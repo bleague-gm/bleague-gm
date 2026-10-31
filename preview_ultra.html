@@ -80,7 +80,7 @@ footer{color:var(--muted);text-align:center;padding:15px;font-size:11px}
 
 <script>
 "use strict";
-const SAVE_KEY="bleague_gm_ultra_b_premier_v4";
+const SAVE_KEY="bleague_gm_ultra_b_premier_v5";
 const $=id=>document.getElementById(id);
 let G=null,PAGE="home";
 
@@ -103,6 +103,9 @@ const TEAM_NAMES=[...EAST,...WEST];
 const esc=v=>String(v||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const yen=n=>Math.round(n||0).toLocaleString("ja-JP")+"万円";
 const uid=()=>Math.random().toString(36).slice(2)+Date.now().toString(36);
+
+// 【修正】ボタン生成用ヘルパー関数を追加しました
+const btn=(label,action,id="",cls="")=>`<button class="${cls}" data-act="${action}" data-id="${esc(id)}">${label}</button>`;
 
 function makePlayer(name,pos,rating,salary,years=1,type="日本人"){
 return{id:uid(),name,pos,rating,salary,years,type};
@@ -205,7 +208,6 @@ G.log.unshift(new Date().toLocaleTimeString("ja-JP",{hour:"numeric",minute:"nume
 G.log=G.log.slice(0,50);
 }
 
-// B.PREMIER仕様：1.5億円（15000万円）超の年俸は1.5億円としてキャップ計算
 function capCalculatedSalary(){
 if(!G || !Array.isArray(G.roster)) return 0;
 return G.roster.reduce((sum,p)=>{
