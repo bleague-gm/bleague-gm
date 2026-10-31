@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>B.LEAGUE GM ULTRA - B.PREMIER Latest Updated Edition</title>
+<title>B.LEAGUE GM ULTRA - B.PREMIER Complete Edition</title>
 <style>
 :root{--bg:#0b1320;--card:#131f33;--card-border:#243652;--text:#e2ebf9;--muted:#94a8c4;--primary:#f5b041;--danger:#e74c3c;--accent:#3498db}
 *{box-sizing:border-box}
@@ -58,7 +58,7 @@ footer{color:var(--muted);text-align:center;padding:15px;font-size:11px}
 <header>
 <div>
 <h1>🏀 B.LEAGUE GM ULTRA</h1>
-<p>B.PREMIER 最新ロスター反映版</p>
+<p>B.PREMIER 完全版（地区別順位・CS・オフシーズン対応）</p>
 </div>
 <button class="primary" data-act="save">セーブ</button>
 </header>
@@ -80,7 +80,7 @@ footer{color:var(--muted);text-align:center;padding:15px;font-size:11px}
 
 <script>
 "use strict";
-const SAVE_KEY="bleague_gm_ultra_b_premier_v10";
+const SAVE_KEY="bleague_gm_ultra_b_premier_v11";
 const $=id=>document.getElementById(id);
 let G=null,PAGE="home";
 
@@ -134,12 +134,12 @@ home:g.away,away:g.home,done:false,round:g.round+30
 return [...games,...first].map((g,i)=>({...g,id:i+1}));
 }
 
-// 各チーム最新のリアルロスターデータ
+// リアルな年俸・実力値を反映したロスターデータ
 const REAL_ROSTERS={
 "レバンガ北海道":[
-  makePlayer("富永 啓生","SG",91,18000,2,"日本人"),
-  makePlayer("ドワイト・ラモス","SG/SF",84,7000,2,"アジア特別枠"),
-  makePlayer("ショーン・ロング","PF/C",87,13000,1,"外国籍"),
+  makePlayer("富永 啓生","SG",91,22000,2,"日本人"),
+  makePlayer("ドワイト・ラモス","SG/SF",84,7500,2,"アジア特別枠"),
+  makePlayer("ショーン・ロング","PF/C",87,14000,1,"外国籍"),
   makePlayer("寺園 脩斗","PG",77,3200,2,"日本人"),
   makePlayer("関野 剛平","SG/SF",78,3500,2,"日本人"),
   makePlayer("島谷 怜","PG",77,3200,2,"日本人"),
@@ -149,8 +149,8 @@ const REAL_ROSTERS={
   makePlayer("菊地 広人","PG/SG",74,2400,2,"日本人")
 ],
 "仙台89ERS":[
-  makePlayer("ジャレット・カルバー","SG/SF",88,15000,1,"外国籍"),
-  makePlayer("ブーバカー・トゥーレ","C",89,16000,1,"外国籍"),
+  makePlayer("ジャレット・カルバー","SG/SF",88,16000,1,"外国籍"),
+  makePlayer("ブーバカー・トゥーレ","C",89,17000,1,"外国籍"),
   makePlayer("青木 保憲","PG",78,3800,2,"日本人"),
   makePlayer("片岡 大晴","SG",74,2500,1,"日本人"),
   makePlayer("杉浦 佑成","SF",77,3400,2,"日本人"),
@@ -185,8 +185,8 @@ const REAL_ROSTERS={
   makePlayer("ブライアント・マークォード","PG",78,3500,1,"日本人")
 ],
 "宇都宮ブレックス":[
-  makePlayer("D.J・ニュービル","PG/SG",92,21000,1,"外国籍"),
-  makePlayer("比江島 慎","SG",90,18000,2,"日本人"),
+  makePlayer("D.J・ニュービル","PG/SG",93,25000,1,"外国籍"),
+  makePlayer("比江島 慎","SG",91,20000,2,"日本人"),
   makePlayer("アイザック・フォトゥ","PF",88,15000,1,"外国籍"),
   makePlayer("ギャビン・エドワーズ","PF",85,11000,1,"帰化"),
   makePlayer("遠藤 祐亮","SG",83,6500,2,"日本人"),
@@ -197,8 +197,8 @@ const REAL_ROSTERS={
   makePlayer("渡邉 裕規","PG",77,3200,1,"日本人")
 ],
 "群馬クレインサンダーズ":[
-  makePlayer("藤井 祐眞","PG/SG",88,14000,2,"日本人"),
-  makePlayer("辻 直人","SG",85,10000,2,"日本人"),
+  makePlayer("藤井 祐眞","PG/SG",88,16000,2,"日本人"),
+  makePlayer("辻 直人","SG",85,11000,2,"日本人"),
   makePlayer("ケリー・ブラックシアー・ジュニア","C/PF",88,15000,1,"外国籍"),
   makePlayer("コー・フリッピン","PG/SG",83,6500,2,"日本人"),
   makePlayer("エージェー・エドゥ","C/PF",84,8000,2,"アジア特別枠"),
@@ -221,11 +221,11 @@ const REAL_ROSTERS={
   makePlayer("青木 ブレイク","PF",75,2500,1,"日本人")
 ],
 "千葉ジェッツ":[
-  makePlayer("富樫 勇樹","PG",92,20000,3,"日本人"),
-  makePlayer("原 修太","SF",83,6000,2,"日本人"),
-  makePlayer("金近 廉","SF",82,5000,3,"日本人"),
+  makePlayer("富樫 勇樹","PG",94,28000,3,"日本人"),
+  makePlayer("原 修太","SF",83,6500,2,"日本人"),
+  makePlayer("金近 廉","SF",82,5500,3,"日本人"),
   makePlayer("D.J.・ステフェンズ","PF",88,15000,1,"外国籍"),
-  makePlayer("クリストファー・スミス","SG",86,12000,1,"外国籍"),
+  makePlayer("クリストファー・スミス","SG",86,13000,1,"外国籍"),
   makePlayer("二上 耀","SG",78,3500,2,"日本人"),
   makePlayer("田代 直希","SF",77,3000,2,"日本人"),
   makePlayer("小川 麻斗","PG",76,2800,2,"日本人"),
@@ -234,10 +234,10 @@ const REAL_ROSTERS={
 ],
 "アルバルク東京":[
   makePlayer("ライアン・ロシター","C/PF",90,18000,1,"帰化"),
-  makePlayer("セバスチャン・サイズ","C/PF",88,15000,1,"外国籍"),
-  makePlayer("アンソニー・クレモンズ","PG",87,13500,1,"外国籍"),
-  makePlayer("安藤 周人","SG",83,6800,2,"日本人"),
-  makePlayer("吉井 裕鷹","SF",82,6000,3,"日本人"),
+  makePlayer("セバスチャン・サイズ","C/PF",88,16000,1,"外国籍"),
+  makePlayer("アンソニー・クレモンズ","PG",87,14000,1,"外国籍"),
+  makePlayer("安藤 周人","SG",83,7200,2,"日本人"),
+  makePlayer("吉井 裕鷹","SF",82,6500,3,"日本人"),
   makePlayer("小酒部 泰暉","SG/SF",81,5500,2,"日本人"),
   makePlayer("ザック・バランスキー","SF/PF",79,4200,1,"日本人"),
   makePlayer("大倉 颯太","PG/SG",78,3800,2,"日本人"),
@@ -245,10 +245,10 @@ const REAL_ROSTERS={
   makePlayer("福田 健人","PG",73,2100,2,"日本人")
 ],
 "サンロッカーズ渋谷":[
-  makePlayer("ジョシュ・ホーキンソン","C/PF",93,22000,1,"帰化"),
+  makePlayer("ジョシュ・ホーキンソン","C/PF",93,24000,1,"帰化"),
   makePlayer("ジェームズ・マイケル・マカドゥ","PF/C",89,16000,1,"外国籍"),
-  makePlayer("ベンドラメ 礼生","PG/SG",84,7500,2,"日本人"),
-  makePlayer("田中 大貴","SG",86,11000,1,"日本人"),
+  makePlayer("ベンドラメ 礼生","PG/SG",84,7800,2,"日本人"),
+  makePlayer("田中 大貴","SG",86,12000,1,"日本人"),
   makePlayer("ライアン・ケリー","PF",86,12500,1,"外国籍"),
   makePlayer("小島 元基","PG",77,3400,2,"日本人"),
   makePlayer("野﨑 零也","SG",76,2900,2,"日本人"),
@@ -269,7 +269,7 @@ const REAL_ROSTERS={
   makePlayer("松山 駿","PG/SG",76,2900,1,"日本人")
 ],
 "横浜ビー・コルセアーズ":[
-  makePlayer("河村 勇輝","PG",95,24000,2,"日本人"),
+  makePlayer("河村 勇輝","PG",96,30000,2,"日本人"),
   makePlayer("パトリック・アウダ","PF",86,12000,1,"外国籍"),
   makePlayer("キング・オブ・ダミアン","C",87,13500,1,"外国籍"),
   makePlayer("エンス","SF/PF",85,11000,1,"外国籍"),
@@ -318,7 +318,7 @@ const REAL_ROSTERS={
 ],
 "シーホース三河":[
   makePlayer("ダバンテ・ガードナー","PF/C",90,18000,1,"外国籍"),
-  makePlayer("西田 優大","SG/SF",87,13000,3,"日本人"),
+  makePlayer("西田 優大","SG/SF",87,14000,3,"日本人"),
   makePlayer("ザック・オーガスト","C",87,13500,1,"外国籍"),
   makePlayer("アンソニー・ローレンス","SF/PF",86,12000,1,"外国籍"),
   makePlayer("角野 亮伍","SF",78,3600,2,"日本人"),
@@ -331,8 +331,8 @@ const REAL_ROSTERS={
 "名古屋ダイヤモンドドルフィンズ":[
   makePlayer("スコット・エサトン","PF/C",89,16000,1,"外国籍"),
   makePlayer("モリス","PF",87,13500,1,"外国籍"),
-  makePlayer("齋藤 拓実","PG",86,11000,2,"日本人"),
-  makePlayer("今村 佳太","SF",84,8000,2,"日本人"),
+  makePlayer("齋藤 拓実","PG",86,12000,2,"日本人"),
+  makePlayer("今村 佳太","SF",84,8500,2,"日本人"),
   makePlayer("レイ・パークスジュニア","SG",84,7200,2,"アジア特別枠"),
   makePlayer("伊藤 達哉","PG",79,4000,1,"日本人"),
   makePlayer("張本 天傑","PF",79,4200,1,"日本人"),
@@ -356,7 +356,7 @@ const REAL_ROSTERS={
   makePlayer("ジャレル・ブラントリー","PF",88,15000,1,"外国籍"),
   makePlayer("マリオ・ライト","SF/PF",86,12000,1,"外国籍"),
   makePlayer("シェイク・ムボジ","C",85,11000,1,"外国籍"),
-  makePlayer("岡田 侑大","SG",85,10000,2,"日本人"),
+  makePlayer("岡田 侑大","SG",85,11000,2,"日本人"),
   makePlayer("前田 悟","SG/SF",80,4800,2,"日本人"),
   makePlayer("鈴木 達也","PG",78,3600,1,"日本人"),
   makePlayer("満田 丈太郎","SF",75,2700,2,"日本人"),
@@ -390,7 +390,7 @@ const REAL_ROSTERS={
 ],
 "島根スサノオマジック":[
   makePlayer("ニック・ケイ","PF",90,18000,1,"外国籍"),
-  makePlayer("安藤 誓哉","PG",88,14000,2,"日本人"),
+  makePlayer("安藤 誓哉","PG",88,15000,2,"日本人"),
   makePlayer("ビュバ","C",88,15000,1,"外国籍"),
   makePlayer("ペガ","C",87,13500,1,"外国籍"),
   makePlayer("晴山 ケビン","SF",78,3500,2,"日本人"),
@@ -401,7 +401,7 @@ const REAL_ROSTERS={
   makePlayer("井上 宗一郎","PF",76,3000,2,"日本人")
 ],
 "広島ドラゴンフライズ":[
-  makePlayer("ドウェイン・エバンス","SF/PF",90,17500,1,"外国籍"),
+  makePlayer("ドウェイン・エバンス","SF/PF",90,18000,1,"外国籍"),
   makePlayer("ケリー・ブラックシアー・ジュニア","PF/C",89,16000,1,"外国籍"),
   makePlayer("ニック・メイヨ","PF/C",88,15000,1,"外国籍"),
   makePlayer("クリストファー・スミス","SG/SF",86,13000,1,"外国籍"),
@@ -424,8 +424,8 @@ const REAL_ROSTERS={
   makePlayer("内尾 聡理","PG/SG",74,2300,2,"日本人"),
   makePlayer("満島 光太郎","PF",73,2100,1,"日本人")
 ],
-"長崎ヴェルカ":[
-  makePlayer("馬場 雄大","SG/SF",91,19000,1,"日本人"),
+"长崎ヴェルカ":[
+  makePlayer("馬場 雄大","SG/SF",92,20000,1,"日本人"),
   makePlayer("マット・ボンズ","SF/PF",89,16500,1,"外国籍"),
   makePlayer("スタンリー・ジョンソン","SF",90,18000,1,"外国籍"),
   makePlayer("ジャハイ・カーソン","PG/SG",86,12000,1,"外国籍"),
@@ -454,15 +454,15 @@ function createNewGame(club="信州ブレイブウォリアーズ"){
 const initialRoster = REAL_ROSTERS[club] ? JSON.parse(JSON.stringify(REAL_ROSTERS[club])) : JSON.parse(JSON.stringify(REAL_ROSTERS["信州ブレイブウォリアーズ"]));
 
 const marketPool = [
-  makePlayer("渡邊 雄太","SF/PF",95,25000,2,"日本人"),
-  makePlayer("河村 勇輝","PG",95,24000,2,"日本人"),
-  makePlayer("富樫 勇樹","PG",92,20000,3,"日本人"),
-  makePlayer("馬場 雄大","SG/SF",91,19000,1,"日本人"),
-  makePlayer("比江島 慎","SG",90,18000,2,"日本人"),
-  makePlayer("ジョシュ・ホーキンソン","PF/C",93,22000,1,"帰化"),
-  makePlayer("西田 優大","SG/SF",87,13000,3,"日本人"),
-  makePlayer("安藤 誓哉","PG",88,14000,2,"日本人"),
-  makePlayer("セバスチャン・サイズ","PF/C",88,15000,1,"外国籍"),
+  makePlayer("渡邊 雄太","SF/PF",96,30000,2,"日本人"),
+  makePlayer("河村 勇輝","PG",96,30000,2,"日本人"),
+  makePlayer("富樫 勇樹","PG",94,28000,3,"日本人"),
+  makePlayer("馬場 雄大","SG/SF",92,20000,1,"日本人"),
+  makePlayer("比江島 慎","SG",91,20000,2,"日本人"),
+  makePlayer("ジョシュ・ホーキンソン","PF/C",93,24000,1,"帰化"),
+  makePlayer("西田 優大","SG/SF",87,14000,3,"日本人"),
+  makePlayer("安藤 誓哉","PG",88,15000,2,"日本人"),
+  makePlayer("セバスチャン・サイズ","PF/C",88,16000,1,"外国籍"),
   makePlayer("ジャック・クーリー","C",89,16000,1,"外国籍")
 ];
 
@@ -483,7 +483,10 @@ coachMarket:[
 ],
 teams:makeTeams(),
 schedule:makeSchedule(),
-log:[`${club}としてB.PREMIERのシーズンが開幕しました！最新リアルロスターで頂点を目指しましょう。`],
+phase:"regular", // regular, cs, off
+csStage:null, // quarterfinals, semifinals, finals
+csResult:null,
+log:[`${club}としてB.PREMIERのシーズンが開幕しました！地区制・CSを勝ち抜き頂点を目指しましょう。`],
 lastResult:null
 };
 saveGame();
@@ -533,8 +536,13 @@ function cap(){return{salary:capCalculatedSalary(),rawSalary:rawSalaryTotal(),ca
 
 function homePage(){
 const c=cap();
+let phaseText="レギュラーシーズン進行中";
+if(G.phase==="cs") phaseText="🏆 チャンピオンシップ（ポストシーズン）開催中";
+if(G.phase==="off") phaseText="🏖️ オフシーズン（契約更改・補強期間）";
+
 return `<section class="card">
 <h2><span>${esc(G.club)}</span> <span class="pill gold">${esc(G.season)} B.PREMIER</span></h2>
+<div class="notice">現在のフェーズ：<b>${phaseText}</b></div>
 <div class="stats-grid">
 <div class="stat-box">手元資金<strong>${yen(G.cash)}</strong></div>
 <div class="stat-box">キャップ対象年俸<strong>${yen(c.salary)}</strong></div>
@@ -546,7 +554,6 @@ return `<section class="card">
 <span>登録選手：<strong>${G.roster.length}/14人</strong></span>
 <span>オンザコート：<strong style="color:var(--primary)">フリー</strong></span>
 </div>
-<div class="notice">トッププレイヤー控除適用中（1.5億円超の年俸は1.5億円としてキャップ計算）。</div>
 </section>
 <section class="card">
 <h2>最新アクティビティ</h2>
@@ -562,21 +569,20 @@ return t?`${t.wins}勝 ${t.losses}敗`:"0勝 0敗";
 }
 
 function standingsPage(){
-const division=window.currentDivision||"ALL";
-const arr=[...(G.teams||[])].filter(t=>division==="ALL"||t.division===division)
-.sort((a,b)=>b.wins-a.wins||((b.pf-b.pa)-(a.pf-a.pa)));
+const tab=window.standingsTab||"EAST";
+const getSorted=(div)=> [...G.teams].filter(t=>t.division===div).sort((a,b)=>b.wins-a.wins||((b.pf-b.pa)-(a.pf-a.pa)));
+
 return `<section class="card">
 <h2><span>順位表</span>
-<select id="divisionFilter" style="width:110px;padding:4px;font-size:11px">
-<option value="ALL" ${division==="ALL"?"selected":""}>全地区</option>
-<option value="東地区" ${division==="東地区"?"selected":""}>東地区</option>
-<option value="西地区" ${division==="西地区"?"selected":""}>西地区</option>
-</select>
+<div class="row" style="gap:4px">
+<button class="${tab==='EAST'?'primary':''}" data-act="st-east" style="padding:4px 8px;font-size:11px">東地区</button>
+<button class="${tab==='WEST'?'primary':''}" data-act="st-west" style="padding:4px 8px;font-size:11px">西地区</button>
+</div>
 </h2>
 <div class="tablewrap"><table><thead><tr>
-<th>順位</th><th>地区</th><th>クラブ</th><th>試合</th><th>勝</th><th>敗</th><th>勝率</th><th>得失点</th>
-</tr></thead><tbody>${arr.map((t,i)=>`<tr class="${t.name===G.club?"highlight":""}">
-<td>${i+1}</td><td>${t.division}</td><td><b>${esc(t.name)}</b></td><td>${t.played}</td>
+<th>順位</th><th>クラブ</th><th>試合</th><th>勝</th><th>敗</th><th>勝率</th><th>得失点</th>
+</tr></thead><tbody>${getSorted(tab==="EAST"?"東地区":"西地区").map((t,i)=>`<tr class="${t.name===G.club?"highlight":""}">
+<td>${i+1}</td><td><b>${esc(t.name)}</b></td><td>${t.played}</td>
 <td>${t.wins}</td><td>${t.losses}</td><td>${t.played?(t.wins/t.played).toFixed(3):".000"}</td><td>${t.pf-t.pa}</td>
 </tr>`).join("")}</tbody></table></div></section>`;
 }
@@ -650,6 +656,24 @@ return `<section class="card">
 }
 
 function schedulePage(){
+if(G.phase==="off"){
+return `<section class="card">
+<h2><span>オフシーズン管理</span></h2>
+<p class="muted">レギュラーシーズンおよびポストシーズンが終了しました。契約が更新された選手を確認し、新シーズンへ移行してください。</p>
+<button class="primary" data-act="nextseason" style="width:100%;margin-top:12px;padding:12px">新シーズンへ移行する</button>
+</section>`;
+}
+
+if(G.phase==="cs"){
+return `<section class="card">
+<h2><span>🏆 チャンピオンシップ (ポストシーズン)</span></h2>
+<p class="muted">年間王者を決めるトーナメント戦が進行中です。</p>
+<div class="notice">ステージ: <b>${G.csStage==="quarter"?"準々決勝 (QF)":G.csStage==="semi"?"準決勝 (SF)":"決勝 (FINALS)"}</b></div>
+<button class="primary" data-act="simulatecs" style="width:100%;margin-top:10px;padding:12px">CSの試合を進める</button>
+${G.csResult?`<div style="margin-top:12px">${resultHTML(G.csResult)}</div>`:""}
+</section>`;
+}
+
 const remaining=(G.schedule||[]).filter(g=>!g.done);
 const nextRound=remaining.length>0?remaining[0].round:null;
 const nextGames=nextRound?G.schedule.filter(g=>g.round===nextRound):[];
@@ -657,9 +681,9 @@ const nextGames=nextRound?G.schedule.filter(g=>g.round===nextRound):[];
 return `<section class="card">
 <h2><span>日程・試合進行</span> <span class="pill">消化: ${(G.schedule||[]).filter(g=>g.done).length}/${(G.schedule||[]).length}</span></h2>
 <div style="margin-bottom:12px">
-${nextRound?btn(`第 ${nextRound} 節の全試合を実行`,"nextgame","","primary"):btn("シーズン終了・次年度へ","nextseason","","primary")}
+${nextRound?btn(`第 ${nextRound} 節の全試合を実行`,"nextgame","","primary"):btn("ポストシーズンへ進む","startcs","","primary")}
 </div>
-<h3>${nextRound?`第 ${nextRound} 節 対戦カード`:"全日程終了"}</h3>
+<h3>${nextRound?`第 ${nextRound} 節 対戦カード`:"レギュラーシーズン終了"}</h3>
 ${nextGames.map(g=>`<div class="logline">${esc(g.home)} vs ${esc(g.away)} ${g.home===G.club||g.away===G.club?"<span class='pill gold'>自チーム</span>":""}</div>`).join("")}
 </section>
 ${G.lastResult?`<section class="card"><h2>直近試合結果</h2>${resultHTML(G.lastResult)}</section>`:""}`;
@@ -725,7 +749,7 @@ return base + cBonus;
 
 function simulateGame(){
 const remaining=G.schedule.filter(x=>!x.done);
-if(remaining.length===0){alert("全日程が終了しています。");return;}
+if(remaining.length===0){alert("全日程が終了しています。ポストシーズンへ進んでください。");return;}
 const currentRound=remaining[0].round;
 const roundGames=G.schedule.filter(g=>g.round===currentRound);
 
@@ -767,6 +791,48 @@ log(`第${currentRound}節: ${g.home} ${hs}-${as} ${g.away} (収支: ${profit>=0
 saveGame();render();
 }
 
+function startCS(){
+G.phase="cs";
+G.csStage="quarter";
+log("チャンピオンシップ（ポストシーズン）が開幕しました！");
+saveGame();render();
+}
+
+function simulateCS(){
+let isMyTeamInCS = true; // 簡略化のため自チームは常にCS出場
+let hPow=calculateTeamPower(true);
+let aPow=78 + Math.random()*5;
+
+let hs=0,as=0,periods=[];
+for(let q=0;q<4;q++){
+let h=Math.max(15,Math.round(22+Math.random()*8+(hPow-75)*.25));
+let a=Math.max(15,Math.round(21+Math.random()*8+(aPow-75)*.25));
+periods.push([h,a]);hs+=h;as+=a;
+}
+if(hs===as){as+=1;periods[3][1]++;}
+
+G.csResult={home:G.club,away:"ライバルクラブ",hs,as,periods,venue:"CS特設アリーナ",attendance:8000};
+
+if(hs>as){
+if(G.csStage==="quarter"){
+  G.csStage="semi";
+  log("チャンピオンシップ 準々決勝を突破しました！次は準決勝です。");
+}else if(G.csStage==="semi"){
+  G.csStage="finals";
+  log("チャンピオンシップ 準決勝を突破しました！ついに関東・有明でのファイナルです！");
+}else{
+  log("🏆 おめでとうございます！B.PREMIERの年間王者に輝きました！");
+  alert("🏆 チャンピオンシップ優勝おめでとうございます！");
+  G.phase="off";
+}
+}else{
+log("チャンピオンシップ敗退となりました。オフシーズンへ移行します。");
+alert("チャンピオンシップ敗退…お疲れ様でした。オフシーズンへ移行します。");
+G.phase="off";
+}
+saveGame();render();
+}
+
 function processNextSeason(){
 if(!confirm("シーズンを終了して次の年度へ移行しますか？"))return;
 G.roster.forEach(p=>p.years--);
@@ -779,6 +845,9 @@ G.seasonStart=startYear;
 G.season=`${startYear}-${String(startYear+1).slice(2)}`;
 G.teams=makeTeams();
 G.schedule=makeSchedule();
+G.phase="regular";
+G.csStage=null;
+G.csResult=null;
 G.lastResult=null;
 log(`新シーズン (${G.season}) が開幕しました。`);
 saveGame();render();
@@ -797,6 +866,8 @@ PAGE="home";render();return;
 }
 if(!validGame(G)){alert("ゲームを開始してください。");render();return;}
 if(action==="save"){alert(saveGame()?"データをセーブしました。":"セーブ失敗");return;}
+if(action==="st-east"){window.standingsTab="EAST";render();return;}
+if(action==="st-west"){window.standingsTab="WEST";render();return;}
 if(action==="changeclub"){
 const name=$("clubSelect")?.value;
 if(!name)return;
@@ -863,12 +934,10 @@ G.ticket=Math.round(t);G.attendance=Math.round(a);
 log("経営方針を更新しました。");saveGame();render();return;
 }
 if(action==="nextgame"){simulateGame();return;}
+if(action==="startcs"){startCS();return;}
+if(action==="simulatecs"){simulateCS();return;}
 if(action==="nextseason"){processNextSeason();return;}
 }
-
-document.addEventListener("change",e=>{
-if(e.target.id==="divisionFilter"){window.currentDivision=e.target.value;render();}
-});
 
 document.addEventListener("click",e=>{
 const b=e.target.closest("button");
