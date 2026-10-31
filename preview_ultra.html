@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>B.LEAGUE GM ULTRA - B.PREMIER Real Edition</title>
+<title>B.LEAGUE GM ULTRA - B.PREMIER All Teams Real Edition</title>
 <style>
 :root{--bg:#0b1320;--card:#131f33;--card-border:#243652;--text:#e2ebf9;--muted:#94a8c4;--primary:#f5b041;--danger:#e74c3c;--accent:#3498db}
 *{box-sizing:border-box}
@@ -58,7 +58,7 @@ footer{color:var(--muted);text-align:center;padding:15px;font-size:11px}
 <header>
 <div>
 <h1>🏀 B.LEAGUE GM ULTRA</h1>
-<p>B.PREMIER レアルルール版</p>
+<p>B.PREMIER 全チーム実名ロスター版</p>
 </div>
 <button class="primary" data-act="save">セーブ</button>
 </header>
@@ -80,7 +80,7 @@ footer{color:var(--muted);text-align:center;padding:15px;font-size:11px}
 
 <script>
 "use strict";
-const SAVE_KEY="bleague_gm_ultra_b_premier_v5";
+const SAVE_KEY="bleague_gm_ultra_b_premier_v7";
 const $=id=>document.getElementById(id);
 let G=null,PAGE="home";
 
@@ -104,78 +104,368 @@ const esc=v=>String(v||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&
 const yen=n=>Math.round(n||0).toLocaleString("ja-JP")+"万円";
 const uid=()=>Math.random().toString(36).slice(2)+Date.now().toString(36);
 
-// 【修正】ボタン生成用ヘルパー関数を追加しました
+// ボタン生成用ヘルパー関数
 const btn=(label,action,id="",cls="")=>`<button class="${cls}" data-act="${action}" data-id="${esc(id)}">${label}</button>`;
 
 function makePlayer(name,pos,rating,salary,years=1,type="日本人"){
 return{id:uid(),name,pos,rating,salary,years,type};
 }
 
-function makeTeams(){
-return TEAM_NAMES.map(name=>({
-name,
-division:EAST.includes(name)?"東地区":"西地区",
-wins:0,losses:0,played:0,pf:0,pa:0
-}));
-}
+// 全26クラブのリアルロスターデータ定義
+const REAL_ROSTERS={
+// --- 東地区 ---
+"レバンガ北海道":[
+  makePlayer("寺園 脩斗","PG",77,3200,2,"日本人"),
+  makePlayer("島谷 怜","PG",74,2400,2,"日本人"),
+  makePlayer("田中 晴瑛","SG",73,2200,1,"日本人"),
+  makePlayer("桜井 良太","SG",72,2000,1,"日本人"),
+  makePlayer("寺嶋 恭之介","SF",75,2800,2,"日本人"),
+  makePlayer("橋本 竜馬","PG",78,3500,1,"日本人"),
+  makePlayer("ドワイト・ラモス","SG/SF",84,7000,2,"アジア特別枠"),
+  makePlayer("ショーン・ロング","PF/C",87,13000,1,"外国籍"),
+  makePlayer("リド・ビッグバイ","C",83,8500,1,"外国籍"),
+  makePlayer("中野 司","SG",76,2900,2,"日本人")
+],
+"仙台89ERS":[
+  makePlayer("片岡 大晴","SG",74,2500,1,"日本人"),
+  makePlayer("青木 保憲","PG",78,3800,2,"日本人"),
+  makePlayer("小林 遥太","PG",73,2200,1,"日本人"),
+  makePlayer("片貝 響","SF",72,2000,2,"日本人"),
+  makePlayer("沢田 竜馬","PG",75,2600,1,"日本人"),
+  makePlayer("鈴木 鉄生","SG",73,2100,2,"日本人"),
+  makePlayer("ネイサン・ブース","PF",85,11000,1,"外国籍"),
+  makePlayer("ジャスティン・ハーパー","PF",86,12000,1,"外国籍"),
+  makePlayer("クリスティアン・カメロ","C",82,8000,1,"外国籍"),
+  makePlayer("渡辺 翔太","PG",75,2700,2,"日本人")
+],
+"秋田ノーザンハピネッツ":[
+  makePlayer("田口 成浩","SG",79,4000,2,"日本人"),
+  makePlayer("古川 孝敏","SG/SF",83,6000,1,"日本人"),
+  makePlayer("中山 拓哉","PG/SG",82,5500,2,"日本人"),
+  makePlayer("長谷川 暢","PG",78,3600,2,"日本人"),
+  makePlayer("保岡 龍斗","SG",80,4500,2,"日本人"),
+  makePlayer("野本 建吾","PF",75,2800,1,"日本人"),
+  makePlayer("赤穂 雷太","SF",77,3400,2,"日本人"),
+  makePlayer("スティーブ・ザック","C",86,12000,1,"外国籍"),
+  makePlayer("タリク・ブラック","C",88,15000,1,"外国籍"),
+  makePlayer("ハビエル・カーター","PF",84,9000,1,"外国籍")
+],
+"茨城ロボッツ":[
+  makePlayer("平尾 充庸","PG",77,3300,1,"日本人"),
+  makePlayer("多嶋 朝飛","PG",76,3000,1,"日本人"),
+  makePlayer("中村 功平","SG",75,2700,2,"日本人"),
+  makePlayer("山口 颯斗","SF",79,4200,2,"日本人"),
+  makePlayer("福澤 晃平","SG",76,2900,1,"日本人"),
+  makePlayer("鶴巻 啓太","SF",74,2400,2,"日本人"),
+  makePlayer("エリック・ジェイコブセン","PF/C",85,11000,1,"外国籍"),
+  makePlayer("トーマス・ケネディ","SF/PF",86,12500,1,"帰化"),
+  makePlayer("チェハー・エムボージェ","C",83,8500,1,"外国籍"),
+  makePlayer("ブライアント・マークォード","PG",78,3500,1,"日本人")
+],
+"宇都宮ブレックス":[
+  makePlayer("田臥 勇太","PG",78,4000,1,"日本人"),
+  makePlayer("比江島 慎","SG",90,18000,2,"日本人"),
+  makePlayer("遠藤 祐亮","SG",83,6500,2,"日本人"),
+  makePlayer("竹内 公輔","PF/C",80,5000,1,"日本人"),
+  makePlayer("鵤 誠司","PG",81,5500,2,"日本人"),
+  makePlayer("渡邉 裕規","PG",77,3200,1,"日本人"),
+  makePlayer("高島 紳司","SG/SF",78,3600,3,"日本人"),
+  makePlayer("ニュービル（DJ）","PG/SG",92,21000,1,"外国籍"),
+  makePlayer("ギャビン・エドワーズ","PF/C",85,11000,1,"帰化"),
+  makePlayer("グラント・ージェメラ","PF",87,14000,1,"外国籍")
+],
+"群馬クレインサンダーズ":[
+  makePlayer("五十嵐 圭","PG",77,3500,1,"日本人"),
+  makePlayer("並里 成","PG",82,5500,2,"日本人"),
+  makePlayer("辻 直人","SG",85,10000,2,"日本人"),
+  makePlayer("八村 阿蓮","SF",78,3800,2,"日本人"),
+  makePlayer("菅原 暉","PG",74,2500,1,"日本人"),
+  makePlayer("野口 大介","PF",73,2200,1,"日本人"),
+  makePlayer("マイケル・パーカー","PF",86,12000,1,"帰化"),
+  makePlayer("トレイ・ジョーンズ","SF/PF",87,13500,1,"外国籍"),
+  makePlayer("K・コッツァー","C",84,9500,1,"外国籍"),
+  makePlayer("ケーレブ・ターズク","C",85,11000,1,"外国籍")
+],
+"アルティーリ千葉":[
+  makePlayer("大塚 裕土","SG",77,3200,1,"日本人"),
+  makePlayer("杉本 天昇","SG",76,3000,2,"日本人"),
+  makePlayer("黒川 虎徹","PG",75,2800,2,"日本人"),
+  makePlayer("前田 怜緒","SF",78,3600,2,"日本人"),
+  makePlayer("鶴田 美勇士","C",74,2400,1,"日本人"),
+  makePlayer("ブランドン・アシュリー","PF",86,12000,1,"外国籍"),
+  makePlayer("レオ・ライオンズ","PF",85,11000,1,"外国籍"),
+  makePlayer("イバン・ビュバ","C",87,14000,1,"外国籍"),
+  makePlayer("木田 貴明","SG",73,2100,1,"日本人"),
+  makePlayer("小林 史弥","PG",72,2000,2,"日本人")
+],
+"千葉ジェッツ":[
+  makePlayer("富樫 勇樹","PG",92,20000,3,"日本人"),
+  makePlayer("原 修太","SF",83,6000,2,"日本人"),
+  makePlayer("金近 廉","SF",82,5000,3,"日本人"),
+  makePlayer("二上 耀","SG",78,3500,2,"日本人"),
+  makePlayer("田代 直希","SF",77,3000,2,"日本人"),
+  makePlayer("小川 麻斗","PG",76,2800,2,"日本人"),
+  makePlayer("荒尾 岳","C",75,2500,1,"日本人"),
+  makePlayer("D.J.・ステフェンズ","PF",88,15000,1,"外国籍"),
+  makePlayer("クリストファー・スミス","SG",86,12000,1,"外国籍"),
+  makePlayer("アイザック・バッツ","C",84,9500,1,"外国籍")
+],
+"アルバルク東京":[
+  makePlayer("安藤 周人","SG",83,6800,2,"日本人"),
+  makePlayer("吉井 裕鹰","SF",82,6000,3,"日本人"),
+  makePlayer("ザック・バランスキー","PF",79,4200,1,"日本人"),
+  makePlayer("小酒部 泰暉","SG/SF",81,5500,2,"日本人"),
+  makePlayer("平岩 玄","C",76,2900,1,"日本人"),
+  makePlayer("橋本 晃佑","PF",75,2700,2,"日本人"),
+  makePlayer("ライアン・ロシター","PF/C",90,18000,1,"帰化"),
+  makePlayer("セバスチャン・サイズ","PF/C",88,15000,1,"外国籍"),
+  makePlayer("デイビン・オリバー","SG/SF",87,14000,1,"外国籍"),
+  makePlayer("福田 健人","PG",73,2100,2,"日本人")
+],
+"サンロッカーズ渋谷":[
+  makePlayer("ベンドラメ 礼生","PG/SG",84,7500,2,"日本人"),
+  makePlayer("田中 大貴","SG",86,11000,1,"日本人"),
+  makePlayer("津屋 一球","SF",76,2800,2,"日本人"),
+  makePlayer("盛實 海翔","SG",75,2600,1,"日本人"),
+  makePlayer("小島 元基","PG",77,3400,2,"日本人"),
+  makePlayer("田中 力","SG",76,3000,3,"日本人"),
+  makePlayer("1.ジョシュ・ホーキンソン","PF/C",93,22000,1,"帰化"),
+  makePlayer("ジェームズ・マイケル・マカドゥ","PF/C",89,16000,1,"外国籍"),
+  makePlayer("アンソニー・クレモンズ","PG",87,13500,1,"外国籍"),
+  makePlayer("ライアン・ケリー","PF",86,12500,1,"外国籍")
+],
+"川崎ブレイブサンダース":[
+  makePlayer("篠山 竜青","PG",81,5000,1,"日本人"),
+  makePlayer("辻の相棒枠・増田","SF",78,3500,2,"日本人"),
+  makePlayer("野口 竜也","PF",74,2300,1,"日本人"),
+  makePlayer("長谷川 技","SF",76,3000,1,"日本人"),
+  makePlayer("飯田 遼","SG",75,2700,2,"日本人"),
+  makePlayer("鎌田 裕也","C",73,2100,1,"日本人"),
+  makePlayer("ニック・ファジーカス枠・帰化","C",91,19000,1,"帰化"),
+  makePlayer("ジョーダン・ヒース","PF/C",87,14000,1,"外国籍"),
+  makePlayer("マティアス・カルファニ","PF",85,11000,1,"外国籍"),
+  makePlayer("益子 拓己","PG",73,2000,2,"日本人")
+],
+"横浜ビー・コルセアーズ":[
+  makePlayer("河村 勇輝","PG",95,24000,2,"日本人"),
+  makePlayer("森井 健太","PG",78,3600,2,"日本人"),
+  makePlayer("大庭 岳輝","SG",74,2400,1,"日本人"),
+  makePlayer("杉浦 佑成","SF",77,3200,2,"日本人"),
+  makePlayer("松崎 裕樹","SF",78,3500,3,"日本人"),
+  makePlayer("須藤 昂矢","SG",76,2900,1,"日本人"),
+  makePlayer("ジャシム・ジャワド","PF",75,2600,2,"アジア特別枠"),
+  makePlayer("パトリック・アウダ","PF",86,12000,1,"外国籍"),
+  makePlayer("キング・オブ・ダミアン","C",87,13500,1,"外国籍"),
+  makePlayer("エンス（B.E）","SF/PF",85,11000,1,"外国籍")
+],
+"富山グラウジーズ":[
+  makePlayer("宇都 直輝","PG",79,4200,1,"日本人"),
+  makePlayer("水戸 健史","SG",73,2100,1,"日本人"),
+  makePlayer("阿部 翔太","PG",74,2300,2,"日本人"),
+  makePlayer("上田 隼輔","SF",72,2000,1,"日本人"),
+  makePlayer("橋本 尚明","SG",75,2600,1,"日本人"),
+  makePlayer("マイク・トレイラー","PF",85,11000,1,"外国籍"),
+  makePlayer("ジョシュ・スコット","C",87,14000,1,"外国籍"),
+  makePlayer("ジュリアン・マブンガ","SF/PF",88,15000,1,"外国籍"),
+  makePlayer("北村 哲也","C",73,2200,2,"日本人"),
+  makePlayer("東 宏斗","PG",72,2000,1,"日本人")
+],
 
-function makeSchedule(){
-const games=[];
-for(let r=0;r<30;r++){
-const rotation=TEAM_NAMES.map((_,i)=>TEAM_NAMES[(i+r)%26]);
-for(let i=0;i<13;i++){
-let home=rotation[i],away=rotation[25-i];
-if((r+i)%2){const t=home;home=away;away=t;}
-games.push({home,away,done:false,round:r+1});
-}
-}
-const first=games.map(g=>({
-home:g.away,away:g.home,done:false,round:g.round+30
-}));
-return [...games,...first].map((g,i)=>({...g,id:i+1}));
-}
+// --- 西地区 ---
+"信州ブレイブウォリアーズ":[
+  makePlayer("キーボン・ハリス","SG",86,12000,1,"外国籍"),
+  makePlayer("古川 孝敏","SG/SF",83,6000,2,"日本人"),
+  makePlayer("マイク・ダウム","PF/C",89,16000,1,"外国籍"),
+  makePlayer("マーカス・リー","C/PF",87,14000,1,"外国籍"),
+  makePlayer("土家 大輝","PG",78,3500,2,"日本人"),
+  makePlayer("星野 京介","SG",77,3000,2,"日本人"),
+  makePlayer("河田 チリジ","C",80,5000,1,"帰化"),
+  makePlayer("トビン マーカス海舟","PF",76,2800,2,"日本人"),
+  makePlayer("加藤 ダニエル","C/PF",75,2500,2,"日本人"),
+  makePlayer("小栗 瑛哉","PG",74,2200,2,"日本人")
+],
+"三遠ネオフェニックス":[
+  makePlayer("太田 敦也","C",75,2500,1,"日本人"),
+  makePlayer("細川 一輝","SG",78,3600,2,"日本人"),
+  makePlayer("大浦 颯太","PG",81,5200,2,"日本人"),
+  makePlayer("佐々木 隆成","PG",77,3400,1,"日本人"),
+  makePlayer("山崎 稜","SG",76,2900,1,"日本人"),
+  makePlayer("吉井 琉生","SF",73,2100,2,"日本人"),
+  makePlayer("サーディ・ラベナ","SG/SF",84,7000,2,"アジア特別枠"),
+  makePlayer("カイル・オクイン","C",88,15000,1,"外国籍"),
+  makePlayer("デイビス（K.D）","PF",87,13500,1,"外国籍"),
+  makePlayer("ヤンテ・メイテン","PF/C",89,16500,1,"外国籍")
+],
+"シーホース三河":[
+  makePlayer("柏木 真介","PG",73,2000,1,"日本人"),
+  makePlayer("久保田 義統","SG",74,2300,1,"日本人"),
+  makePlayer("長野 誠史","PG",77,3300,2,"日本人"),
+  makePlayer("西田 優大","SG/SF",87,13000,3,"日本人"),
+  makePlayer("角野 亮伍","SF",78,3600,2,"日本人"),
+  makePlayer("石井 講祐","SG",76,2800,1,"日本人"),
+  makePlayer("ダバンテ・ガードナー","PF/C",90,18000,1,"外国籍"),
+  makePlayer("アンソニー・ローレンス","SF/PF",86,12000,1,"外国籍"),
+  makePlayer("ザック・オーガスト","C",87,13500,1,"外国籍"),
+  makePlayer("中村 拓人","PG",76,2900,2,"日本人")
+],
+"名古屋ダイヤモンドドルフィンズ":[
+  makePlayer("齋藤 拓実","PG",86,11000,2,"日本人"),
+  makePlayer("今村 佳太","SF",84,8000,2,"日本人"),
+  makePlayer("佐藤 卓磨","SF",78,3600,2,"日本人"),
+  makePlayer("中東 泰斗","SG/SF",76,3000,1,"日本人"),
+  makePlayer("張本 天傑","PF",79,4200,1,"日本人"),
+  makePlayer("菊池 真人","C",74,2200,2,"日本人"),
+  makePlayer("スコット・エサトン","PF/C",89,16000,1,"外国籍"),
+  makePlayer("モリス（B.M）","PF",87,13500,1,"外国籍"),
+  makePlayer("レイ・パークスジュニア","SG",84,7200,2,"アジア特別枠"),
+  makePlayer("伊藤 達哉","PG",79,4000,1,"日本人")
+],
+"滋賀レイクス":[
+  makePlayer("野本 熊生","SF",73,2100,1,"日本人"),
+  makePlayer("柏倉 哲平","PG",76,2900,2,"日本人"),
+  makePlayer("狩野 祐介","SG",75,2700,1,"日本人"),
+  makePlayer("野崎 零也","SG",74,2400,2,"日本人"),
+  makePlayer("川真田 紘也","C",77,3500,2,"日本人"),
+  makePlayer("テーブス 海","PG",83,6500,2,"日本人"),
+  makePlayer("イヴァン・ブヴァ","C",87,14000,1,"外国籍"),
+  makePlayer("ライアン・フォンテイン","PF",85,11000,1,"外国籍"),
+  makePlayer("ノヴァリア（K.N）","SF",82,7500,2,"アジア特別枠"),
+  makePlayer("ブランデン・ドソン","PF",86,12500,1,"外国籍")
+],
+"京都ハンナリーズ":[
+  makePlayer("小西 聖也","PG",74,2300,1,"日本人"),
+  makePlayer("久保田 遼","PF",73,2100,1,"日本人"),
+  makePlayer("満田 丈太郎","SF",75,2700,2,"日本人"),
+  makePlayer("前田 悟","SG/SF",80,4800,2,"日本人"),
+  makePlayer("青木 龍史","SG",74,2400,1,"日本人"),
+  makePlayer("鈴木 達也","PG",78,3600,1,"日本人"),
+  makePlayer("シェイク・ムボジ","C",85,11000,1,"外国籍"),
+  makePlayer("マリオ・ライト","SF/PF",86,12000,1,"外国籍"),
+  makePlayer("ジャレル・ブラントリー","PF",88,15000,1,"外国籍"),
+  makePlayer("岡田 侑大","SG",85,10000,2,"日本人")
+],
+"大阪エヴェッサ":[
+  makePlayer("合田 怜","SG",76,3000,1,"日本人"),
+  makePlayer("竹内 譲次","PF",78,3800,1,"日本人"),
+  makePlayer("飯尾 文哉","SG",73,2100,2,"日本人"),
+  makePlayer("木下 誠","PG",75,2600,1,"日本人"),
+  makePlayer("中村 浩陸","PG",74,2300,2,"日本人"),
+  makePlayer("鈴木 達也","PG",77,3400,1,"日本人"),
+  makePlayer("DJ・ニュービル枠・大阪","SG",88,15000,1,"外国籍"),
+  makePlayer("ショーン・オマーア","PF/C",86,12000,1,"外国籍"),
+  makePlayer("アイラ・ブラウン","PF",83,8500,1,"帰化"),
+  makePlayer("マシュー・ライト","SG",84,7500,2,"アジア特別枠")
+],
+"神戸ストークス":[
+  makePlayer("道原 紀晃","SG",74,2300,1,"日本人"),
+  makePlayer("川晓 智大","PF",73,2100,2,"日本人"),
+  makePlayer("綱井 勇介","PG",74,2200,1,"日本人"),
+  makePlayer("金田 龍弥","SF",75,2600,2,"日本人"),
+  makePlayer("中西 良太","PF",73,2000,1,"日本人"),
+  makePlayer("ジョーダン・ヴォーン","PF",85,11000,1,"外国籍"),
+  makePlayer("シャキール・ハインズ","SF/PF",86,12000,1,"外国籍"),
+  makePlayer("トレイ・ポーター","C",84,9500,1,"外国籍"),
+  makePlayer("松岡 俊希","PG",72,19000,1,"日本人"),
+  makePlayer("内藤 瑛斗","SG",73,2000,2,"日本人")
+],
+"島根スサノオマジック":[
+  makePlayer("安藤 誓哉","PG",88,14000,2,"日本人"),
+  makePlayer("後藤 翔平","PG",74,2400,1,"日本人"),
+  makePlayer("津山 尚大","SG",77,3200,2,"日本人"),
+  makePlayer("北川 弘","PG",76,2800,1,"日本人"),
+  makePlayer("相馬 卓弥","SG",75,2600,1,"日本人"),
+  makePlayer("ニック・ケイ","PF",90,18000,1,"外国籍"),
+  makePlayer("ペガ（W.P）","C",87,13500,1,"外国籍"),
+  makePlayer("ビュバ（I.B）","C",88,15000,1,"外国籍"),
+  makePlayer("晴山 ケビン","SF",78,3500,2,"日本人"),
+  makePlayer("津山 竜一","SF",72,2000,1,"日本人")
+],
+"広島ドラゴンフライズ":[
+  makePlayer("朝山 正悟","SF",74,2500,1,"日本人"),
+  makePlayer("辻 直人（移籍想定・広島）","SG",85,10000,1,"日本人"),
+  makePlayer("寺嶋 良","PG",81,5500,2,"日本人"),
+  makePlayer("上澤 俊喜","PG",75,2700,2,"日本人"),
+  makePlayer("船生 誠也","SF",77,3300,1,"日本人"),
+  makePlayer("荒尾 岳（広島）","C",73,2100,1,"日本人"),
+  makePlayer("ケリー・ブラックシアー・ジュニア","PF/C",89,16000,1,"外国籍"),
+  makePlayer("ドウェイン・エバンス","SF/PF",90,17500,1,"外国籍"),
+  makePlayer("ニック・メイヨ","PF/C",88,15000,1,"外国籍"),
+  makePlayer("山崎 隼","SG",73,2000,2,"日本人")
+],
+"佐賀バルーナーズ":[
+  makePlayer("西川 貴之","SF",77,3200,1,"日本人"),
+  makePlayer("角田 太輝","PG",75,2700,2,"日本人"),
+  makePlayer("満島 光太郎","PF",73,2100,1,"日本人"),
+  makePlayer("南 渡馬","SG",72,2000,2,"日本人"),
+  makePlayer("山下 泰弘","PG",76,2900,1,"日本人"),
+  makePlayer("チェイス・フィーラー","PF",86,12000,1,"外国籍"),
+  makePlayer("レイナルド・ガルシア","PG/SG",88,15000,1,"外国籍"),
+  makePlayer("ヨハネス・ティーマン","C",87,13500,1,"外国籍"),
+  makePlayer("岸田 琉生","SG",72,1900,2,"日本人"),
+  makePlayer("徳川 健","SF",73,2100,1,"日本人")
+],
+"長崎ヴェルカ":[
+  makePlayer("馬場 雄大","SG/SF",91,19000,1,"日本人"),
+  makePlayer("髙比良 寛治","SG",76,2900,2,"日本人"),
+  makePlayer("狩俣 昌也","PG",77,3300,1,"日本人"),
+  makePlayer("松本 健児リオン","SG",74,2300,2,"日本人"),
+  makePlayer("荒川 颯","PG",75,2600,2,"日本人"),
+  makePlayer("ジャハイ・カーソン","PG/SG",86,12000,1,"外国籍"),
+  makePlayer("マット・ボンズ","SF/PF",89,16500,1,"外国籍"),
+  makePlayer("パブロ・アギラール","PF",85,11000,1,"外国籍"),
+  makePlayer("森 唯斗","C",73,2100,1,"日本人"),
+  makePlayer("小針 幸也","PG",72,2000,2,"日本人")
+],
+"琉球ゴールデンキングス":[
+  makePlayer("岸本 隆一","PG",84,7500,3,"日本人"),
+  makePlayer("田代 直希（琉球）","SF",77,3200,2,"日本人"),
+  makePlayer("松本 礼太","PG",75,2700,2,"日本人"),
+  makePlayer("今村 佳太（琉球）","SF",85,10500,2,"日本人"),
+  makePlayer("小野寺 祥太","SG",79,4000,2,"日本人"),
+  makePlayer("渡邉 飛勇","C",80,5000,3,"日本人"),
+  makePlayer("ヴィック・ロー","SF/PF",91,19000,1,"外国籍"),
+  makePlayer("ジャック・クーリー","C",89,16000,1,"外国籍"),
+  makePlayer("アレックス・カーク","C",90,18000,1,"外国籍"),
+  makePlayer("カール・タマヨ","PF",85,11000,2,"アジア特別枠")
+]
+};
 
-function createNewGame(club="千葉ジェッツ"){
+function createNewGame(club="信州ブレイブウォリアーズ"){
+// 選択されたクラブのリアルロスターを取得（未定義の場合はデフォルトの信州）
+const initialRoster = REAL_ROSTERS[club] ? JSON.parse(JSON.stringify(REAL_ROSTERS[club])) : JSON.parse(JSON.stringify(REAL_ROSTERS["信州ブレイブウォリアーズ"]));
+
+// 市場（FA等）には他チームの有名選手や外国人スターを並べる
+const marketPool = [
+  makePlayer("渡邊 雄太","SF/PF",95,25000,2,"日本人"),
+  makePlayer("富樫 勇樹","PG",92,20000,3,"日本人"),
+  makePlayer("ジョシュ・ホーキンソン","PF/C",93,22000,1,"帰化"),
+  makePlayer("河村 勇輝","PG",95,24000,2,"日本人"),
+  makePlayer("西田 優大","SG/SF",87,13000,3,"日本人"),
+  makePlayer("安藤 誓哉","PG",88,14000,2,"日本人"),
+  makePlayer("セバスチャン・サイズ","PF/C",88,15000,1,"外国籍"),
+  makePlayer("ジャック・クーリー","C",89,16000,1,"外国籍"),
+  makePlayer("比江島 慎","SG",90,18000,2,"日本人"),
+  makePlayer("D.J.・ステフェンズ","PF",88,15000,1,"外国籍")
+];
+
 G={
 club,seasonStart:2026,season:"2026-27",
-cash:600000,ticket:3500,attendance:5000,
-roster:[
-makePlayer("富樫 勇樹","PG",92,20000,3,"日本人"),
-makePlayer("原 修太","SF",83,6000,2,"日本人"),
-makePlayer("金近 廉","SF",82,5000,3,"日本人"),
-makePlayer("D.J.・ステフェンズ","PF",88,15000,1,"外国籍"),
-makePlayer("ギャビン・エドワーズ","PF/C",85,11000,1,"帰化"),
-makePlayer("荒尾 岳","C",75,2500,1,"日本人"),
-makePlayer("二上 耀","SG",78,3500,2,"日本人"),
-makePlayer("田代 直希","SF",77,3000,2,"日本人"),
-makePlayer("小川 麻斗","PG",76,2800,2,"日本人"),
-makePlayer("クリストファー・スミス","SG",86,12000,1,"外国籍")
-],
-market:[
-makePlayer("比江島 慎","SG",90,18000,2,"日本人"),
-makePlayer("馬場 雄大","SG/SF",91,19000,1,"日本人"),
-makePlayer("ジャック・クーリー","C",89,16000,1,"外国籍"),
-makePlayer("セバスチャン・サイズ","PF/C",88,15000,1,"外国籍"),
-makePlayer("岸本 隆一","PG",83,7000,2,"日本人"),
-makePlayer("安藤 周人","SG",82,6500,2,"日本人"),
-makePlayer("今村 佳太","SF",84,8000,2,"日本人"),
-makePlayer("ジョシュ・ホーキンソン","PF/C",93,22000,1,"帰化"),
-makePlayer("鵤 誠司","PG",79,4000,2,"日本人"),
-makePlayer("K・コッツァー","C",84,9500,1,"外国籍")
-],
+cash:600000,ticket:3500,attendance:4500,
+roster: initialRoster,
+market: marketPool,
 coaches:[
-{id:uid(),name:"ジョン・パトリック",role:"HC",rating:88,salary:15000}
+  {id:uid(),name:"日本バスケ界の名将",role:"HC",rating:85,salary:12000}
 ],
 coachMarket:[
-{id:uid(),name:"ルカ・パヴィチェヴィッチ",role:"HC",rating:90,salary:18000},
-{id:uid(),name:"佐々 宜央",role:"HC",rating:82,salary:8000},
-{id:uid(),name:"東頭 毅",role:"OF",rating:78,salary:4000},
-{id:uid(),name:"敕使川原 寛",role:"DF",rating:80,salary:4500},
-{id:uid(),name:"佐藤 博紀",role:"育成",rating:77,salary:3000}
+  {id:uid(),name:"ルカ・パヴィチェヴィッチ",role:"HC",rating:90,salary:18000},
+  {id:uid(),name:"ジョン・パトリック",role:"HC",rating:88,salary:15000},
+  {id:uid(),name:"東頭 毅",role:"OF",rating:78,salary:4000},
+  {id:uid(),name:"敕使川原 寛",role:"DF",rating:80,salary:4500},
+  {id:uid(),name:"佐藤 博紀",role:"育成",rating:77,salary:3000}
 ],
 teams:makeTeams(),
 schedule:makeSchedule(),
-log:["B.PREMIER開幕！オンザコートフリー＆実名スター選手による熱い戦いが始まります。"],
+log:[`${club}としてB.PREMIERのシーズンが開幕しました！全チーム実名ロスターで頂点を目指しましょう。`],
 lastResult:null
 };
 saveGame();
@@ -389,7 +679,7 @@ return `<section class="card" style="margin-top:20px">
 <h2><span>B.PREMIER GM 起動</span></h2>
 <p class="muted">お好きなクラブを選択してゼネラルマネージャーに就任してください。</p>
 <label><span>担当クラブ</span><select id="firstClub">
-${TEAM_NAMES.map(n=>`<option value="${esc(n)}" ${n==="千葉ジェッツ"?"selected":""}>${esc(n)}</option>`).join("")}
+${TEAM_NAMES.map(n=>`<option value="${esc(n)}" ${n==="信州ブレイブウォリアーズ"?"selected":""}>${esc(n)}</option>`).join("")}
 </select></label>
 <button data-act="firstgame" class="primary" style="width:100%;margin-top:10px;padding:12px">GM就任してゲーム開始</button>
 </section>`;
@@ -478,7 +768,9 @@ saveGame();render();
 
 function act(action,id){
 if(action==="firstgame"){
-createNewGame($("firstClub")?.value||"千葉ジェッツ");render();return;
+const selectedClub = $("firstClub")?.value || "信州ブレイブウォリアーズ";
+createNewGame(selectedClub);
+render();return;
 }
 if(action==="newgame"){
 if(!confirm("初期データに戻してやり直しますか？"))return;
@@ -490,8 +782,14 @@ if(action==="save"){alert(saveGame()?"データをセーブしました。":"セ
 if(action==="changeclub"){
 const name=$("clubSelect")?.value;
 if(!name)return;
-G.club=name;log("操作クラブを"+name+"に変更");saveGame();render();
-alert("操作クラブを変更しました。");return;
+G.club=name;
+// クラブ変更時にもそのチームのリアルロスターを反映
+if(REAL_ROSTERS[name]) {
+  G.roster = JSON.parse(JSON.stringify(REAL_ROSTERS[name]));
+}
+log("操作クラブを"+name+"に変更（ロスター更新）");
+saveGame();render();
+alert("操作クラブを変更しました。ロスターも更新されました。");return;
 }
 if(action==="extend"){
 const p=G.roster.find(x=>x.id===id);
