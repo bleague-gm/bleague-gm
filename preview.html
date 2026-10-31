@@ -3,66 +3,139 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#101c35">
-<title>B.LEAGUE GM - My Dynasty</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>B.LEAGUE GM PRO</title>
 <style>
-*{box-sizing:border-box}body{margin:0;background:#10182a;color:#f5f7ff;font-family:-apple-system,BlinkMacSystemFont,sans-serif}header{padding:22px 16px;background:linear-gradient(135deg,#172c51,#345da0)}h1{margin:0;font-size:25px}header p{margin:8px 0 0;color:#d2def5;font-size:13px}.wrap{max-width:850px;margin:auto;padding:14px}.panel{background:#1c2941;border:1px solid #354562;border-radius:14px;padding:15px;margin:12px 0}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.stat{background:#253652;padding:11px;border-radius:10px}.stat small{display:block;color:#bac8df}.stat strong{font-size:18px}.tabs{display:flex;gap:7px;overflow:auto;padding:8px 0}.tabs button{white-space:nowrap}.btn,button{background:#365f9f;color:white;border:0;border-radius:9px;padding:11px 13px;font-size:14px;cursor:pointer}.btn.secondary,button.secondary{background:#35445d}.btn:disabled{opacity:.4}button.active{background:#e2a83b;color:#172033}select{background:#101c30;color:white;border:1px solid #526582;border-radius:8px;padding:10px;width:100%;margin:7px 0}table{border-collapse:collapse;width:100%;font-size:13px}th,td{text-align:left;padding:9px 5px;border-bottom:1px solid #3b4960}th{color:#b8c8e3} .muted{color:#b7c6df;font-size:13px}.event{border-left:4px solid #e5b04c;padding:12px;background:#263650;border-radius:8px;margin:10px 0}.choice{display:block;width:100%;margin:8px 0;text-align:left;background:#354b6d}.hidden{display:none}.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.row>*{flex:1}.club{display:flex;justify-content:space-between;gap:10px;padding:10px 2px;border-bottom:1px solid #3b4960}footer{text-align:center;color:#8798b5;padding:20px;font-size:12px}
+:root{--bg:#0b1020;--panel:#151e32;--line:#293751;--gold:#f5c451;--blue:#54b9ff;--green:#55d6a0;--red:#ff7777;--text:#edf3ff;--muted:#9eacc5}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:14px}
+header{padding:20px 16px;background:linear-gradient(135deg,#142a50,#101528);border-bottom:1px solid var(--line)}
+header h1{font-size:23px;margin:0 0 5px}header p{color:var(--muted);margin:0;font-size:12px}
+main{max-width:1000px;margin:auto;padding:12px;padding-bottom:95px}
+.metrics{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.metric,.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:13px;margin-bottom:10px}
+.metric small,.muted{color:var(--muted)}.metric strong{display:block;font-size:20px;margin-top:5px}
+h2{font-size:17px;margin:4px 0 12px}h3{font-size:14px;margin:0 0 8px}
+button,select,input{font:inherit}button{border:1px solid var(--line);background:#22314c;color:var(--text);padding:10px 12px;border-radius:8px;cursor:pointer}
+button.primary{background:#176dc0;border-color:#3b9bea}button.gold{background:#73541a;border-color:var(--gold)}button.danger{background:#612a35}button:disabled{opacity:.4}
+.actions{display:flex;gap:7px;flex-wrap:wrap;margin:8px 0}.row{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 0;border-bottom:1px solid var(--line)}.row:last-child{border-bottom:0}
+.row .info{min-width:0;flex:1}.row strong{display:block}.tag{font-size:11px;border:1px solid var(--line);border-radius:5px;padding:3px 6px;color:var(--muted);display:inline-block;margin:2px}
+.good{color:var(--green)}.bad{color:var(--red)}.goldtext{color:var(--gold)}.blue{color:var(--blue)}
+.bar{height:6px;background:#28354a;border-radius:6px;overflow:hidden;margin-top:5px}.bar span{height:100%;display:block;background:var(--blue)}
+nav{position:fixed;bottom:0;left:0;right:0;z-index:10;display:flex;overflow-x:auto;background:#10182a;border-top:1px solid var(--line);padding:7px 3px env(safe-area-inset-bottom)}
+nav button{flex:1;min-width:61px;padding:9px 2px;font-size:11px;background:transparent;border:0;border-radius:6px}
+nav button.active{background:#23395b;color:var(--gold)}
+input,select{background:#0c1424;color:var(--text);border:1px solid var(--line);border-radius:7px;padding:9px;max-width:100%}
+label{display:block;color:var(--muted);margin:10px 0 5px}
+table{width:100%;border-collapse:collapse;font-size:12px}th,td{text-align:left;padding:9px 5px;border-bottom:1px solid var(--line)}th{color:var(--muted)}
+.scroll{overflow-x:auto}.story{border-left:3px solid var(--gold);padding:10px 12px;background:#1a263b;border-radius:5px;margin:8px 0}
+.big{font-size:26px;font-weight:800}.center{text-align:center}.hidden{display:none}
+@media(min-width:650px){.metrics{grid-template-columns:repeat(4,1fr)}main{padding:20px}.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}}
 </style>
 </head>
 <body>
-<header><div class="wrap"><h1>🏀 B.LEAGUE GM</h1><p>BUILD YOUR DYNASTY — 君の選択で、クラブの未来が変わる。</p></div></header>
-<main class="wrap">
-<div class="panel">
-<div class="stats">
-<div class="stat"><small>シーズン</small><strong id="season">1年目</strong></div>
-<div class="stat"><small>クラブ資金</small><strong id="money">30.0億円</strong></div>
-<div class="stat"><small>勝敗</small><strong id="record">0勝0敗</strong></div>
-</div>
-<p class="muted" id="clubline">信州ブレイブウォリアーズ | GMモード</p>
-</div>
-<nav class="tabs" id="tabs"></nav>
-<section class="panel" id="content"></section>
-<footer>ゲーム内の選手・試合結果・物語は架空のシミュレーションです。実際の公式戦データとは連動していません。</footer>
-</main>
+<header>
+<h1>🏀 B.LEAGUE GM <span class="goldtext">PRO</span></h1>
+<p>CLUB MANAGEMENT SIMULATOR · 2026–27</p>
+</header>
+<main id="app"></main>
+<nav id="nav"></nav>
 <script>
+"use strict";
+const KEY="bleagueGM_PRO_v1";
 const clubs=[
-["レバンガ北海道","東"],["仙台89ERS","東"],["秋田ノーザンハピネッツ","東"],["茨城ロボッツ","東"],["宇都宮ブレックス","東"],["群馬クレインサンダーズ","東"],["アルティーリ千葉","東"],["千葉ジェッツ","東"],["アルバルク東京","東"],["東京サンロッカーズ","東"],["川崎ブレイブサンダース","東"],["横浜ビー・コルセアーズ","東"],["富山グラウジーズ","東"],["信州ブレイブウォリアーズ","西"],["三遠ネオフェニックス","西"],["シーホース三河","西"],["名古屋ダイヤモンドドルフィンズ","西"],["滋賀レイクス","西"],["京都ハンナリーズ","西"],["大阪エヴェッサ","西"],["神戸ストークス","西"],["島根スサノオマジック","西"],["広島ドラゴンフライズ","西"],["佐賀バルーナーズ","西"],["長崎ヴェルカ","西"],["琉球ゴールデンキングス","西"]
-];
-const chapters=[
-{title:"第1章：再建か、勝負か",body:"新シーズンを前に、オーナーから最初の方針を求められた。限られた資金で、クラブの未来を決める。",choices:[["若手育成に投資する","若手選手の成長を重視する方針を宣言した。",1,3],["即戦力を集めて優勝を狙う","勝利への期待が高まった。", -2,5]]},
-{title:"第2章：ファンの声",body:"連敗が続き、ファンから補強を求める声が届いた。GMとして何を優先する？",choices:[["地道な練習と戦術改善","チームの連携を鍛える。",0,3],["補強を約束して期待に応える","資金は減るが、期待感が高まった。",-1,5]]},
-{title:"第3章：若手の挑戦",body:"若手選手が出場機会を求めている。重要な試合で起用するべきだろうか。",choices:[["若手に大きな役割を任せる","経験が選手を成長させた。",0,4],["実績のある選手を起用する","目先の安定を選んだ。",0,1]]},
-{title:"第4章：経営判断",body:"スポンサーから地域貢献活動の提案があった。費用はかかるが、地域とのつながりを強められる。",choices:[["地域イベントを開催する","地域の応援が少しずつ広がった。",-1,5],["競技力への投資を優先する","練習環境の充実を目指す。",-1,2]]},
-{title:"第5章：運命の最終戦",body:"シーズン最終戦。勝利すればプレーオフ進出に近づく。チームにどんな言葉をかける？",choices:[["全員で最後まで戦おう","チームは一丸となって試合に臨んだ。",0,5],["結果で証明しよう","選手たちに勝利への覚悟が生まれた。",0,3]]}
-];
-let state={season:1,round:0,w:0,l:0,money:30,fan:50,trust:50,team:"信州ブレイブウォリアーズ",chapter:0,storyDone:[],standings:{},log:[]};
-const original=localStorage.getItem("bleagueGM2026");
-if(original){try{state={...state,...JSON.parse(original)}}catch(e){}}
-function initStandings(){clubs.forEach(c=>{if(!state.standings[c[0]])state.standings[c[0]]={w:0,l:0}})}
-initStandings();
-const pages=["ホーム","試合","順位表","クラブ","ストーリー","セーブ"];
-let page="ホーム";
-function save(){localStorage.setItem("bleagueGM2026",JSON.stringify(state));renderHeader()}
-function renderHeader(){document.getElementById("season").textContent=state.season+"年目";document.getElementById("money").textContent=state.money.toFixed(1)+"億円";document.getElementById("record").textContent=state.w+"勝"+state.l+"敗";document.getElementById("clubline").textContent=state.team+" | GMモード"}
-function renderTabs(){document.getElementById("tabs").innerHTML=pages.map(p=>`<button class="${page===p?"active":""}" onclick="go('${p}')">${p}</button>`).join("")}
-function go(p){page=p;render()}
-function render(){
-renderHeader();renderTabs();
-let c=document.getElementById("content");
-if(page==="ホーム"){c.innerHTML=`<h2>GMダッシュボード</h2><p>クラブの未来は、あなたの決断にかかっている。</p><div class="event"><b>今週のミッション</b><p>試合を進め、クラブの勝利と経営の両立を目指そう。</p></div><div class="row"><button onclick="go('試合')">試合に進む</button><button class="secondary" onclick="go('ストーリー')">物語を読む</button></div><h3>直近のニュース</h3>${state.log.slice(-3).reverse().map(x=>`<p class="muted">・${x}</p>`).join("")||"<p class='muted'>まだニュースはありません。</p>"}`}
-if(page==="試合"){let opp=clubs[(state.round*7+4)%clubs.length][0];if(opp===state.team)opp=clubs[(state.round*7+5)%clubs.length][0];c.innerHTML=`<h2>試合日程</h2><p class="muted">${state.season}年目 | 第${state.round+1}節</p><div class="event"><h3>${state.team} vs ${opp}</h3><p>レギュラーシーズン</p></div><button onclick="play('${opp.replace(/'/g,"\\'")}')">試合をシミュレーション</button><p class="muted">結果はゲーム内で生成される架空の試合結果です。</p>`}
-if(page==="順位表"){let rows=clubs.map(x=>({name:x[0],...state.standings[x[0]]})).sort((a,b)=>b.w-a.w||a.l-b.l);c.innerHTML=`<h2>リーグ順位表</h2><table><tr><th>順位</th><th>クラブ</th><th>勝</th><th>敗</th></tr>${rows.map((x,i)=>`<tr><td>${i+1}</td><td>${x.name}</td><td>${x.w}</td><td>${x.l}</td></tr>`).join("")}</table>`}
-if(page==="クラブ"){c.innerHTML=`<h2>クラブ管理</h2><p>所属クラブを選択してください。</p><select id="teamselect">${clubs.map(x=>`<option ${x[0]===state.team?"selected":""}>${x[0]}</option>`).join("")}</select><button onclick="changeTeam()">クラブを選択</button><h3>経営状況</h3><p>資金：${state.money.toFixed(1)}億円</p><p>ファン支持：${state.fan}/100</p><p>オーナー信頼：${state.trust}/100</p><p class="muted">クラブ変更はGMプレイの所属先だけを変更します。</p>`}
-if(page==="ストーリー"){let n=state.chapter;if(n>=chapters.length){c.innerHTML=`<h2>シーズンストーリー完了</h2><p>あなたの決断がクラブの歴史を作った。</p><button onclick="nextSeason()">次のシーズンへ</button><p class="muted">シーズンを進めると物語を再び体験できます。</p>`}else{let a=chapters[n];c.innerHTML=`<p class="muted">STORY ${n+1} / ${chapters.length}</p><h2>${a.title}</h2><div class="event">${a.body}</div>${a.choices.map((q,i)=>`<button class="choice" onclick="choose(${n},${i})">${q[0]}</button>`).join("")}<p class="muted">選択によって資金、信頼、ファン支持が変化します。</p>`}}
-if(page==="セーブ"){c.innerHTML=`<h2>セーブデータ</h2><p>ゲームの進行はこのブラウザに保存されます。</p><button onclick="exportSave()">セーブデータを書き出す</button><p><label>バックアップを読み込む<input id="savefile" type="file" accept=".json,application/json"></label></p><button class="secondary" onclick="importSave()">読み込む</button><p class="muted">機種変更やブラウザのデータ削除に備え、定期的にバックアップしてください。</p>`}
+"レバンガ北海道","仙台89ERS","秋田ノーザンハピネッツ","茨城ロボッツ","宇都宮ブレックス","群馬クレインサンダーズ","アルティーリ千葉","千葉ジェッツ","アルバルク東京","サンロッカーズ渋谷","川崎ブレイブサンダース","横浜ビー・コルセアーズ","富山グラウジーズ",
+"信州ブレイブウォリアーズ","三遠ネオフェニックス","シーホース三河","名古屋ダイヤモンドドルフィンズ","滋賀レイクス","京都ハンナリーズ","大阪エヴェッサ","神戸ストークス","島根スサノオマジック","広島ドラゴンフライズ","佐賀バルーナーズ","長崎ヴェルカ","琉球ゴールデンキングス"];
+const names=["高橋","田中","佐藤","鈴木","伊藤","渡辺","山本","中村","小林","加藤","吉田","山田","松本","井上","木村","林","清水","森","池田","橋本"];
+const first=["蓮","大翔","悠真","蒼","拓海","颯太","健太","陸","湊","翔","直哉","海斗","駿","優斗","陽向"];
+const positions=["PG","SG","SF","PF","C"];
+let S,tab="home";
+function rand(a,b){return Math.floor(Math.random()*(b-a+1))+a}
+function money(n){return "¥"+Math.round(n).toLocaleString("ja-JP")+"万円"}
+function player(pos,ovr,age){return {id:Math.random().toString(36).slice(2,10),name:names[rand(0,names.length-1)]+first[rand(0,first.length-1)],pos,ovr,age,salary:Math.round((ovr-55)*35+rand(0,500)),years:rand(1,3),potential:Math.min(99,ovr+rand(0,16)),mood:rand(60,90),games:0,pts:0}}
+function makeClub(name,i){
+let strength=68+rand(0,19);
+return {name,cash: i===13?30000:rand(12000,35000),fans:rand(4000,12000),rep:rand(45,85),coach:rand(65,86),strength,roster:Array.from({length:10},(_,j)=>player(positions[j%5],rand(strength-13,strength+8),rand(19,34))),w:0,l:0,pf:0,pa:0,revenue:0,expense:0,sponsor:rand(2000,5500),morale:75,owner:70}
 }
-function play(opp){let home=Math.floor(75+Math.random()*31),away=Math.floor(75+Math.random()*31);if(Math.random()<.5)home+=10;else away+=10;let win=home>away;if(home===away){home++;win=true}state.round++;state.money+=win?.12:-.06;state.fan=Math.max(0,Math.min(100,state.fan+(win?1:-1)));state.trust=Math.max(0,Math.min(100,state.trust+(win?1:-1)));if(win)state.w++;else state.l++;state.standings[state.team][win?"w":"l"]++;state.standings[opp][win?"l":"w"]++;let msg=`第${state.round}節 ${state.team} ${home}-${away} ${opp}：${win?"勝利":"敗戦"}`;state.log.push(msg);save();alert(msg);go("試合")}
-function choose(n,i){let q=chapters[n].choices[i];state.money=Math.max(0,state.money+q[2]);state.trust=Math.max(0,Math.min(100,state.trust+q[3]));state.fan=Math.max(0,Math.min(100,state.fan+Math.round(q[3]/2)));state.log.push(q[1]);state.chapter++;state.storyDone.push(n);save();render()}
-function nextSeason(){state.season++;state.round=0;state.w=0;state.l=0;state.chapter=0;state.log.push(`${state.season}年目の新シーズンが開幕。`);save();go("ホーム")}
-function changeTeam(){state.team=document.getElementById("teamselect").value;save();go("クラブ")}
-function exportSave(){let blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json"});let a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="bleague-gm-save.json";a.click();URL.revokeObjectURL(a.href)}
-function importSave(){let f=document.getElementById("savefile").files[0];if(!f)return alert("バックアップファイルを選択してください");let r=new FileReader();r.onload=()=>{try{state={...state,...JSON.parse(r.result)};initStandings();save();render();alert("読み込みました")}catch(e){alert("ファイルを読み込めませんでした")}};r.readAsText(f)}
+function newGame(i){
+const teams=clubs.map(makeClub);
+const t=teams[i];
+return {version:1,season:2026,round:0,phase:"regular",user:i,teams,cash:t.cash,history:[],log:["GM就任。チームを率いて優勝を目指そう。"],stories:[],storyDone:[],sponsorLevel:1,training:1,tactics:"balanced",ticket:2500,autosave:true,gameCount:0};
+}
+function team(){return S.teams[S.user]}
+function strength(t){let a=t.roster.slice().sort((x,y)=>y.ovr-y.ovr).slice(0,8);return Math.round(a.reduce((s,p)=>s+p.ovr,0)/Math.max(1,a.length)+t.coach*.12+(t.morale-70)*.08)}
+function note(x){S.log.unshift(x);S.log=S.log.slice(0,45)}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S));return true}catch(e){return false}}
+function load(){try{let x=JSON.parse(localStorage.getItem(KEY));if(x&&x.teams&&x.user>=0){S=x;return true}}catch(e){}return false}
+function el(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function btn(text,action,cls=""){return `<button class="${cls}" onclick="${action}">${text}</button>`}
+function panel(title,body){return `<section class="panel"><h2>${title}</h2>${body}</section>`}
+function metrics(){let t=team();return `<div class="metrics">
+<div class="metric"><small>運営資金</small><strong>${money(S.cash)}</strong></div>
+<div class="metric"><small>シーズン</small><strong>${S.season}–${String(S.season+1).slice(-2)}</strong></div>
+<div class="metric"><small>成績</small><strong>${t.w}勝 ${t.l}敗</strong></div>
+<div class="metric"><small>チーム力</small><strong>${strength(t)} <span class="muted">/ 100</span></strong></div>
+</div>`}
+function home(){let t=team(),rank=standings().findIndex(x=>x===t)+1;
+return metrics()+`<div class="two">${panel("🏟️ クラブ概要",`<h3>${el(t.name)}</h3><div class="row"><span>リーグ順位</span><b>${rank}位 / 26</b></div><div class="row"><span>選手数</span><b>${t.roster.length}人</b></div><div class="row"><span>士気</span><b>${t.morale}/100</b></div><div class="bar"><span style="width:${t.morale}%"></span></div><div class="row"><span>ホーム観客数（目安）</span><b>${t.fans.toLocaleString()}人</b></div>`)}
+${panel("📅 シーズン進行",`<p>${S.phase==="regular"?"レギュラーシーズン":S.phase==="playoff"?"プレーオフ":"オフシーズン"} · ${S.round} / ${S.phase==="regular"?60:S.phase==="playoff"?3:0}節</p><p class="muted">試合・経営判断を行い、シーズンを進めよう。</p><div class="actions">${btn("次の試合を実行","playGame()","primary")}${btn("1週間進める","advanceWeek()")}${btn("ストーリー確認","setTab('story')")}</div>`)}
+</div>${panel("📰 GMニュース",S.log.slice(0,5).map(x=>`<div class="row"><div>${el(x)}</div></div>`).join(""))}
+${panel("🎯 GMの基本方針",`<p>補強・育成・戦術・経営を組み合わせて勝利を目指そう。</p><div class="actions">${btn("選手編成","setTab('roster')")}${btn("経営管理","setTab('business')")}${btn("順位表","setTab('table')")}</div>`)}`}
+function roster(){let t=team();return metrics()+panel("👥 選手編成",`<p class="muted">選手をタップして詳細確認。補強候補と契約交渉ができます。</p><div class="scroll"><table><thead><tr><th>選手</th><th>位置</th><th>年齢</th><th>能力</th><th>年俸</th><th>契約</th><th></th></tr></thead><tbody>${t.roster.slice().sort((a,b)=>b.ovr-a.ovr).map(p=>`<tr><td>${el(p.name)}</td><td>${p.pos}</td><td>${p.age}</td><td><b>${p.ovr}</b></td><td>${money(p.salary)}</td><td>${p.years}年</td><td>${btn("詳細",`playerDetail('${p.id}')`)}</td></tr>`).join("")}</tbody></table></div><div class="actions">${btn("フリー選手市場","setTab('market')","primary")}${btn("育成メニュー","setTab('training')")}</div>`)}
+function market(){let t=team();if(!S.market)S.market=Array.from({length:18},()=>player(positions[rand(0,4)],rand(65,91),rand(19,32)));return metrics()+panel("🔍 フリー選手市場",`<p class="muted">契約金は年俸の30%。資金が不足すると契約できません。</p>${S.market.map(p=>`<div class="row"><div class="info"><strong>${el(p.name)} <span class="tag">${p.pos}</span></strong><span class="muted">${p.age}歳 · 潜在能力 ${p.potential}</span><div>能力 <b>${p.ovr}</b> · 年俸 ${money(p.salary)}</div></div>${btn("契約",`sign('${p.id}')`,"primary")}</div>`).join("")}<div class="actions">${btn("候補を更新","refreshMarket()")}${btn("選手編成へ戻る","setTab('roster')")}</div>`)}
+function training(){let t=team();return metrics()+panel("📈 育成・練習",`<p>練習を選ぶと、費用が発生する代わりに選手の能力や士気が変化します。</p><div class="row"><div class="info"><strong>基礎トレーニング</strong><span class="muted">全選手の成長を促す</span></div>${btn("実行 ¥300万","train('basic')","primary")}</div><div class="row"><div class="info"><strong>戦術練習</strong><span class="muted">監督能力とチーム力を強化</span></div>${btn("実行 ¥500万","train('tactics')","primary")}</div><div class="row"><div class="info"><strong>休養日</strong><span class="muted">士気を回復させる</span></div>${btn("実行","train('rest')")}</div><p>練習レベル：${S.training}</p>`)}
+function business(){let t=team(),pay=t.roster.reduce((s,p)=>s+p.salary,0);return metrics()+panel("💴 クラブ経営",`<div class="row"><span>選手年俸総額（年換算）</span><b>${money(pay)}</b></div><div class="row"><span>スポンサー収入（試合ごと）</span><b>${money(t.sponsor)}</b></div><div class="row"><span>ホーム観客数（目安）</span><b>${t.fans.toLocaleString()}人</b></div><label>チケット価格</label><select id="ticket"><option value="1500">¥1,500</option><option value="2500">¥2,500</option><option value="3500">¥3,500</option><option value="5000">¥5,000</option></select><div class="actions">${btn("価格を設定","setTicket()","primary")}</div><h3>経営施策</h3><div class="row"><div class="info"><strong>スポンサー営業</strong><span class="muted">費用 ¥200万、成功時に収入増加</span></div>${btn("営業する","sponsor()")}</div><div class="row"><div class="info"><strong>ファンサービス</strong><span class="muted">費用 ¥300万、観客動員の増加を狙う</span></div>${btn("実施する","fanService()")}</div><div class="row"><div class="info"><strong>選手を放出</strong><span class="muted">契約解除。年俸支出を抑える</span></div><select id="release">${t.roster.map(p=>`<option value="${p.id}">${el(p.name)}（${money(p.salary)}）</option>`).join("")}</select>${btn("放出","releasePlayer()","danger")}</div>`)}
+function standings(){return [...S.teams].sort((a,b)=>b.w-a.w||(b.pf-b.pa)-(a.pf-a.pa))}
+function table(){return panel("🏆 リーグ順位表",`<p class="muted">ゲーム内のシミュレーション成績</p><div class="scroll"><table><thead><tr><th>順位</th><th>クラブ</th><th>勝</th><th>敗</th><th>勝率</th><th>得失点</th><th>戦力</th></tr></thead><tbody>${standings().map((t,i)=>`<tr style="${t===team()?'color:var(--gold);font-weight:bold':''}"><td>${i+1}</td><td>${el(t.name)}</td><td>${t.w}</td><td>${t.l}</td><td>${(t.w/Math.max(1,t.w+t.l)*100).toFixed(1)}%</td><td>${t.pf-t.pa}</td><td>${strength(t)}</td></tr>`).join("")}</tbody></table></div>`)+panel("📊 戦績",`<p>試合実行回数：${S.gameCount}</p><p>現在のチーム：${el(team().name)}</p><p>レギュラーシーズン終了後、オフシーズンへ進めます。</p>`)}
+function story(){let events=[
+["主力選手からの相談","出場時間が少ないと主力選手が不満を訴えている。","playtime"],
+["スポンサーの要望","スポンサーから地域イベントへの参加を求められた。","sponsor"],
+["若手選手の成長","若手選手が自主練習を増やしたいと申し出ている。","young"],
+["観客動員の課題","ホームゲームの観客を増やす施策が必要だ。","fans"],
+["監督との作戦会議","監督が戦術の変更を提案している。","coach"]];
+return metrics()+panel("📖 GMストーリー",`<p>選択によって資金、士気、チーム力が変化します。イベントは進行中に発生します。</p>${S.stories.length?S.stories.slice(0,12).map(x=>`<div class="story"><b>${el(x.title)}</b><p>${el(x.text)}</p><small class="muted">${el(x.result)}</small></div>`).join(""):"<p class='muted'>まだストーリーイベントはありません。試合を進めるとイベントが発生します。</p>"}<h3>GM判断イベント</h3>${events.map(e=>`<div class="row"><div class="info"><strong>${e[0]}</strong><span class="muted">${e[1]}</span></div>${btn("判断する",`storyEvent('${e[2]}')`)}</div>`).join("")}`)}
+function savePage(){return metrics()+panel("💾 セーブ・ロード",`<p>この端末のブラウザにゲームを保存します。ブラウザのデータ削除や別端末では消える場合があります。定期的にJSONバックアップを保存してください。</p><div class="actions">${btn("今すぐセーブ","manualSave()","primary")}${btn("セーブデータをロード","manualLoad()")}</div><p id="saveStatus" class="muted">保存状況：${localStorage.getItem(KEY)?"保存データあり":"保存データなし"}</p><hr style="border-color:var(--line)"><h3>バックアップ</h3><div class="actions">${btn("JSONを書き出す","exportSave()")}</div><label>バックアップJSONを読み込む</label><input type="file" id="importFile" accept=".json,application/json"><div class="actions">${btn("読み込んで復元","importSave()","primary")}</div><p class="muted">復元すると現在のゲームデータが置き換わります。</p><hr style="border-color:var(--line)"><h3>ゲーム管理</h3><div class="actions">${btn("新しいゲーム","newGameConfirm()","danger")}</div><p class="muted">新規開始すると現在の進行状況は置き換わります。必要な場合は先にバックアップしてください。</p>`)}
+function nav(){let tabs=[["home","🏠","ホーム"],["roster","👥","選手"],["market","🔎","補強"],["training","📈","育成"],["business","💴","経営"],["table","🏆","順位表"],["story","📖","ストーリー"],["save","💾","セーブ"]];document.getElementById("nav").innerHTML=tabs.map(([id,icon,label])=>`<button class="${tab===id?'active':''}" onclick="setTab('${id}')">${icon}<br>${label}</button>`).join("")}
+function render(){if(!S){document.getElementById("app").innerHTML=panel("ゲーム開始",`<p>クラブを選択してGMに就任しよう。</p><label>所属クラブ</label><select id="newClub">${clubs.map((c,i)=>`<option value="${i}" ${i===13?"selected":""}>${el(c)}</option>`).join("")}</select><div class="actions">${btn("ゲームを開始","startGame()","primary")}${btn("セーブデータをロード","manualLoad()")}</div>`);nav();return}
+const pages={home,roster,market,training,business,table,story,save};
+document.getElementById("app").innerHTML=(pages[tab]||home)();nav();save()}
+function setTab(t){tab=t;render();window.scrollTo(0,0)}
+function startGame(){let i=Number(document.getElementById("newClub").value);S=newGame(i);note("GM就任："+team().name+"。優勝を目指してシーズンが開幕！");tab="home";render()}
+function manualSave(){if(!S){alert("ゲームを開始してください");return}alert(save()?"セーブしました！":"保存できませんでした。空き容量やブラウザ設定を確認してください。");render()}
+function manualLoad(){if(load()){tab="home";render();alert("セーブデータをロードしました")}else alert("セーブデータが見つかりません")}
+function exportSave(){if(!S)return alert("ゲームを開始してください");let blob=new Blob([JSON.stringify(S,null,2)],{type:"application/json"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="bleague-gm-save.json";a.click();URL.revokeObjectURL(url)}
+function importSave(){let f=document.getElementById("importFile").files[0];if(!f)return alert("JSONファイルを選択してください");let r=new FileReader();r.onload=()=>{try{let d=JSON.parse(r.result);if(!d.teams||!Array.isArray(d.teams)||!d.teams[d.user])throw Error();if(!confirm("現在のデータを置き換えて復元しますか？"))return;S=d;save();tab="home";render();alert("復元しました")}catch(e){alert("ファイルが正しいセーブデータではありません")}};r.readAsText(f)}
+function newGameConfirm(){if(confirm("現在のゲームを終了して新規ゲームを始めますか？")){S=null;localStorage.removeItem(KEY);tab="home";render()}}
+function refreshMarket(){S.market=Array.from({length:18},()=>player(positions[rand(0,4)],rand(65,91),rand(19,32)));note("フリー選手市場の候補が更新された。");render()}
+function sign(id){let p=S.market.find(x=>x.id===id),t=team();if(!p)return;if(t.roster.length>=15)return alert("登録枠がいっぱいです（15人）");let cost=p.salary*.3+p.salary;if(S.cash<cost)return alert("資金が不足しています");if(!confirm(`${p.name}と契約しますか？\n能力 ${p.ovr} / 年俸 ${money(p.salary)} / 初期費用 ${money(cost)}`))return;S.cash-=cost;t.roster.push(p);S.market=S.market.filter(x=>x.id!==id);t.morale=Math.min(100,t.morale+2);note(`${p.name}と契約。契約関連費用 ${money(cost)}。`);render()}
+function playerDetail(id){let p=team().roster.find(x=>x.id===id);if(!p)return;alert(`${p.name}\nポジション：${p.pos}\n能力：${p.ovr}\n潜在能力：${p.potential}\n年齢：${p.age}\n年俸：${money(p.salary)}\n契約残：${p.years}年\n士気：${p.mood}\n出場：${p.games}試合\n平均得点：${p.games?(p.pts/p.games).toFixed(1):0}`)}
+function train(type){let t=team(),cost=type==="basic"?300:type==="tactics"?500:0;if(S.cash<cost)return alert("資金不足です");S.cash-=cost;if(type==="basic"){t.roster.forEach(p=>{if(p.age<31&&p.ovr<p.potential&&Math.random()<.65)p.ovr++;p.mood=Math.min(100,p.mood+2)});S.training++;note("基礎トレーニングを実施。選手の成長を促した。")}else if(type==="tactics"){t.coach=Math.min(99,t.coach+1);t.morale=Math.min(100,t.morale+3);note("戦術練習を実施。監督能力と士気が向上。")}else{t.morale=Math.min(100,t.morale+8);t.roster.forEach(p=>p.mood=Math.min(100,p.mood+5));note("休養日を設け、チームの士気を回復。")}render()}
+function setTicket(){let v=Number(document.getElementById("ticket").value);S.ticket=v;note("チケット価格を"+money(v/10000*10000).replace("万円","円")+"に設定。");render()}
+function sponsor(){let t=team();if(S.cash<200)return alert("資金不足です");S.cash-=200;if(Math.random()<.75){t.sponsor+=rand(300,900);t.rep=Math.min(100,t.rep+1);note("スポンサー営業成功。スポンサー収入が増加。")}else note("スポンサー営業は不成立。営業費用が発生。");render()}
+function fanService(){let t=team();if(S.cash<300)return alert("資金不足です");S.cash-=300;t.fans+=rand(200,800);t.morale=Math.min(100,t.morale+4);note("ファンサービスを実施。観客動員の増加を狙う。");render()}
+function releasePlayer(){let t=team(),id=document.getElementById("release").value,p=t.roster.find(x=>x.id===id);if(!p)return;if(t.roster.length<=5)return alert("選手をこれ以上放出できません");if(!confirm(`${p.name}を放出しますか？`))return;t.roster=t.roster.filter(x=>x.id!==id);S.cash-=Math.round(p.salary*.15);note(`${p.name}を契約解除。違約金 ${money(p.salary*.15)}。`);render()}
+function storyEvent(type){let t=team(),title="",text="",choices=[];
+if(type==="playtime"){title="出場時間への不満";text="主力選手が出場時間について相談に来た。";choices=[["出場時間を増やす",()=>{t.morale+=3;t.roster[0].mood+=8;return"選手の信頼を得た。"}],["競争を続ける",()=>{t.morale-=3;return"競争意識は高まるが、不満が残った。"}]]}
+if(type==="sponsor"){title="スポンサーの要望";text="地域イベントに参加するか、練習を優先するか。";choices=[["イベントに参加",()=>{S.cash+=300;t.rep++;return"地域からの評価が高まった。"}],["練習を優先",()=>{t.coach++;return"チーム練習を優先した。"}]]}
+if(type==="young"){title="若手の挑戦";text="若手選手が追加練習を希望している。";choices=[["支援する",()=>{S.cash-=100;let p=t.roster.filter(x=>x.age<25).sort((a,b)=>b.potential-a.potential)[0];if(p&&p.ovr<p.potential)p.ovr++;return"若手育成を支援した。"}],["休養を優先",()=>{t.morale++;return"コンディションを優先した。"}]]}
+if(type==="fans"){title="観客動員の課題";text="観客を増やすための施策を選ぼう。";choices=[["地域イベント",()=>{S.cash-=200;t.fans+=500;return"地域との交流を実施。"}],["価格を維持",()=>{t.cash+=100;return"費用を抑える判断をした。"}]]}
+if(type==="coach"){title="監督との作戦会議";text="戦術変更について監督と話し合う。";choices=[["攻撃的に戦う",()=>{S.tactics="attack";t.morale+=2;return"攻撃的な戦術を採用。"}],["守備を重視",()=>{S.tactics="defense";t.coach++;return"守備を重視する方針を採用。"}]]}
+let ans=prompt(title+"\n"+text+"\n\n1："+choices[0][0]+"\n2："+choices[1][0]+"\n\n1または2を入力");if(ans!=="1"&&ans!=="2")return;let result=choices[Number(ans)-1][1]();t.morale=Math.max(0,Math.min(100,t.morale));S.stories.unshift({title,text,result});S.stories=S.stories.slice(0,30);note("ストーリー："+title+"／"+result);render()}
+function playGame(){if(!S)return;let t=team();if(S.phase==="offseason")return alert("オフシーズンです。『シーズン開始』を押してください。");if(S.phase==="regular"&&S.round>=60){S.phase="playoff";note("レギュラーシーズン終了。プレーオフ進出クラブを決定。");render();return}
+let opponents=S.teams.filter(x=>x!==t),o=opponents[rand(0,opponents.length-1)];let a=strength(t),b=strength(o);if(S.tactics==="attack")a+=rand(-2,5);if(S.tactics==="defense")b-=rand(0,4);let score1=rand(72,99)+Math.round((a-75)*.5),score2=rand(72,99)+Math.round((b-75)*.5);if(score1===score2)score1++;
+t.pf+=score1;t.pa+=score2;o.pf+=score2;o.pa+=score1;
+let win=score1>score2;if(win){t.w++;o.l++;t.morale=Math.min(100,t.morale+2)}else{t.l++;o.w++;t.morale=Math.max(0,t.morale-2)}
+t.cash+=Math.round(t.fans*S.ticket/10000)+t.sponsor-500;t.expense+=500;t.revenue+=Math.round(t.fans*S.ticket/10000)+t.sponsor;
+t.roster.forEach(p=>{p.games++;p.pts+=rand(0,24);p.mood=Math.max(0,Math.min(100,p.mood+(win?1:-2)))});
+S.round++;S.gameCount++;note(`${win?"勝利":"敗北"}：${t.name} ${score1} - ${score2} ${o.name}`);
+if(Math.random()<.34)randomStory();if(S.round>=60){S.phase="offseason";note("レギュラーシーズン終了。オフシーズンへ移行。")}render()}
+function randomStory(){let pool=[["選手の活躍","控え選手が練習で好調を見せた。",()=>{let p=team().roster[rand(0,team().roster.length-1)];if(p.ovr<p.potential)p.ovr++;return p.name+"の能力が向上。"}],["スポンサーからの評価","クラブの取り組みがスポンサーに評価された。",()=>{team().cash+=250;return"臨時収入250万円を獲得。"}],["チームの結束","選手たちが自主的にミーティングを行った。",()=>{team().morale=Math.min(100,team().morale+5);return"チームの士気が向上。"}]];
+let e=pool[rand(0,pool.length-1)],result=e[2]();S.stories.unshift({title:e[0],text:e[1],result});S.stories=S.stories.slice(0,30);note("イベント："+e[0]+"／"+result)}
+function advanceWeek(){if(!S)return;for(let i=0;i<3;i++){if(S.phase==="regular"&&S.round<60){let t=team(),o=S.teams.filter(x=>x!==t)[rand(0,24)],win=strength(t)+rand(-12,12)>=strength(o)+rand(-12,12);if(win){t.w++;o.l++}else{t.l++;o.w++}S.round++;S.gameCount++;t.cash+=t.sponsor-300}else break}if(S.round>=60)S.phase="offseason";note("1週間分のリーグ進行を処理。");render()}
+function nextSeason(){if(!S)return;if(S.phase!=="offseason")return alert("レギュラーシーズン終了後に実行できます");if(!confirm("新シーズンを開始しますか？"))return;S.teams.forEach(t=>{t.w=0;t.l=0;t.pf=0;t.pa=0;t.roster.forEach(p=>{p.age++;p.years--;if(p.age>30&&Math.random()<.5)p.ovr=Math.max(50,p.ovr-1);else if(p.age<27&&p.ovr<p.potential&&Math.random()<.6)p.ovr++;});t.roster=t.roster.filter(p=>p.years>0);while(t.roster.length<8)t.roster.push(player(positions[rand(0,4)],rand(62,78),rand(20,27)));});S.season++;S.round=0;S.phase="regular";S.tactics="balanced";note(S.season+"–"+(S.season+1)+"シーズン開幕！");render()}
+function offseasonPage(){return metrics()+panel("🌅 オフシーズン",`<p>シーズンが終了しました。選手の年齢や契約期間が変化し、若手は成長する場合があります。</p><div class="actions">${btn("新シーズン開始","nextSeason()","primary")}${btn("選手補強","setTab('market')")}${btn("セーブ","manualSave()")}</div>`)}
+const oldHome=home;
+home=function(){if(S&&S.phase==="offseason")return offseasonPage()+oldHome();return oldHome()};
+if(!load())S=null;
 render();
 </script>
 </body>
