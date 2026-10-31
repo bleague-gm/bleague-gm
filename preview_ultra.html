@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>B.LEAGUE GM ULTRA - Complete Fixed Edition</title>
+<title>B.LEAGUE GM ULTRA - Free Agent Edition</title>
 <style>
 :root{--bg:#0b1320;--card:#131f33;--card-border:#243652;--text:#e2ebf9;--muted:#94a8c4;--primary:#f5b041;--danger:#e74c3c;--accent:#3498db;--success:#2ecc71}
 *{box-sizing:border-box}
@@ -63,7 +63,7 @@ footer{color:var(--muted);text-align:center;padding:15px;font-size:11px}
 <header>
 <div>
 <h1>🏀 B.LEAGUE GM ULTRA</h1>
-<p>オールインワン完全版（エラー修正済）</p>
+<p>自由交渉リスト・完全版</p>
 </div>
 <button class="primary" data-act="save">セーブ</button>
 </header>
@@ -75,7 +75,7 @@ footer{color:var(--muted);text-align:center;padding:15px;font-size:11px}
 <button data-page="team">チーム</button>
 <button data-page="standings">順位表</button>
 <button data-page="news">ニュース</button>
-<button data-page="market">市場・スカウト</button>
+<button data-page="market">自由交渉リスト</button>
 <button data-page="finance">経営</button>
 <button data-page="season">試合・日程</button>
 <button data-page="settings">設定</button>
@@ -87,7 +87,7 @@ footer{color:var(--muted);text-align:center;padding:15px;font-size:11px}
 
 <script>
 "use strict";
-const SAVE_KEY="bleague_gm_ultra_b_premier_v13";
+const SAVE_KEY="bleague_gm_ultra_b_premier_v14";
 const $=id=>document.getElementById(id);
 let G=null,PAGE="home";
 
@@ -459,17 +459,21 @@ const REAL_ROSTERS={
 function createNewGame(club="信州ブレイブウォリアーズ"){
 const initialRoster = REAL_ROSTERS[club] ? JSON.parse(JSON.stringify(REAL_ROSTERS[club])) : JSON.parse(JSON.stringify(REAL_ROSTERS["信州ブレイブウォリアーズ"]));
 
+// 元Bリーグの自由交渉選手・実名フリーエージェント選手たち
 const marketPool = [
   makePlayer("渡邊 雄太","SF/PF",96,30000,2,"日本人"),
-  makePlayer("河村 勇輝","PG",96,30000,2,"日本人"),
-  makePlayer("富樫 勇樹","PG",94,28000,3,"日本人"),
-  makePlayer("馬場 雄大","SG/SF",92,20000,1,"日本人"),
-  makePlayer("比江島 慎","SG",91,20000,2,"日本人"),
-  makePlayer("ジョシュ・ホーキンソン","PF/C",93,24000,1,"帰化"),
-  makePlayer("西田 優大","SG/SF",87,14000,3,"日本人"),
-  makePlayer("安藤 誓哉","PG",88,15000,2,"日本人"),
-  makePlayer("セバスチャン・サイズ","PF/C",88,16000,1,"外国籍"),
-  makePlayer("ジャック・クーリー","C",89,16000,1,"外国籍")
+  makePlayer("アイラ・ブラウン","PF",83,8500,1,"帰化"),
+  makePlayer("エマニュエル・テリー","C/PF",86,12000,1,"外国籍"),
+  makePlayer("ディディ・ロウザダ","SF",85,11000,1,"外国籍"),
+  makePlayer("トーマス・ウェルシュ","C",85,11500,1,"外国籍"),
+  makePlayer("マーカス・ジョージズ＝ハント","SG/SF",87,13000,1,"外国籍"),
+  makePlayer("セクー・ドゥムブヤ","SF/PF",88,14000,1,"外国籍"),
+  makePlayer("ジャレル・マーティン","PF",87,13500,1,"外国籍"),
+  makePlayer("カイ・ソット","C",84,10000,1,"外国籍"),
+  makePlayer("小野 龍猛","SF",75,2500,1,"日本人"),
+  makePlayer("ラシード ファラーズ","SF/PF",76,2800,1,"日本人"),
+  makePlayer("會田 圭佑","PG",74,2200,1,"日本人"),
+  makePlayer("村上 駿斗","SG",74,2300,1,"日本人")
 ];
 
 G={
@@ -490,7 +494,7 @@ teams:makeTeams(),
 schedule:makeSchedule(),
 news:[
   {title:`${club}が新体制でB.PREMIER開幕へ！`,date:"10/1",body:"ゼネラルマネージャーの手腕にブースターの期待が高まる。"},
-  {title:"B.PREMIER各クラブの戦力分析",date:"10/1",body:"今季も強豪クラブによる激しい上位争いが予想される。"}
+  {title:"B.LEAGUE自由交渉選手リストが公示",date:"10/1",body:"多くの実力派フリーエージェント選手が各クラブからのオファーを待っている。"}
 ],
 pendingMeeting:null,
 phase:"regular",
@@ -590,10 +594,10 @@ ${btn("現状維持でいく","resolgemeeting","reject","danger")}
 </div>
 <div class="player-item">
 <div class="player-info">
-<strong>選手市場・FA・外国人発掘</strong>
-<small>新たなスター選手や外国籍強豪をスカウトします。</small>
+<strong>自由交渉リスト (選手獲得)</strong>
+<small>元Bリーグ所属のフリーエージェント選手と交渉・獲得します。</small>
 </div>
-<div class="player-actions">${btn("市場を見る","gopage","market")}</div>
+<div class="player-actions">${btn("自由交渉リストを見る","gopage","market")}</div>
 </div>
 <div class="player-item">
 <div class="player-info">
@@ -609,6 +613,12 @@ ${btn("現状維持でいく","resolgemeeting","reject","danger")}
 ${(G.log||[]).slice(0,5).map(x=>`<div class="logline">${esc(x)}</div>`).join("")||"<p class='muted'>履歴はありません。</p>"}
 </section>
 ${G.lastResult?`<section class="card"><h2>直近の試合リザルト</h2>${resultHTML(G.lastResult)}</section>`:""}`;
+}
+
+function record(name){
+if(!G || !Array.isArray(G.teams)) return "0勝 0敗";
+const t=G.teams.find(x=>x.name===name);
+return t?`${t.wins}勝 ${t.losses}敗`:"0勝 0敗";
 }
 
 function standingsPage(){
@@ -664,17 +674,17 @@ ${(G.news||[]).map(n=>`<div class="news-box">
 function marketPage(){
 renderTopBar();
 return `<section class="card">
-<h2><span>選手市場 (FA・外国人発掘)</span></h2>
-<p class="muted">実名スター選手や外国籍強豪を獲得してチームを強化しましょう。</p>
+<h2><span>自由交渉選手リスト (FA獲得)</span></h2>
+<p class="muted">元Bリーグ所属のフリーエージェント選手と交渉し、自チームへ迎え入れます。</p>
 ${G.market.map(p=>`<div class="player-item">
 <div class="player-info">
 <strong>${esc(p.name)}（${esc(p.pos)}）</strong>
 <small>能力: <b>${p.rating}</b> | 年俸: ${yen(p.salary)} | 契約: ${p.years}年 | 区分: ${esc(p.type)}</small>
 </div>
 <div class="player-actions">
-${btn("獲得する","sign",p.id,"primary")}
+${btn("獲得オファー","sign",p.id,"primary")}
 </div>
-</div>`).join("")||"<p class='muted'>市場に選手はいません。</p>"}
+</div>`).join("")||"<p class='muted'>現在、自由交渉リストに選手はいません。</p>"}
 </section>`;
 }
 
@@ -1003,9 +1013,9 @@ if(nextCap > 80000)return alert("サラリーキャップ（8億円）を超過�
 
 const fee=Math.round(p.salary*.1);
 if(G.cash<p.salary+fee)return alert("資金が不足しています。");
-if(!confirm(`${p.name}を獲得しますか？\n年俸: ${yen(p.salary)}\n契約金: ${yen(fee)}`))return;
+if(!confirm(`${p.name}と契約交渉しますか？\n年俸: ${yen(p.salary)}\n契約金: ${yen(fee)}`))return;
 G.cash-=(p.salary+fee);G.roster.push(p);G.market.splice(i,1);
-log(`${p.name}を獲得しました。`);saveGame();render();return;
+log(`${p.name}と契約合意しました。`);saveGame();render();return;
 }
 if(action==="hirecoach"){
 const i=G.coachMarket.findIndex(c=>c.id===id);
