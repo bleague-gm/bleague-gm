@@ -3,53 +3,54 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#101827">
 <title>B.LEAGUE GM ULTRA</title>
 <style>
-:root{color-scheme:dark}
+:root{color-scheme:dark;--bg:#0b1220;--panel:#17253a;--line:#334761;--gold:#efb84d;--muted:#afbed1;--green:#85e0ad;--red:#ff9696}
 *{box-sizing:border-box}
-body{margin:0;background:#0c1422;color:#f4f6fa;font-family:-apple-system,BlinkMacSystemFont,sans-serif}
-header{background:#182941;padding:17px;border-bottom:3px solid #e9ad42}
-header h1{font-size:23px;margin:0}
-header p{margin:5px 0 0;color:#b9c8dc;font-size:12px}
-nav{display:flex;overflow-x:auto;gap:5px;padding:9px;background:#101d30;position:sticky;top:0;z-index:2}
+body{margin:0;background:var(--bg);color:#f5f7fb;font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif}
+header{padding:17px;background:linear-gradient(135deg,#203a5a,#101827);border-bottom:3px solid var(--gold)}
+header h1{margin:0;font-size:23px}header p{margin:6px 0 0;color:#c3d0e1;font-size:12px}
+nav{display:flex;gap:6px;padding:9px;overflow-x:auto;background:#101b2b;position:sticky;top:0;z-index:5}
 button,select,input{font:inherit}
-nav button{white-space:nowrap}
-button{border:0;border-radius:8px;padding:10px 12px;background:#e9ad42;color:#142033;font-weight:700;cursor:pointer}
-button.alt{background:#344963;color:white}
-button.danger{background:#8f3743;color:white}
-button:disabled{opacity:.35}
-main{max-width:950px;margin:auto;padding:12px}
-.panel{background:#19283d;border:1px solid #34445e;border-radius:12px;padding:14px;margin:12px 0}
-h2{font-size:18px;margin:0 0 12px}
-h3{font-size:15px;margin:14px 0 8px}
-.muted{font-size:12px;color:#aebed2;line-height:1.7}
+button{background:var(--gold);color:#172238;border:0;border-radius:9px;padding:10px 12px;font-weight:750;cursor:pointer}
+button.alt{background:#344963;color:white}button.danger{background:#913d4a;color:white}
+button:disabled{opacity:.4}
+nav button{white-space:nowrap;flex-shrink:0;padding:10px}
+main{max-width:1000px;margin:auto;padding:10px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:13px;padding:13px;margin:11px 0}
+h2{font-size:18px;margin:0 0 12px}h3{font-size:15px;margin:17px 0 8px}
+p{line-height:1.6}.muted{font-size:12px;color:var(--muted);line-height:1.7}
 .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
-.stat{background:#263952;border-radius:9px;padding:10px}
-.stat span{font-size:12px;color:#b9c8dc}
-.stat strong{display:block;font-size:20px;margin-top:5px}
-input,select{width:100%;padding:10px;background:#0f1b2b;color:white;border:1px solid #40536c;border-radius:8px;margin:5px 0}
-table{border-collapse:collapse;width:100%;font-size:12px}
-th,td{padding:9px 5px;border-bottom:1px solid #34445e;text-align:center}
-th{color:#e9bd70}
-td:first-child,th:first-child{text-align:left}
-.scroll{overflow-x:auto}
-.tag{display:inline-block;background:#314661;border-radius:5px;padding:3px 6px;font-size:11px}
-.item{padding:10px 0;border-bottom:1px solid #34445e}
-.item:last-child{border:0}
-.item button{margin:3px}
-.good{color:#8de0b1}.bad{color:#ff9d9d}
+.stat{background:#263851;padding:11px;border-radius:10px;min-width:0}
+.stat span{display:block;color:#bdcce0;font-size:12px}.stat strong{display:block;font-size:20px;margin-top:5px;overflow-wrap:anywhere}
+input,select{width:100%;padding:11px;background:#0d1726;color:white;border:1px solid #465a74;border-radius:8px;margin:5px 0}
+table{border-collapse:collapse;width:100%;font-size:12px;white-space:nowrap}
+th,td{padding:9px 7px;border-bottom:1px solid var(--line);text-align:center}
+th{color:#f2c875}td:first-child,th:first-child{text-align:left}
+.scroll{overflow-x:auto}.tag{display:inline-block;background:#344c68;border-radius:5px;padding:3px 6px;font-size:11px}
+.item{padding:11px 0;border-bottom:1px solid var(--line)}.item:last-child{border:0}
+.item button{margin:3px 3px 3px 0}.good{color:var(--green)}.bad{color:var(--red)}
+.bar{height:8px;background:#344963;border-radius:10px;overflow:hidden;margin:5px 0 9px}
+.bar i{display:block;height:100%;background:var(--gold)}
+.actions{display:flex;flex-wrap:wrap;gap:7px;margin:10px 0}
+.actions button{flex:1;min-width:125px}
+.small{font-size:11px;color:var(--muted)}
+.notice{border-left:3px solid var(--gold);padding:8px 10px;background:#22344c;border-radius:5px;font-size:12px;line-height:1.7}
+@media(min-width:650px){.grid{grid-template-columns:repeat(4,minmax(0,1fr))}main{padding:18px}.panel{padding:17px}}
 </style>
 </head>
 <body>
 <header>
 <h1>🏀 B.LEAGUE GM ULTRA</h1>
-<p>クラブ経営・選手編成・育成・シーズン制シミュレーション</p>
+<p>クラブ経営・選手編成・育成・試合・優勝を目指すGMシミュレーション</p>
 </header>
 <nav id="nav"></nav>
 <main id="app"></main>
 <script>
 "use strict";
+
 const CLUBS=[
 ["レバンガ北海道","東"],["仙台89ERS","東"],["秋田ノーザンハピネッツ","東"],
 ["茨城ロボッツ","東"],["宇都宮ブレックス","東"],["群馬クレインサンダーズ","東"],
@@ -66,38 +67,46 @@ const CLUBS=[
 const POS=["PG","SG","SF","PF","C"];
 const FIRST=["蒼真","蓮","悠真","大翔","陸","湊","陽向","颯太","健太","拓海","翔","大輝","亮","優斗","海斗","直哉","涼","駿","一樹","玲央","颯","大和","翔太","誠","圭","匠","光","樹","龍之介","悠"];
 const LAST=["佐藤","鈴木","高橋","田中","伊藤","渡辺","山本","中村","小林","加藤","吉田","山田","松本","井上","木村","林","清水","森","池田","橋本","石川","阿部","前田","藤田","岡田","長谷川","村上","近藤","石井","坂本"];
-const NAV=["ホーム","選手","移籍市場","育成","経営","順位表","試合","セーブ"];
-let tab="ホーム",g=null;
+const NAV=["ホーム","選手","移籍市場","育成","経営","順位表","試合","プレーオフ","セーブ"];
+let g=null,tab="ホーム";
 const $=id=>document.getElementById(id);
 const rand=(a,b)=>Math.floor(Math.random()*(b-a+1))+a;
-const money=n=>n.toFixed(2)+"億円";
+const money=n=>Number(n||0).toFixed(2)+"億円";
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 function playerName(){return LAST[rand(0,LAST.length-1)]+" "+FIRST[rand(0,FIRST.length-1)]}
 function makePlayer(id,club=null){
- let age=rand(19,34),ovr=rand(55,87);
+ const age=rand(19,34),ovr=rand(55,87);
  return {id,name:playerName(),pos:POS[rand(0,4)],age,ovr,
- potential:Math.min(99,ovr+rand(0,18)),salary:+(ovr*0.012+Math.random()*0.12).toFixed(2),
- years:rand(1,3),club,injury:0,energy:100,pts:0,reb:0,ast:0};
+ potential:Math.min(99,ovr+rand(0,18)),
+ salary:+(ovr*.012+Math.random()*.12).toFixed(2),
+ years:club===null?0:rand(1,3),club,injury:0,energy:100,
+ pts:0,reb:0,ast:0,apps:0};
 }
 function freshGame(){
  let next=1;
- let teams=CLUBS.map((c,i)=>{
-  let t={id:i,name:c[0],div:c[1],strength:rand(68,86),w:0,l:0,pf:0,pa:0,
-   cash:30,sponsor:0,fan:7000,players:[],homeRevenue:0};
-  for(let j=0;j<12;j++){let p=makePlayer(next++,i);t.players.push(p)}
+ const teams=CLUBS.map((c,i)=>{
+  const t={id:i,name:c[0],div:c[1],strength:rand(68,86),w:0,l:0,pf:0,pa:0,
+  cash:30,sponsor:0,fan:7000,players:[],homeRevenue:0};
+  for(let j=0;j<12;j++)t.players.push(makePlayer(next++,i));
   return t;
  });
- return {version:1,season:2026,phase:"off",user:13,teams,nextId:next,
-  market:[],week:0,schedule:[],results:[],log:["GMに就任しました。新シーズンの準備を始めましょう。"],
-  playoffs:null,champion:null,history:[],trainingPoints:5};
+ return {version:2,season:2026,phase:"off",user:13,teams,nextId:next,
+ market:[],week:0,schedule:[],results:[],log:["GMに就任しました。チームを編成し、優勝を目指しましょう。"],
+ playoffs:null,champion:null,history:[],trainingPoints:5};
 }
 function me(){return g.teams[g.user]}
-function allPlayers(){return g.teams.flatMap(t=>t.players)}
-function say(s){g.log.unshift(s);g.log=g.log.slice(0,60)}
+function say(s){g.log.unshift(s);g.log=g.log.slice(0,80)}
+function strength(t){
+ if(!t.players.length)return 0;
+ const sorted=t.players.slice().sort((a,b)=>b.ovr-a.ovr).slice(0,10);
+ const total=sorted.reduce((s,p)=>s+p.ovr*(p.energy<30?.88:p.energy<60?.95:1)*(p.injury?0.35:1),0);
+ return Math.round(total/Math.max(1,sorted.length));
+}
+function payroll(t){return t.players.reduce((s,p)=>s+p.salary,0)}
+function phaseName(){return ({off:"オフシーズン",regular:"レギュラーシーズン",regular_done:"順位確定",playoffs:"プレーオフ",champion:"シーズン終了"})[g.phase]||g.phase}
 function initMarket(){
  g.market=[];
- for(let i=0;i<40;i++){
-  let p=makePlayer(g.nextId++,null);p.years=0;g.market.push(p);
- }
+ for(let i=0;i<40;i++)g.market.push(makePlayer(g.nextId++,null));
 }
 function nav(){
  $("nav").innerHTML=NAV.map(n=>`<button class="${n===tab?"":"alt"}" onclick="go('${n}')">${n}</button>`).join("");
@@ -106,154 +115,157 @@ function go(n){tab=n;render()}
 function shell(title,html){return `<section class="panel"><h2>${title}</h2>${html}</section>`}
 function btn(label,fn,cls=""){return `<button class="${cls}" onclick="${fn}">${label}</button>`}
 function selectClub(){
- return `<select onchange="g.user=+this.value;render()">${g.teams.map(t=>`<option value="${t.id}" ${t.id===g.user?"selected":""}>${t.name}</option>`).join("")}</select>`;
+ return `<label class="muted">操作するクラブ</label><select onchange="changeClub(this.value)">${g.teams.map(t=>`<option value="${t.id}" ${t.id===g.user?"selected":""}>${esc(t.name)}</option>`).join("")}</select>`;
 }
+function changeClub(v){g.user=Number(v);render()}
 function home(){
- let t=me(),pay=t.players.reduce((s,p)=>s+p.salary,0);
- return shell("GMダッシュボード",`
- <p>${selectClub()}</p>
+ const t=me(),pay=payroll(t);
+ let action="";
+ if(g.phase==="off")action=btn("レギュラーシーズン開始","startSeason()");
+ if(g.phase==="regular")action=btn("次の節を進める","advanceWeek()");
+ if(g.phase==="regular_done")action=btn("プレーオフ進出クラブを決定","startPlayoffs()");
+ if(g.phase==="playoffs")action=btn("プレーオフを1試合進める","playoffStep()");
+ if(g.phase==="champion")action=btn("次のオフシーズンへ","nextSeason()");
+ return shell("GMダッシュボード",`${selectClub()}
  <div class="grid">
  <div class="stat"><span>シーズン</span><strong>${g.season}-${String(g.season+1).slice(-2)}</strong></div>
  <div class="stat"><span>フェーズ</span><strong>${phaseName()}</strong></div>
  <div class="stat"><span>クラブ資金</span><strong>${money(t.cash)}</strong></div>
  <div class="stat"><span>戦力評価</span><strong>${strength(t)}</strong></div>
  <div class="stat"><span>戦績</span><strong>${t.w}勝 ${t.l}敗</strong></div>
- <div class="stat"><span>選手人件費/年</span><strong>${money(pay)}</strong></div>
+ <div class="stat"><span>登録選手</span><strong>${t.players.length}人</strong></div>
+ <div class="stat"><span>年間人件費</span><strong>${money(pay)}</strong></div>
+ <div class="stat"><span>スポンサー収入</span><strong>${money(t.sponsor)}</strong></div>
  </div>
- <h3>今シーズンの目標</h3>
- <p class="muted">編成を整え、試合を進め、順位を上げて優勝を目指そう。選手の能力値・成績はゲーム内シミュレーション用データです。</p>
- ${g.phase==="off"?btn("レギュラーシーズン開始","startSeason()"):""}
- ${g.phase==="regular"?btn("次の節を進める","advanceWeek()"):""}
- ${g.phase==="regular_done"?btn("プレーオフ進出クラブを決定","startPlayoffs()"):""}
- ${g.phase==="playoffs"?btn("プレーオフを1試合進める","playoffStep()"):""}
- ${g.phase==="champion"?btn("次のオフシーズンへ","nextSeason()"):""}
- `)+shell("GMニュース",g.log.slice(0,8).map(x=>`<div class="item">${x}</div>`).join(""));
-}
-function phaseName(){return ({off:"オフシーズン",regular:"レギュラーシーズン",regular_done:"順位確定",playoffs:"ポストシーズン",champion:"シーズン終了"})[g.phase]}
-function strength(t){
- if(!t.players.length)return 0;
- return Math.round(t.players.reduce((s,p)=>s+p.ovr,0)/t.players.length);
+ <div class="actions">${action}</div>
+ <div class="notice">ゲーム内データはシミュレーション用です。経営・選手編成・育成・試合を組み合わせてクラブを強化しよう。</div>`);
 }
 function playersPage(){
- let t=me();
- return shell("選手名簿",`<p class="muted">選手をタップして起用・能力・契約情報を確認。放出すると移籍市場に登録されます。</p>
- <div class="scroll"><table><tr><th>選手</th><th>Pos</th><th>年齢</th><th>能力</th><th>年俸</th><th>契約</th><th>操作</th></tr>
- ${t.players.slice().sort((a,b)=>b.ovr-a.ovr).map(p=>`<tr><td>${p.name}</td><td>${p.pos}</td><td>${p.age}</td><td>${p.ovr}</td><td>${money(p.salary)}</td><td>${p.years}年</td><td>${btn("詳細",`playerDetail(${p.id})`)} ${btn("放出",`releasePlayer(${p.id})`,"danger")}</td></tr>`).join("")}</table></div>`);
+ const t=me();
+ return shell("選手名簿",`<p class="muted">能力の高い選手を起用しつつ、疲労と故障にも注意。放出はオフシーズンのみ可能です。</p>
+ <div class="scroll"><table><tr><th>選手</th><th>Pos</th><th>年齢</th><th>能力</th><th>潜在</th><th>年俸</th><th>契約</th><th>体調</th><th>操作</th></tr>
+ ${t.players.slice().sort((a,b)=>b.ovr-a.ovr).map(p=>`<tr><td>${esc(p.name)}</td><td>${p.pos}</td><td>${p.age}</td><td>${p.ovr}</td><td>${p.potential}</td><td>${money(p.salary)}</td><td>${p.years}年</td><td>${p.injury?"故障":p.energy+"%"}</td><td>${btn("詳細",`playerDetail(${p.id})`)} ${btn("放出",`releasePlayer(${p.id})`,"danger")}</td></tr>`).join("")}</table></div>`);
 }
 function playerDetail(id){
- let p=me().players.find(x=>x.id===id);if(!p)return;
- alert(`${p.name}\nポジション：${p.pos}\n年齢：${p.age}\n能力：${p.ovr}\n潜在能力：${p.potential}\n年俸：${money(p.salary)}\n契約残：${p.years}年\n疲労：${100-p.energy}%\n故障残：${p.injury}節`);
+ const p=me().players.find(x=>x.id===id);if(!p)return;
+ alert(`${p.name}\nポジション：${p.pos}\n年齢：${p.age}\n能力：${p.ovr}\n潜在能力：${p.potential}\n年俸：${money(p.salary)}\n契約残：${p.years}年\n疲労：${100-p.energy}%\n故障残：${p.injury}節\n出場数：${p.apps}\n得点：${p.pts}\nリバウンド：${p.reb}\nアシスト：${p.ast}`);
 }
 function releasePlayer(id){
- if(g.phase!=="off"){alert("放出はオフシーズンのみ可能です。");return}
- let t=me(),i=t.players.findIndex(p=>p.id===id);
+ if(g.phase!=="off")return alert("放出はオフシーズンのみ可能です。");
+ const t=me(),i=t.players.findIndex(p=>p.id===id);
  if(i<0)return;
- let p=t.players[i];
- if(!confirm(`${p.name}を放出しますか？`))return;
+ const p=t.players[i];
+ if(t.players.length<=5)return alert("最低5人の選手を残してください。");
+ if(!confirm(`${p.name}を放出して移籍市場に登録しますか？`))return;
  t.players.splice(i,1);p.club=null;p.years=0;g.market.push(p);
- say(`${t.name}が${p.name}を放出。移籍市場に登録されました。`);render();
+ say(`${t.name}が${p.name}を放出しました。`);render();
 }
 function marketPage(){
- return shell("移籍市場",`<p class="muted">オフシーズン限定。獲得費用として年俸の一部を契約金として支払います。架空の選手データも含みます。</p>
- <div class="scroll"><table><tr><th>選手</th><th>Pos</th><th>年齢</th><th>能力</th><th>年俸</th><th>契約</th></tr>
- ${g.market.slice().sort((a,b)=>b.ovr-a.ovr).map(p=>`<tr><td>${p.name}</td><td>${p.pos}</td><td>${p.age}</td><td>${p.ovr}</td><td>${money(p.salary)}</td><td>${btn("獲得",`signPlayer(${p.id})`)}</td></tr>`).join("")}</table></div>`);
+ return shell("移籍市場",`<p class="muted">オフシーズン限定。契約金は年俸の25%。登録上限は15人です。</p>
+ <div class="scroll"><table><tr><th>選手</th><th>Pos</th><th>年齢</th><th>能力</th><th>潜在</th><th>年俸</th><th>契約</th></tr>
+ ${g.market.slice().sort((a,b)=>b.ovr-a.ovr).map(p=>`<tr><td>${esc(p.name)}</td><td>${p.pos}</td><td>${p.age}</td><td>${p.ovr}</td><td>${p.potential}</td><td>${money(p.salary)}</td><td>${btn("獲得",`signPlayer(${p.id})`)}</td></tr>`).join("")||"<tr><td colspan='7'>移籍市場に選手がいません。</td></tr>"}</table></div>`);
 }
 function signPlayer(id){
- if(g.phase!=="off"){alert("契約交渉はオフシーズンのみです。");return}
- let t=me(),p=g.market.find(x=>x.id===id);
- if(!p)return;
- if(t.players.length>=15){alert("登録人数上限（15人）です。先に放出してください。");return}
- let fee=+(p.salary*.25).toFixed(2);
- if(t.cash<fee){alert("契約金を支払う資金が不足しています。");return}
+ if(g.phase!=="off")return alert("契約交渉はオフシーズンのみです。");
+ const t=me(),p=g.market.find(x=>x.id===id);if(!p)return;
+ if(t.players.length>=15)return alert("登録人数上限15人です。先に放出してください。");
+ const fee=+(p.salary*.25).toFixed(2);
+ if(t.cash<fee)return alert("契約金を支払う資金が不足しています。");
  if(!confirm(`${p.name}を獲得しますか？\n契約金：${money(fee)}\n年俸：${money(p.salary)} / 年`))return;
- t.cash-=fee;p.club=t.id;p.years=rand(1,3);p.energy=100;
+ t.cash-=fee;p.club=t.id;p.years=rand(1,3);p.energy=100;p.injury=0;
  t.players.push(p);g.market=g.market.filter(x=>x.id!==id);
  say(`${t.name}が${p.name}と契約。契約金${money(fee)}。`);render();
 }
 function trainingPage(){
- let t=me();
+ const t=me();
  return shell("選手育成",`<p>育成ポイント：<b>${g.trainingPoints}</b></p>
- <p class="muted">オフシーズンに実行可能。能力の伸びは選手の潜在能力と年齢に左右されます。</p>
- ${t.players.slice().sort((a,b)=>b.potential-b.ovr-(a.potential-a.ovr)).map(p=>`<div class="item"><b>${p.name}</b> <span class="tag">${p.pos}</span><br><span class="muted">能力 ${p.ovr} / 潜在 ${p.potential} / 年齢 ${p.age}</span><br>${btn("個別育成（1pt）",`train(${p.id})`)}</div>`).join("")}`);
+ <p class="muted">オフシーズンに育成できます。潜在能力が上限です。</p>
+ ${t.players.slice().sort((a,b)=>(b.potential-b.ovr)-(a.potential-a.ovr)).map(p=>`<div class="item"><b>${esc(p.name)}</b> <span class="tag">${p.pos}</span>
+ <div class="small">能力 ${p.ovr} / 潜在 ${p.potential} / 年齢 ${p.age}</div>
+ <div class="bar"><i style="width:${p.ovr}%"></i></div>${btn("個別育成（1pt）",`train(${p.id})`)}</div>`).join("")}`);
 }
 function train(id){
- if(g.phase!=="off"){alert("育成はオフシーズンに実行できます。");return}
- if(g.trainingPoints<1){alert("育成ポイントがありません。");return}
- let p=me().players.find(x=>x.id===id);if(!p)return;
- if(p.ovr>=p.potential){alert("この選手は現在の潜在能力に到達しています。");return}
- let gain=Math.min(rand(1,2),p.potential-p.ovr);
+ if(g.phase!=="off")return alert("育成はオフシーズンのみです。");
+ if(g.trainingPoints<1)return alert("育成ポイントがありません。");
+ const p=me().players.find(x=>x.id===id);if(!p)return;
+ if(p.ovr>=p.potential)return alert("この選手は潜在能力に到達しています。");
+ const gain=Math.min(rand(1,2),p.potential-p.ovr);
  p.ovr+=gain;g.trainingPoints--;
  say(`${p.name}が成長。能力 +${gain}。`);render();
 }
 function businessPage(){
- let t=me(),pay=t.players.reduce((s,p)=>s+p.salary,0);
+ const t=me(),pay=payroll(t);
+ const projected=t.cash+t.sponsor-pay;
  return shell("クラブ経営",`<div class="grid">
  <div class="stat"><span>資金</span><strong>${money(t.cash)}</strong></div>
  <div class="stat"><span>年間人件費</span><strong>${money(pay)}</strong></div>
  <div class="stat"><span>平均観客数（推定）</span><strong>${t.fan.toLocaleString()}人</strong></div>
- <div class="stat"><span>スポンサー収入/年</span><strong>${money(t.sponsor)}</strong></div></div>
+ <div class="stat"><span>年間スポンサー収入</span><strong>${money(t.sponsor)}</strong></div>
+ <div class="stat"><span>年次収支目安※</span><strong class="${projected>=0?"good":"bad"}">${money(t.sponsor-pay)}</strong></div>
+ </div>
+ <p class="muted">※観客収入・契約金・投資などを含まない簡易目安です。各投資はオフシーズン限定。</p>
  <h3>経営施策</h3>
- <p class="muted">投資はオフシーズンに実施可能。資金と観客動員に反映されます。</p>
- ${btn("スポンサー営業：費用0.1億円","business('sponsor')")}
- ${btn("ファン施策：費用0.5億円","business('fans')")}
- ${btn("練習施設投資：費用1億円","business('facility')")}
- <h3>今季の収支見込み</h3>
- <p>人件費：${money(pay)} / 年</p><p>スポンサー：${money(t.sponsor)} / 年</p>`);
+ <div class="actions">${btn("スポンサー営業（費用0.1億）","business('sponsor')")}${btn("ファン施策（費用0.5億）","business('fans')")}${btn("練習施設投資（費用1億）","business('facility')")}</div>
+ <h3>経営方針</h3><p class="muted">スポンサー営業は年間収入を増やします。ファン施策は観客数を増やし、施設投資は育成ポイントを獲得します。</p>`);
 }
 function business(type){
- if(g.phase!=="off"){alert("経営投資はオフシーズンのみです。");return}
- let t=me();
+ if(g.phase!=="off")return alert("経営投資はオフシーズンのみです。");
+ const t=me();
  if(type==="sponsor"){
   if(t.cash<.1)return alert("資金不足です。");
   t.cash-=.1;t.sponsor+=.35;say("スポンサー営業に成功。年間スポンサー収入が0.35億円増加。");
  }else if(type==="fans"){
   if(t.cash<.5)return alert("資金不足です。");
-  t.cash-=.5;t.fan+=rand(300,1000);say("ファン施策を実施。観客動員の増加が期待されます。");
+  t.cash-=.5;t.fan+=rand(300,1000);say("ファン施策を実施。平均観客数が増加しました。");
  }else{
   if(t.cash<1)return alert("資金不足です。");
-  t.cash-=1;t.strength=Math.min(99,t.strength+1);
-  say("練習施設に投資しました。チーム環境が改善。");
+  t.cash-=1;g.trainingPoints+=3;say("練習施設に投資。育成ポイントを3獲得しました。");
  }
  render();
 }
+
+/* 25節の総当たり＋ホーム/アウェー反転＋10節の追加日程。
+   26クラブが各60試合になるゲーム用日程。 */
 function makeSchedule(){
- // 30節×各チーム2試合＝1チーム60試合となるラウンドロビン方式。
- // 1節に全26チームを13カードへ分ける。対戦相手を節ごとに循環させる。
- let ids=Array.from({length:26},(_,i)=>i),rounds=[];
+ const base=Array.from({length:26},(_,i)=>i);
+ let ids=base.slice(),rounds=[];
  for(let r=0;r<25;r++){
-  let cards=[];
+  const cards=[];
   for(let i=0;i<13;i++)cards.push([ids[i],ids[25-i]]);
   rounds.push(cards);
   ids=[ids[0],ids[25],...ids.slice(1,25)];
  }
- // 25節の1回戦をホーム＆アウェーで実施し、50試合。
- // 残り10試合は地区内の対戦を追加。
- let out=[],id=1;
- rounds.forEach((cards,r)=>cards.forEach((c,j)=>out.push({id:id++,week:r+1,home:r%2?c[1]:c[0],away:r%2?c[0]:c[1],played:false})));
- rounds.slice(0,5).forEach((cards,r)=>cards.forEach((c,j)=>{
-  let a=c[0],b=c[1];
-  if(CLUBS[a][1]===CLUBS[b][1])out.push({id:id++,week:26+r,home:b,away:a,played:false});
- }));
- // 不足分は地区内カードから追加。60試合/クラブに厳密に一致する公式日程ではない。
- let count=Array(26).fill(0);out.forEach(m=>{count[m.home]++;count[m.away]++});
- for(let a=0;a<26;a++)for(let b=a+1;b<26;b++){
-  if(CLUBS[a][1]!==CLUBS[b][1])continue;
-  while(count[a]<60&&count[b]<60){
-   out.push({id:id++,week:26+Math.floor(out.length/13),home:a,away:b,played:false});
-   count[a]++;count[b]++;
+ const out=[];let id=1;
+ rounds.forEach((cards,r)=>cards.forEach(c=>out.push({
+  id:id++,week:r+1,home:r%2?c[1]:c[0],away:r%2?c[0]:c[1],played:false
+ })));
+ rounds.forEach((cards,r)=>cards.forEach(c=>out.push({
+  id:id++,week:r+26,home:r%2?c[0]:c[1],away:r%2?c[1]:c[0],played:false
+ })));
+ for(let r=0;r<10;r++){
+  const order=base.slice();
+  for(let i=order.length-1;i>0;i--){
+   const j=rand(0,i);[order[i],order[j]]=[order[j],order[i]];
+  }
+  for(let i=0;i<13;i++){
+   const a=order[i*2],b=order[i*2+1];
+   out.push({id:id++,week:51+r,home:r%2?b:a,away:r%2?a:b,played:false});
   }
  }
  g.schedule=out;g.week=0;
 }
 function startSeason(){
  if(g.phase!=="off")return alert("オフシーズン中に開始してください。");
- if(me().players.length<5)return alert("選手が不足しています。移籍市場で補強してください。");
- g.teams.forEach(t=>{t.w=0;t.l=0;t.pf=0;t.pa=0;t.players.forEach(p=>{p.energy=100;p.injury=0;p.pts=0;p.reb=0;p.ast=0})});
+ if(me().players.length<5)return alert("選手が不足しています。5人以上必要です。");
+ g.teams.forEach(t=>{
+  t.w=0;t.l=0;t.pf=0;t.pa=0;
+  t.players.forEach(p=>{p.energy=100;p.injury=0;p.pts=0;p.reb=0;p.ast=0;p.apps=0});
+ });
  g.results=[];makeSchedule();g.phase="regular";
- say("レギュラーシーズンが開幕しました。");render();
+ say("レギュラーシーズン開幕。全26クラブが60試合を戦います。");render();
 }
 function sim(m){
- let h=g.teams[m.home],a=g.teams[m.away];
+ const h=g.teams[m.home],a=g.teams[m.away];
  let hs=rand(65,95)+Math.round((strength(h)-strength(a))*.7)+5;
  let as=rand(65,95)+Math.round((strength(a)-strength(h))*.7);
  hs=Math.max(50,hs);as=Math.max(50,as);
@@ -262,138 +274,171 @@ function sim(m){
  if(hs>as){h.w++;a.l++}else{a.w++;h.l++}
  for(const t of [h,a]){
   t.players.forEach(p=>{
-   p.energy=Math.max(10,p.energy-rand(5,12));
-   if(p.injury>0)p.injury--;
+   if(p.injury>0){p.injury--;p.energy=Math.min(100,p.energy+2);return}
+   p.apps++;p.energy=Math.max(10,p.energy-rand(5,12));
    p.pts+=Math.max(0,Math.round((p.ovr/10)*Math.random()*1.6));
    p.reb+=rand(0,3);p.ast+=rand(0,3);
   });
-  let gate=Math.round(t.fan*(.7+Math.random()*.4));
-  let revenue=gate*.0000008;
-  t.cash+=revenue;
+  if(t===h){
+   const gate=Math.round(t.fan*(.7+Math.random()*.4));
+   t.cash+=gate*.0000008;t.homeRevenue+=gate*.0000008;
+  }
  }
- let text=`${h.name} ${hs}－${as} ${a.name}`;
- g.results.unshift(text);g.results=g.results.slice(0,60);
+ const text=`${h.name} ${hs}－${as} ${a.name}`;
+ g.results.unshift(text);g.results=g.results.slice(0,100);
  return text;
 }
 function advanceWeek(){
  if(g.phase!=="regular")return alert("レギュラーシーズン中ではありません。");
- let games=g.schedule.filter(m=>!m.played&&m.week===g.week+1);
- if(!games.length){
-  let next=g.schedule.find(m=>!m.played);
-  if(!next){g.phase="regular_done";say("レギュラーシーズンが終了しました。");render();return}
-  g.week=next.week-1;games=g.schedule.filter(m=>!m.played&&m.week===g.week+1);
- }
+ const nextWeek=g.week+1;
+ const games=g.schedule.filter(m=>!m.played&&m.week===nextWeek);
+ if(!games.length)return alert("この節の試合がありません。日程を確認してください。");
  games.forEach(m=>{sim(m);m.played=true});
- g.week++;
- // 人件費・スポンサー収入を節単位で計上
+ g.week=nextWeek;
  g.teams.forEach(t=>{
-  const salary=t.players.reduce((s,p)=>s+p.salary,0);
-  t.cash+=t.sponsor/30-salary/30;
-  if(Math.random()<.012){let p=t.players[rand(0,t.players.length-1)];if(p){p.injury=rand(1,3);say(`${t.name}：${p.name}が故障。${p.injury}節程度の離脱見込み。`)}}
+  const salary=payroll(t);
+  t.cash+=t.sponsor/60-salary/60;
+  t.players.forEach(p=>{
+   if(p.injury===0&&Math.random()<.008){p.injury=rand(1,3);say(`${t.name}：${p.name}が故障。離脱見込み ${p.injury}節。`)}
+  });
  });
  if(!g.schedule.some(m=>!m.played))g.phase="regular_done";
- say(`第${g.week}節が終了しました。`);
+ say(`第${g.week}節終了。試合 ${games.length}試合。`);
  render();
 }
 function sortedTeams(arr){
- return arr.slice().sort((a,b)=>b.w/(b.w+b.l||1)-a.w/(a.w+b.l||1)||(b.pf-b.pa)-(a.pf-a.pa));
+ return arr.slice().sort((a,b)=>{
+  const aw=a.w/(a.w+a.l||1),bw=b.w/(b.w+b.l||1);
+  return bw-aw||(b.pf-b.pa)-(a.pf-a.pa);
+ });
 }
 function standingsPage(){
  let html="";
  for(const d of ["東","西"]){
-  html+=`<h3>${d}地区</h3><div class="scroll"><table><tr><th>順位</th><th>クラブ</th><th>勝</th><th>敗</th><th>勝率</th><th>得失点</th></tr>`;
-  html+=sortedTeams(g.teams.filter(t=>t.div===d)).map((t,i)=>`<tr><td>${i+1}</td><td>${t.name}</td><td>${t.w}</td><td>${t.l}</td><td>${(t.w/(t.w+t.l||1)).toFixed(3)}</td><td>${t.pf-t.pa}</td></tr>`).join("");
+  html+=`<h3>${d}地区</h3><div class="scroll"><table><tr><th>順位</th><th>クラブ</th><th>勝</th><th>敗</th><th>勝率</th><th>得失点</th><th>戦力</th></tr>`;
+  html+=sortedTeams(g.teams.filter(t=>t.div===d)).map((t,i)=>`<tr><td>${i+1}</td><td>${esc(t.name)}</td><td>${t.w}</td><td>${t.l}</td><td>${(t.w/(t.w+t.l||1)).toFixed(3)}</td><td>${t.pf-t.pa}</td><td>${strength(t)}</td></tr>`).join("");
   html+="</table></div>";
  }
  return shell("順位表",html);
 }
 function gamePage(){
- let played=g.schedule.filter(m=>m.played).length;
- return shell("試合日程・結果",`<div class="grid"><div class="stat"><span>消化試合</span><strong>${played}</strong></div><div class="stat"><span>節</span><strong>${g.week}</strong></div></div>
+ const played=g.schedule.filter(m=>m.played).length;
+ const upcoming=g.schedule.filter(m=>!m.played).slice(0,20);
+ return shell("試合日程・結果",`<div class="grid">
+ <div class="stat"><span>消化試合</span><strong>${played} / ${g.schedule.length}</strong></div>
+ <div class="stat"><span>節</span><strong>${g.week} / 60</strong></div></div>
  ${g.phase==="regular"?btn("次の節を進める","advanceWeek()"):""}
- <h3>直近の結果</h3>${g.results.slice(0,30).map(x=>`<div class="item">${x}</div>`).join("")||"試合結果はありません。"}`);
+ <h3>次の試合</h3>${upcoming.map(m=>`<div class="item"><span class="tag">第${m.week}節</span> ${esc(g.teams[m.home].name)} vs ${esc(g.teams[m.away].name)}</div>`).join("")||"未消化の試合はありません。"}
+ <h3>直近の結果</h3>${g.results.slice(0,30).map(x=>`<div class="item">${esc(x)}</div>`).join("")||"試合結果はありません。"}`);
 }
 function startPlayoffs(){
  if(g.phase!=="regular_done")return alert("レギュラーシーズン終了後に進出できます。");
- let e=sortedTeams(g.teams.filter(t=>t.div==="東"));
- let w=sortedTeams(g.teams.filter(t=>t.div==="西"));
- let top=[e[0],e[1],e[2],w[0],w[1],w[2]];
- let rest=sortedTeams(g.teams.filter(t=>!top.some(x=>x.id===t.id)));
- let seeds=[...top,...rest.slice(0,2)].sort((a,b)=>b.w/(b.w+b.l||1)-a.w/(a.w+a.l||1));
+ const east=sortedTeams(g.teams.filter(t=>t.div==="東"));
+ const west=sortedTeams(g.teams.filter(t=>t.div==="西"));
+ const pool=[east[0],east[1],east[2],west[0],west[1],west[2]];
+ const rest=sortedTeams(g.teams.filter(t=>!pool.some(x=>x.id===t.id)));
+ const seeds=[...pool,...rest.slice(0,2)].sort((a,b)=>b.w/(b.w+b.l||1)-a.w/(a.w+a.l||1));
  g.playoffs={round:0,rounds:[
  {name:"準々決勝",best:2,series:[[seeds[0],seeds[7]],[seeds[3],seeds[4]],[seeds[1],seeds[6]],[seeds[2],seeds[5]]].map(teams=>({teams,wins:[0,0],done:false}))},
- {name:"準決勝",best:2,series:[]},{name:"決勝",best:3,series:[]}
+ {name:"準決勝",best:2,series:[]},
+ {name:"決勝",best:3,series:[]}
  ]};
  g.phase="playoffs";say("プレーオフ進出8クラブが決定しました。");render();
 }
 function playoffStep(){
  if(g.phase!=="playoffs")return alert("プレーオフ中ではありません。");
- let r=g.playoffs.rounds[g.playoffs.round],s=r.series.find(x=>!x.done);
+ const r=g.playoffs.rounds[g.playoffs.round];
+ const s=r.series.find(x=>!x.done);
  if(!s){
   if(g.playoffs.round===2){
-   let f=r.series[0];g.champion=f.teams[f.wins[0]>f.wins[1]?0:1].name;
+   const f=r.series[0];g.champion=f.teams[f.wins[0]>f.wins[1]?0:1].name;
    g.phase="champion";say(`🏆 優勝決定：${g.champion}`);render();return;
   }
-  let winners=r.series.map(x=>x.teams[x.wins[0]>x.wins[1]?0:1]);
-  let next=g.playoffs.rounds[g.playoffs.round+1];
-  if(g.playoffs.round===0)next.series=[[winners[0],winners[1]],[winners[2],winners[3]]].map(teams=>({teams,wins:[0,0],done:false}));
-  else next.series=[{teams:[winners[0],winners[1]],wins:[0,0],done:false}];
+  const winners=r.series.map(x=>x.teams[x.wins[0]>x.wins[1]?0:1]);
+  const next=g.playoffs.rounds[g.playoffs.round+1];
+  next.series=g.playoffs.round===0?
+   [[winners[0],winners[1]],[winners[2],winners[3]]].map(teams=>({teams,wins:[0,0],done:false})):
+   [{teams:[winners[0],winners[1]],wins:[0,0],done:false}];
   g.playoffs.round++;render();return;
  }
- let [a,b]=s.teams;
- let chance=Math.max(.15,Math.min(.85,.5+(strength(a)-strength(b))*.012));
- let winner=Math.random()<chance?0:1;
- s.wins[winner]++;
- s.done=s.wins[winner]>=r.best;
+ const [a,b]=s.teams;
+ const chance=Math.max(.15,Math.min(.85,.5+(strength(a)-strength(b))*.012));
+ const winner=Math.random()<chance?0:1;
+ s.wins[winner]++;s.done=s.wins[winner]>=r.best;
  say(`${r.name}：${a.name} ${s.wins[0]}－${s.wins[1]} ${b.name}`);
  render();
+}
+function playoffsPage(){
+ if(!g.playoffs)return shell("プレーオフ",`<p>レギュラーシーズン終了後に進出クラブを決定できます。</p>${g.phase==="regular_done"?btn("進出クラブを決定","startPlayoffs"):""}`);
+ const r=g.playoffs.rounds[g.playoffs.round];
+ return shell("プレーオフ",`<p class="muted">現在：${r.name}。シリーズを進めて優勝クラブを決定します。</p>
+ ${r.series.map(s=>`<div class="item"><b>${esc(s.teams[0].name)}</b>　${s.wins[0]}－${s.wins[1]}　<b>${esc(s.teams[1].name)}</b> ${s.done?'<span class="tag">決着</span>':""}</div>`).join("")}
+ ${g.phase==="playoffs"?btn("1試合進める","playoffStep"):""}
+ ${g.phase==="champion"?`<h3>🏆 優勝：${esc(g.champion)}</h3>`:""}`);
 }
 function nextSeason(){
  if(g.phase!=="champion")return alert("優勝決定後に次年度へ進めます。");
  g.history.push({season:g.season,champion:g.champion,record:me().w+"勝"+me().l+"敗"});
  g.season++;g.phase="off";g.week=0;g.schedule=[];g.results=[];g.playoffs=null;g.champion=null;g.trainingPoints=5;
+ const expired=[];
  g.teams.forEach(t=>{
   t.w=0;t.l=0;t.pf=0;t.pa=0;
+  const retained=[];
   t.players.forEach(p=>{
    p.age++;p.years--;
    if(p.age>31&&Math.random()<.65)p.ovr=Math.max(45,p.ovr-rand(0,2));
    else if(p.age<25&&p.ovr<p.potential&&Math.random()<.6)p.ovr=Math.min(p.potential,p.ovr+1);
-   p.energy=100;p.injury=0;
+   p.energy=100;p.injury=0;p.pts=0;p.reb=0;p.ast=0;p.apps=0;
+   if(p.years<=0){p.club=null;p.years=0;expired.push(p)}
+   else retained.push(p);
   });
-  t.players=t.players.filter(p=>p.years>0);
-  t.players.forEach(p=>{p.years=Math.max(1,p.years)});
-  t.cash-=t.players.reduce((s,p)=>s+p.salary,0);
+  t.players=retained;
  });
- initMarket();say(`${g.season}-${String(g.season+1).slice(-2)}シーズンのオフシーズンが始まりました。契約切れの選手は市場に登録されています。`);
+ initMarket();
+ const existing=new Set(g.market.map(p=>p.id));
+ g.market.push(...expired.filter(p=>!existing.has(p.id)));
+ say(`${g.season}-${String(g.season+1).slice(-2)}シーズン開始。契約満了選手を移籍市場に登録しました。`);
  render();
 }
 function saveGame(){
- try{localStorage.setItem("bleagueUltraSave",JSON.stringify(g));alert("保存しました。")}
- catch(e){alert("保存に失敗しました。空き容量を確認してください。")}
+ try{localStorage.setItem("bleagueUltraSave",JSON.stringify(g));alert("ゲームを保存しました。")}
+ catch(e){alert("保存に失敗しました。ブラウザの空き容量を確認してください。")}
 }
 function loadGame(){
- try{let x=localStorage.getItem("bleagueUltraSave");if(!x)return alert("保存データがありません。");g=JSON.parse(x);render();alert("読み込みました。")}
- catch(e){alert("データを読み込めませんでした。")}
+ try{
+  const x=localStorage.getItem("bleagueUltraSave");
+  if(!x)return alert("保存データがありません。");
+  const data=JSON.parse(x);
+  if(!data.teams||!Array.isArray(data.teams))return alert("保存データの形式が違います。");
+  g=data;
+  if(!Array.isArray(g.market))g.market=[];
+  if(!Array.isArray(g.history))g.history=[];
+  if(!Array.isArray(g.log))g.log=[];
+  render();alert("ゲームを読み込みました。");
+ }catch(e){alert("データを読み込めませんでした。")}
 }
 function exportSave(){
- let blob=new Blob([JSON.stringify(g)],{type:"application/json"});
- let a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="bleague-gm-save.json";a.click();URL.revokeObjectURL(a.href);
+ const blob=new Blob([JSON.stringify(g,null,2)],{type:"application/json"});
+ const url=URL.createObjectURL(blob);
+ const a=document.createElement("a");a.href=url;a.download="bleague-gm-save.json";a.click();
+ setTimeout(()=>URL.revokeObjectURL(url),1000);
 }
 function savePage(){
- return shell("セーブ・データ管理",`<p class="muted">ブラウザ内セーブはこの端末・ブラウザのデータに依存します。消去に備えてJSONを書き出してください。</p>
- ${btn("ゲームを保存","saveGame()")} ${btn("保存データをロード","loadGame()","alt")} ${btn("JSONを書き出す","exportSave()","alt")}
- <h3>セーブ情報</h3><p>シーズン：${g.season}-${String(g.season+1).slice(-2)}</p><p>フェーズ：${phaseName()}</p><p>クラブ：${me().name}</p>
- <h3>年度別履歴</h3>${g.history.map(h=>`${h.season}-${h.season+1}: 優勝 ${h.champion}（自クラブ ${h.record}）`).join("<br>")||"まだ履歴はありません。"}`);
+ return shell("セーブ・データ管理",`<p class="muted">ブラウザ内セーブは、この端末・ブラウザのデータに依存します。Safariの履歴やWebサイトデータを消すと、保存データが消える場合があります。</p>
+ <div class="actions">${btn("ゲームを保存","saveGame()")}${btn("保存データをロード","loadGame()","alt")}${btn("JSONを書き出す","exportSave()","alt")}</div>
+ <h3>セーブ情報</h3><p>シーズン：${g.season}-${String(g.season+1).slice(-2)}</p><p>フェーズ：${phaseName()}</p><p>クラブ：${esc(me().name)}</p>
+ <h3>年度別履歴</h3>${g.history.map(h=>`<div class="item">${h.season}-${h.season+1}：優勝 ${esc(h.champion)}（自クラブ ${esc(h.record)}）</div>`).join("")||"まだ履歴はありません。"}`);
 }
 function render(){
  nav();
- let html=tab==="ホーム"?home():
+ const html=tab==="ホーム"?home():
  tab==="選手"?playersPage():
  tab==="移籍市場"?marketPage():
  tab==="育成"?trainingPage():
  tab==="経営"?businessPage():
  tab==="順位表"?standingsPage():
- tab==="試合"?gamePage():savePage();
+ tab==="試合"?gamePage():
+ tab==="プレーオフ"?playoffsPage():savePage();
  $("app").innerHTML=html;
 }
 g=freshGame();initMarket();render();
