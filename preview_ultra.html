@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>B.LEAGUE GM ULTRA - All-In-One Complete Edition</title>
+<title>B.LEAGUE GM ULTRA - Complete Fixed Edition</title>
 <style>
 :root{--bg:#0b1320;--card:#131f33;--card-border:#243652;--text:#e2ebf9;--muted:#94a8c4;--primary:#f5b041;--danger:#e74c3c;--accent:#3498db;--success:#2ecc71}
 *{box-sizing:border-box}
@@ -63,7 +63,7 @@ footer{color:var(--muted);text-align:center;padding:15px;font-size:11px}
 <header>
 <div>
 <h1>🏀 B.LEAGUE GM ULTRA</h1>
-<p>オールインワン完全版（ニュース・面談・スカウト・CS・経営）</p>
+<p>オールインワン完全版（エラー修正済）</p>
 </div>
 <button class="primary" data-act="save">セーブ</button>
 </header>
@@ -87,7 +87,7 @@ footer{color:var(--muted);text-align:center;padding:15px;font-size:11px}
 
 <script>
 "use strict";
-const SAVE_KEY="bleague_gm_ultra_b_premier_v12";
+const SAVE_KEY="bleague_gm_ultra_b_premier_v13";
 const $=id=>document.getElementById(id);
 let G=null,PAGE="home";
 
@@ -141,7 +141,6 @@ home:g.away,away:g.home,done:false,round:g.round+30
 return [...games,...first].map((g,i)=>({...g,id:i+1}));
 }
 
-// リアルロスターデータ
 const REAL_ROSTERS={
 "レバンガ北海道":[
   makePlayer("富永 啓生","SG",91,22000,2,"日本人"),
@@ -475,7 +474,6 @@ const marketPool = [
 
 G={
 club,seasonStart:2026,season:"2026-27",
-dateStr:"2026年 10月 1日",
 fans:1250000,fanSatisfy:85,
 cash:600000,ticket:3500,attendance:4500,
 roster: initialRoster,
@@ -494,7 +492,7 @@ news:[
   {title:`${club}が新体制でB.PREMIER開幕へ！`,date:"10/1",body:"ゼネラルマネージャーの手腕にブースターの期待が高まる。"},
   {title:"B.PREMIER各クラブの戦力分析",date:"10/1",body:"今季も強豪クラブによる激しい上位争いが予想される。"}
 ],
-pendingMeeting:null, // ヘッドコーチからの相談イベント
+pendingMeeting:null,
 phase:"regular",
 csStage:null,
 csResult:null,
@@ -611,12 +609,6 @@ ${btn("現状維持でいく","resolgemeeting","reject","danger")}
 ${(G.log||[]).slice(0,5).map(x=>`<div class="logline">${esc(x)}</div>`).join("")||"<p class='muted'>履歴はありません。</p>"}
 </section>
 ${G.lastResult?`<section class="card"><h2>直近の試合リザルト</h2>${resultHTML(G.lastResult)}</section>`:""}`;
-}
-
-function record(name){
-if(!G || !Array.isArray(G.teams)) return "0勝 0敗";
-const t=G.teams.find(x=>x.name===name);
-return t?`${t.wins}勝 ${t.losses}敗`:"0勝 0敗";
 }
 
 function standingsPage(){
@@ -811,7 +803,6 @@ try {
 
 function calculateTeamPower(isMyTeam){
 if(!isMyTeam) return 76 + Math.random()*5;
-// 怪我人を除外して戦力計算
 const activeRoster = G.roster.filter(p=>p.injury<=0);
 const sorted = [...activeRoster].sort((a,b)=>b.rating-a.rating);
 const top5 = sorted.slice(0,5);
@@ -826,7 +817,6 @@ if(remaining.length===0){alert("全日程が終了しています。ポストシ
 const currentRound=remaining[0].round;
 const roundGames=G.schedule.filter(g=>g.round===currentRound);
 
-// 試合ごとに怪我回復カウントを進める
 G.roster.forEach(p=>{if(p.injury>0)p.injury--;});
 
 roundGames.forEach(g=>{
@@ -854,18 +844,18 @@ if(score>against)t.wins++;else t.losses++;
 }
 
 if(isHome||isAway){
-const attendance=Math.round(G.attendance*(.85+Math.random()*3));
+const attendance=Math.round(G.attendance*(.85+Math.random()*.3));
 const revenue=isHome?Math.round(attendance*G.ticket/10000):0;
 const expenses=Math.round(2200+rawSalaryTotal()/60+G.coaches.reduce((s,c)=>s+c.salary,0)/100);
 const profit=revenue-expenses;
 G.cash+=profit;
-G.fans=Math.round(G.fans+(score>against?1200:-800));
-G.fanSatisfy=Math.min(100,Math.max(20,G.fanSatisfy+(score>against?1:-2)));
+let isWin = hs > as;
+G.fans=Math.round(G.fans+(isWin?1200:-800));
+G.fanSatisfy=Math.min(100,Math.max(20,G.fanSatisfy+(isWin?1:-2)));
 
 G.lastResult={home:g.home,away:g.away,hs,as,periods,venue:isHome?"ホームアリーナ":"アウェイ",attendance};
 log(`第${currentRound}節: ${g.home} ${hs}-${as} ${g.away} (収支: ${profit>=0?"+":""}${yen(profit)})`);
 
-// ランダムで怪我発生＆コーチ面談イベント発生
 if(Math.random()<0.15 && G.roster.length>0){
   const victim = G.roster[Math.floor(Math.random()*G.roster.length)];
   if(victim.injury<=0){
@@ -904,9 +894,10 @@ periods.push([h,a]);hs+=h;as+=a;
 }
 if(hs===as){as+=1;periods[3][1]++;}
 
+let isWin = hs > as;
 G.csResult={home:G.club,away:"ライバルクラブ",hs,as,periods,venue:"CS特設アリーナ",attendance:8000};
 
-if(hs>as){
+if(isWin){
 if(G.csStage==="quarter"){
   G.csStage="semi";
   log("チャンピオンシップ 準々決勝を突破しました！次は準決勝です。");
