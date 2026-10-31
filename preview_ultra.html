@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>B.LEAGUE GM ULTRA</title>
+<title>B.LEAGUE GM ULTRA - B.PREMIER Edition</title>
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#101827;color:#eef3ff;font-family:system-ui,-apple-system,sans-serif}
@@ -51,8 +51,8 @@ footer{color:#8292aa;text-align:center;padding:20px;font-size:12px}
 </head>
 <body>
 <header>
-<h1>🏀 B.LEAGUE GM ULTRA</h1>
-<p>クラブ経営・契約・地区別順位・試合リザルト（ゲーム内シミュレーション）</p>
+<h1>🏀 B.LEAGUE GM ULTRA (B.PREMIER)</h1>
+<p>オンザコートフリー＆サラリーキャップ完全対応版クラブ経営シミュレーション</p>
 </header>
 <nav>
 <button data-page="home">ホーム</button>
@@ -65,11 +65,11 @@ footer{color:#8292aa;text-align:center;padding:20px;font-size:12px}
 <button data-page="settings">設定</button>
 </nav>
 <main id="app"></main>
-<footer>B.LEAGUE GM ULTRA / 単一HTML版。試合・選手能力・財務は架空のゲームデータです。</footer>
+<footer>B.LEAGUE GM ULTRA / B.PREMIER仕様（オンザコートフリー対応）。</footer>
 
 <script>
 "use strict";
-const SAVE_KEY="bleague_gm_ultra_standalone_v2";
+const SAVE_KEY="bleague_gm_ultra_premier_v1";
 const $=id=>document.getElementById(id);
 let G=null,PAGE="home";
 
@@ -124,7 +124,7 @@ return [...games,...first].map((g,i)=>({...g,id:i+1}));
 function createNewGame(club="信州ブレイブウォリアーズ"){
 G={
 club,seasonStart:2026,season:"2026-27",
-cash:300000,ticket:2500,attendance:3500,
+cash:400000,ticket:3000,attendance:4000,
 roster:[
 makePlayer("田中 大地","PG",76,3500,2),
 makePlayer("佐藤 悠斗","SG",75,3200,2),
@@ -138,15 +138,15 @@ makePlayer("加藤 颯","PF",73,2600,1),
 makePlayer("吉田 誠","C",72,2400,1)
 ],
 market:[
-makePlayer("Marcus Reid","PF",87,12000,1,"外国籍"),
-makePlayer("Jaylen Carter","SG/SF",87,8500,1,"外国籍"),
-makePlayer("Eric Johnson","C",83,6000,1,"外国籍"),
+makePlayer("Marcus Reid","PF",89,18000,1,"外国籍"),
+makePlayer("Jaylen Carter","SG/SF",88,14000,1,"外国籍"),
+makePlayer("Eric Johnson","C",85,9000,1,"外国籍"),
 makePlayer("朝倉 蒼真","PG",84,6500,2),
 makePlayer("神谷 蓮","SF",86,9000,2),
 makePlayer("森下 悠真","SG/SF",82,4500,2),
 makePlayer("李 明","SF",79,4000,2,"アジア特別枠"),
-makePlayer("帰化選手サンプル","PF/C",81,5500,2,"帰化"),
-makePlayer("David Brown","C",85,8000,1,"外国籍"),
+makePlayer("帰化選手サンプル","PF/C",83,8500,2,"帰化"),
+makePlayer("David Brown","C",86,11000,1,"外国籍"),
 makePlayer("渡辺 陽","PG",80,5000,2)
 ],
 coaches:[
@@ -154,15 +154,15 @@ coaches:[
 ],
 coachMarket:[
 {id:uid(),name:"佐々木 健",role:"HC",rating:78,salary:7000},
-{id:uid(),name:"Michael Green",role:"HC",rating:84,salary:12000},
+{id:uid(),name:"Michael Green",role:"HC",rating:85,salary:15000},
 {id:uid(),name:"田村 誠",role:"OF",rating:75,salary:3000},
 {id:uid(),name:"James Wilson",role:"DF",rating:80,salary:4500},
 {id:uid(),name:"小林 修",role:"育成",rating:77,salary:2500}
 ],
 teams:makeTeams(),
 schedule:makeSchedule(),
-log:["新しいゲームを開始しました。"],
-lastResult:null,playoff:null
+log:["B.PREMIER 開幕！オンザコートフリーの挑戦が始まります。"],
+lastResult:null
 };
 saveGame();
 PAGE="home";
@@ -183,24 +183,6 @@ let raw=localStorage.getItem(SAVE_KEY);
 if(!raw)return false;
 let x=JSON.parse(raw);
 if(!validGame(x))return false;
-x.teams=Array.isArray(x.teams)&&x.teams.length===26?x.teams:makeTeams();
-x.teams.forEach(t=>{
-t.division=EAST.includes(t.name)?"東地区":"西地区";
-t.played=Number(t.played)||0;
-t.pf=Number(t.pf)||0;
-t.pa=Number(t.pa)||0;
-t.wins=Number(t.wins)||0;
-t.losses=Number(t.losses)||0;
-});
-x.schedule=Array.isArray(x.schedule)?x.schedule:makeSchedule();
-x.coaches=Array.isArray(x.coaches)?x.coaches:(x.coach?[{...x.coach,id:uid(),role:"HC"}]:[]);
-x.coachMarket=Array.isArray(x.coachMarket)?x.coachMarket:[];
-x.log=Array.isArray(x.log)?x.log:[];
-x.attendance=x.attendance||3500;
-x.ticket=x.ticket||2500;
-x.seasonStart=x.seasonStart||2026;
-x.season=x.season||"2026-27";
-x.lastResult=x.lastResult||null;
 G=x;
 return true;
 }catch(e){console.error(e);return false;}
@@ -210,10 +192,18 @@ function log(s){
 G.log.unshift(new Date().toLocaleString("ja-JP")+" "+s);
 G.log=G.log.slice(0,80);
 }
-function salaryTotal(){return G.roster.reduce((s,p)=>s+(Number(p.salary)||0),0);}
+
+// B.PREMIER仕様：1.5億円超の年俸は1.5億円（15,000万円）でキャップ計上
+function capCalculatedSalary(){
+return G.roster.reduce((sum,p)=>{
+let sal=Number(p.salary)||0;
+return sum + (sal > 15000 ? 15000 : sal);
+},0);
+}
+function rawSalaryTotal(){ return G.roster.reduce((s,p)=>s+(Number(p.salary)||0),0); }
 function foreignCount(){return G.roster.filter(p=>p.type==="外国籍").length;}
 function specialCount(){return G.roster.filter(p=>["アジア特別枠","帰化"].includes(p.type)).length;}
-function cap(){return{salary:salaryTotal(),cap:80000,floor:50000};}
+function cap(){return{salary:capCalculatedSalary(),rawSalary:rawSalaryTotal(),cap:80000,floor:50000};}
 function btn(label,action,id="",cls=""){
 return `<button class="${cls}" data-act="${action}" data-id="${esc(id)}">${label}</button>`;
 }
@@ -221,16 +211,16 @@ return `<button class="${cls}" data-act="${action}" data-id="${esc(id)}">${label
 function homePage(){
 const c=cap();
 return `<section class="card">
-<h2>${esc(G.club)} <span class="pill">${esc(G.season)}</span></h2>
+<h2>${esc(G.club)} <span class="pill">${esc(G.season)} B.PREMIER</span></h2>
 <div class="stats">
 <div class="stat">手元資金<strong>${yen(G.cash)}</strong></div>
-<div class="stat">選手年俸<strong>${yen(c.salary)}</strong></div>
+<div class="stat">キャップ対象年俸<strong>${yen(c.salary)}</strong></div>
 <div class="stat">サラリーキャップ<strong>${yen(c.cap)}</strong></div>
 <div class="stat">サラリーフロア<strong>${yen(c.floor)}</strong></div>
 </div>
-<p>成績：${record(G.club)} / 登録選手：${G.roster.length}人 / コーチ：${G.coaches.length}人</p>
-<p>チケット価格：${G.ticket.toLocaleString()}円　観客数設定：${G.attendance.toLocaleString()}人</p>
-<div class="notice">${c.salary>c.cap?"キャップ超過":c.salary<c.floor?"フロア未達":"年俸はキャップ・フロアの範囲内"}。キャップ8億円・フロア5億円はゲーム用の仮設定です。</div>
+<p>成績：${record(G.club)} / 登録選手：${G.roster.length}/14人 / オンザコート：フリー</p>
+<p>実質年俸総額：${yen(c.rawSalary)} （※1.5億円超の選手は1.5億円としてキャップ計算）</p>
+<div class="notice">${c.salary>c.cap?"【警告】サラリーキャップ超過":c.salary<c.floor?"【注意】サラリーフロア未達":"年俸適正範囲内"}。B.PREMIERでは外国籍同時出場制限が撤廃（オンザコートフリー）されています。</div>
 </section>
 <section class="card"><h2>最近の記録</h2>${G.log.slice(0,8).map(x=>`<div class="logline">${esc(x)}</div>`).join("")}</section>
 ${G.lastResult?`<section class="card"><h2>最新リザルト</h2>${resultHTML(G.lastResult)}</section>`:""}`;
@@ -245,7 +235,7 @@ function standingsPage(){
 const division=window.currentDivision||"ALL";
 const arr=[...G.teams].filter(t=>division==="ALL"||t.division===division)
 .sort((a,b)=>b.wins-a.wins||((b.pf-b.pa)-(a.pf-a.pa)));
-return `<section class="card"><h2>順位表</h2>
+return `<section class="card"><h2>順位表 (B.PREMIER)</h2>
 <label><span>表示地区</span><select id="divisionFilter">
 <option value="ALL" ${division==="ALL"?"selected":""}>全地区</option>
 <option value="東地区" ${division==="東地区"?"selected":""}>東地区</option>
@@ -262,10 +252,10 @@ return `<section class="card"><h2>順位表</h2>
 function rosterPage(){
 const c=cap();
 return `<section class="card"><h2>選手・契約管理</h2>
-<p>登録人数 ${G.roster.length}/14　外国籍 ${foreignCount()}/3　帰化・アジア特別枠 ${specialCount()}/1</p>
-<p>年俸 ${yen(c.salary)} / キャップ ${yen(c.cap)} / フロア ${yen(c.floor)}</p>
+<p>登録人数 ${G.roster.length}/14　外国籍 ${foreignCount()}/3　帰化・アジア枠 ${specialCount()}/1</p>
+<p>キャップ対象年俸 ${yen(c.salary)} / 8億円キャップ</p>
 ${G.roster.map(p=>`<div class="player"><div class="player-info">
-<strong>${esc(p.name)}（${esc(p.pos)}）</strong>
+<strong>${esc(p.name)}（${esc(p.pos)}） ${p.salary>=15000?"<span class='pill'>Top Player(控除適用)</span>":""}</strong>
 <small>能力 ${p.rating} / 年俸 ${yen(p.salary)} / 残り契約 ${p.years}年 / ${esc(p.type)}</small>
 </div><div class="player-actions">${btn("契約延長","extend",p.id)}${btn("契約解除","release",p.id,"danger")}</div></div>`).join("")||"<p>登録選手はいません。</p>"}
 </section>`;
@@ -273,7 +263,7 @@ ${G.roster.map(p=>`<div class="player"><div class="player-info">
 
 function marketPage(){
 return `<section class="card"><h2>選手市場</h2>
-<p>登録上限14人、外国籍最大3人、帰化・アジア特別枠合計1人。年俸キャップを超える契約はできません。</p>
+<p>B.PREMIER登録規制：最大14人、外国籍上限3人、帰化・アジア特別枠上限1人。</p>
 ${G.market.map(p=>`<div class="player"><div class="player-info">
 <strong>${esc(p.name)}（${esc(p.pos)}）</strong>
 <small>能力 ${p.rating} / 年俸 ${yen(p.salary)} / ${p.years}年契約 / ${esc(p.type)}</small>
@@ -299,14 +289,13 @@ const c=cap();
 return `<section class="card"><h2>経営・財務</h2>
 <div class="stats">
 <div class="stat">手元資金<strong>${yen(G.cash)}</strong></div>
-<div class="stat">選手年俸<strong>${yen(c.salary)}</strong></div>
+<div class="stat">キャップ対象年俸<strong>${yen(c.salary)}</strong></div>
 <div class="stat">サラリーキャップ<strong>${yen(c.cap)}</strong></div>
 <div class="stat">サラリーフロア<strong>${yen(c.floor)}</strong></div>
 </div>
-<label><span>チケット価格（円）</span><input id="ticketInput" type="number" min="500" max="20000" step="100" value="${G.ticket}"></label>
+<label><span>チケット平均価格（円）</span><input id="ticketInput" type="number" min="500" max="30000" step="100" value="${G.ticket}"></label>
 <label><span>平均観客数</span><input id="attendanceInput" type="number" min="0" max="20000" step="100" value="${G.attendance}"></label>
 <button class="primary" data-act="savefinance">設定を保存</button>
-<p class="muted">キャップ8億円・フロア5億円はゲーム内の仮設定です。</p>
 </section>`;
 }
 
@@ -317,7 +306,6 @@ const nextGames=nextRound?G.schedule.filter(g=>g.round===nextRound):[];
 
 return `<section class="card"><h2>日程・試合</h2>
 <p>消化試合：${G.schedule.filter(g=>g.done).length} / ${G.schedule.length}</p>
-<p class="muted">この画面の日程はゲーム内生成の架空日程で、公式日程ではありません。</p>
 ${nextRound?btn(`第 ${nextRound} 節の全試合を実行`,"nextgame","","primary"):btn("シーズン終了・新シーズンへ","nextseason","","primary")}
 <h3>${nextRound?`第 ${nextRound} 節の対戦カード`:"全日程終了"}</h3>
 ${nextGames.map(g=>`<div class="logline">${g.home} vs ${g.away} ${g.home===G.club||g.away===G.club?"<span class='pill'>★自チーム</span>":""}</div>`).join("")}
@@ -327,7 +315,7 @@ ${nextGames.map(g=>`<div class="logline">${g.home} vs ${g.away} ${g.home===G.clu
 
 function resultHTML(r){
 return `<div class="scoreboard">
-<div style="color:#aaa;letter-spacing:2px;font-weight:800">B.LEAGUE GM ULTRA</div>
+<div style="color:#aaa;letter-spacing:2px;font-weight:800">B.LEAGUE PREMIER</div>
 <div style="margin:12px;font-weight:800">FINAL</div>
 <div class="scoreline">
 <div><div>${esc(r.home)}</div><div class="team-score">${r.hs}</div><span class="pill">HOME</span></div>
@@ -337,7 +325,6 @@ return `<div class="scoreboard">
 <div class="periods">${r.periods.map((p,i)=>`<div><small>${i+1}Q</small><br>${p[0]}-${p[1]}</div>`).join("")}
 <div><small>FINAL</small><br><b>${r.hs}-${r.as}</b></div></div>
 <p>会場：${esc(r.venue)}<br>観客数：${Number(r.attendance).toLocaleString()}人</p>
-<p class="muted">架空のゲーム内試合結果</p>
 </div>`;
 }
 
@@ -348,17 +335,15 @@ ${G.teams.map(t=>`<option value="${esc(t.name)}" ${G.club===t.name?"selected":""
 </select></label>
 <button data-act="changeclub" class="primary">操作クラブを変更</button>
 <div class="row" style="margin-top:12px">${btn("手動セーブ","save","","primary")}${btn("新規ゲーム","newgame","","danger")}</div>
-<p class="muted">新規ゲームを開始すると、このゲームのセーブデータを置き換えます。</p>
-<div class="notice">クラブ一覧はゲーム用データです。正式な2026-27 B.PREMIER参加クラブ・地区分けと同一であることは未確認です。</div>
 </section>`;
 }
 
 function newGameScreen(){
-return `<section class="card"><h2>新規ゲーム</h2><p>操作するクラブを選択してください。</p>
+return `<section class="card"><h2>新規ゲーム</h2><p>B.PREMIER参戦クラブを選択してください。</p>
 <label><span>操作クラブ</span><select id="firstClub">
 ${TEAM_NAMES.map(n=>`<option value="${esc(n)}" ${n==="信州ブレイブウォリアーズ"?"selected":""}>${esc(n)}</option>`).join("")}
 </select></label>
-<button data-act="firstgame" class="primary">ゲーム開始</button>
+<button data-act="firstgame" class="primary">B.PREMIER開幕</button>
 </section>`;
 }
 
@@ -366,6 +351,17 @@ function render(){
 if(!validGame(G)){$("app").innerHTML=newGameScreen();return;}
 const pages={home:homePage,standings:standingsPage,roster:rosterPage,market:marketPage,coaches:coachesPage,finance:financePage,season:schedulePage,settings:settingsPage};
 $("app").innerHTML=(pages[PAGE]||homePage)();
+}
+
+// B.PREMIER オンザコートフリー計算ロジック
+function calculateTeamPower(isMyTeam){
+if(!isMyTeam) return 76 + Math.random()*4; // 敵チームは76~80前後のベース能力
+// 自チーム：オンザコートフリーのため全外国籍・帰化枠の能力を加算
+const sortedRoster = [...G.roster].sort((a,b)=>b.rating-a.rating);
+const top5 = sortedRoster.slice(0,5);
+const baseRating = top5.reduce((s,p)=>s+p.rating,0) / Math.max(1, top5.length);
+const coachBonus = G.coaches.reduce((s,c)=>s+(c.rating-70)*.08, 0);
+return baseRating + coachBonus;
 }
 
 function simulateGame(){
@@ -378,18 +374,13 @@ roundGames.forEach(g=>{
 let myTeamIsHome=g.home===G.club;
 let myTeamIsAway=g.away===G.club;
 
-let homePower=75, awayPower=75;
-if(myTeamIsHome){
-homePower=G.roster.reduce((s,p)=>s+p.rating,0)/Math.max(1,G.roster.length)+G.coaches.reduce((s,c)=>s+(c.rating-70)*.08,0);
-}
-if(myTeamIsAway){
-awayPower=G.roster.reduce((s,p)=>s+p.rating,0)/Math.max(1,G.roster.length)+G.coaches.reduce((s,c)=>s+(c.rating-70)*.08,0);
-}
+let homePower=calculateTeamPower(myTeamIsHome);
+let awayPower=calculateTeamPower(myTeamIsAway);
 
 let hs=0,as=0,periods=[];
 for(let q=0;q<4;q++){
-let h=Math.max(12,Math.round(19+Math.random()*9+(homePower-75)*.22));
-let a=Math.max(12,Math.round(18+Math.random()*9+(awayPower-75)*.22));
+let h=Math.max(12,Math.round(20+Math.random()*8+(homePower-75)*.25));
+let a=Math.max(12,Math.round(19+Math.random()*8+(awayPower-75)*.25));
 periods.push([h,a]);hs+=h;as+=a;
 }
 if(hs===as){as+=1;periods[3][1]++;}
@@ -405,9 +396,9 @@ if(score>against)t.wins++;else t.losses++;
 
 if(myTeamIsHome||myTeamIsAway){
 const isHome=myTeamIsHome;
-const attendance=Math.round(G.attendance*(.8+Math.random()*.4));
+const attendance=Math.round(G.attendance*(.85+Math.random()*.3));
 const revenue=isHome?Math.round(attendance*G.ticket/10000):0;
-const expenses=Math.round(1800+salaryTotal()/60+G.coaches.reduce((s,c)=>s+c.salary,0)/100);
+const expenses=Math.round(2000+rawSalaryTotal()/60+G.coaches.reduce((s,c)=>s+c.salary,0)/100);
 const profit=revenue-expenses;
 G.cash+=profit;
 G.lastResult={home:g.home,away:g.away,hs,as,periods,venue:isHome?"ホームアリーナ":"アウェイアリーナ",attendance};
@@ -419,7 +410,7 @@ saveGame();render();
 }
 
 function processNextSeason(){
-if(!confirm("シーズンを終了して次のシーズンに進みますか？\n契約選手・コーチの年数が減少し、満了選手はFAになります。"))return;
+if(!confirm("シーズンを終了して次のシーズンに進みますか？\n契約選手・コーチの年数が減少し、契約満了選手はFAになります。"))return;
 G.roster.forEach(p=>p.years--);
 const expired=G.roster.filter(p=>p.years<=0);
 G.roster=G.roster.filter(p=>p.years>0);
@@ -432,9 +423,7 @@ G.season=`${startYear}-${String(startYear+1).slice(2)}`;
 G.teams=makeTeams();
 G.schedule=makeSchedule();
 G.lastResult=null;
-log(`--- 新シーズン (${G.season}) が開幕しました ---`);
-if(expired.length>0)log(`${expired.length}名の選手が契約満了となりFAになりました。`);
-
+log(`--- B.PREMIER 新シーズン (${G.season}) が開幕しました ---`);
 saveGame();render();
 }
 
@@ -443,7 +432,7 @@ if(action==="firstgame"){
 createNewGame($("firstClub")?.value||"信州ブレイブウォリアーズ");render();return;
 }
 if(action==="newgame"){
-if(!confirm("新規ゲームを開始しますか？現在のセーブデータは上書きされます。"))return;
+if(!confirm("新規ゲームを開始しますか？"))return;
 G=null;
 try{localStorage.removeItem(SAVE_KEY);}catch(e){}
 PAGE="home";render();return;
@@ -461,7 +450,6 @@ const p=G.roster.find(x=>x.id===id);
 if(!p)return alert("選手が見つかりません。");
 const n=Number(prompt(`${p.name}選手の契約延長年数（1～3年）`,"1"));
 if(!Number.isInteger(n)||n<1||n>3)return;
-if(!confirm(`${p.name}選手の契約を${n}年延長しますか？`))return;
 p.years+=n;log(`${p.name}選手と${n}年延長`);saveGame();render();return;
 }
 if(action==="release"){
@@ -476,23 +464,26 @@ if(action==="sign"){
 const i=G.market.findIndex(p=>p.id===id);
 if(i<0)return alert("選手が見つかりません。");
 const p=G.market[i];
-if(G.roster.length>=14)return alert("登録人数は最大14人です。");
-if(p.type==="外国籍"&&foreignCount()>=3)return alert("外国籍枠は最大3人です。");
-if(["帰化","アジア特別枠"].includes(p.type)&&specialCount()>=1)return alert("帰化・アジア特別枠は合計1人までです。");
-if(salaryTotal()+p.salary>80000)return alert("サラリーキャップ8億円を超えます。");
+if(G.roster.length>=14)return alert("登録人数上限（14名）に達しています。");
+if(p.type==="外国籍"&&foreignCount()>=3)return alert("外国籍選手は3名までです。");
+if(["帰化","アジア特別枠"].includes(p.type)&&specialCount()>=1)return alert("帰化/アジア特別枠は1名までです。");
+
+const nextCapSalary = capCalculatedSalary() + (p.salary > 15000 ? 15000 : p.salary);
+if(nextCapSalary > 80000)return alert("サラリーキャップ8億円を超過します。");
+
 const fee=Math.round(p.salary*.1);
 if(G.cash<p.salary+fee)return alert("資金が不足しています。");
 if(!confirm(`${p.name}選手と契約しますか？\n年俸 ${yen(p.salary)}\n契約金 ${yen(fee)}`))return;
 G.cash-=(p.salary+fee);G.roster.push(p);G.market.splice(i,1);
-log(`${p.name}選手と契約`);saveGame();render();return;
+log(`${p.name}選手と契約（オンザコートフリー枠活用）`);saveGame();render();return;
 }
 if(action==="hirecoach"){
 const i=G.coachMarket.findIndex(c=>c.id===id);
 if(i<0)return alert("コーチが見つかりません。");
 const c=G.coachMarket[i];
-if(G.coaches.some(x=>x.role===c.role))return alert(`${c.role}は契約中です。先に解除してください。`);
+if(G.coaches.some(x=>x.role===c.role))return alert(`${c.role}は契約中です。`);
 if(G.cash<c.salary)return alert("資金が不足しています。");
-if(!confirm(`${c.name}（${c.role}）と契約しますか？年俸 ${yen(c.salary)}`))return;
+if(!confirm(`${c.name}（${c.role}）と契約しますか？`))return;
 G.cash-=c.salary;G.coaches.push(c);G.coachMarket.splice(i,1);
 log(`${c.name}コーチと契約`);saveGame();render();return;
 }
@@ -506,7 +497,7 @@ log(`${c.name}コーチを契約解除`);saveGame();render();return;
 }
 if(action==="savefinance"){
 const t=Number($("ticketInput")?.value),a=Number($("attendanceInput")?.value);
-if(!Number.isFinite(t)||t<500||t>20000||!Number.isFinite(a)||a<0||a>20000)return alert("入力値を確認してください。");
+if(!Number.isFinite(t)||t<500||t>30000||!Number.isFinite(a)||a<0||a>20000)return alert("入力値を確認してください。");
 G.ticket=Math.round(t);G.attendance=Math.round(a);
 log("財務設定を変更");saveGame();render();return;
 }
@@ -526,7 +517,7 @@ if(!b)return;
 if(b.dataset.page){PAGE=b.dataset.page;render();return;}
 if(b.dataset.act){
 try{act(b.dataset.act,b.dataset.id||"");}
-catch(err){console.error(err);alert("操作中にエラーが発生しました："+err.message);}
+catch(err){console.error(err);alert("エラーが発生しました："+err.message);}
 }
 });
 
