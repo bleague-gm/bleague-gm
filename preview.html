@@ -1,0 +1,69 @@
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#101c35">
+<title>B.LEAGUE GM - My Dynasty</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#10182a;color:#f5f7ff;font-family:-apple-system,BlinkMacSystemFont,sans-serif}header{padding:22px 16px;background:linear-gradient(135deg,#172c51,#345da0)}h1{margin:0;font-size:25px}header p{margin:8px 0 0;color:#d2def5;font-size:13px}.wrap{max-width:850px;margin:auto;padding:14px}.panel{background:#1c2941;border:1px solid #354562;border-radius:14px;padding:15px;margin:12px 0}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.stat{background:#253652;padding:11px;border-radius:10px}.stat small{display:block;color:#bac8df}.stat strong{font-size:18px}.tabs{display:flex;gap:7px;overflow:auto;padding:8px 0}.tabs button{white-space:nowrap}.btn,button{background:#365f9f;color:white;border:0;border-radius:9px;padding:11px 13px;font-size:14px;cursor:pointer}.btn.secondary,button.secondary{background:#35445d}.btn:disabled{opacity:.4}button.active{background:#e2a83b;color:#172033}select{background:#101c30;color:white;border:1px solid #526582;border-radius:8px;padding:10px;width:100%;margin:7px 0}table{border-collapse:collapse;width:100%;font-size:13px}th,td{text-align:left;padding:9px 5px;border-bottom:1px solid #3b4960}th{color:#b8c8e3} .muted{color:#b7c6df;font-size:13px}.event{border-left:4px solid #e5b04c;padding:12px;background:#263650;border-radius:8px;margin:10px 0}.choice{display:block;width:100%;margin:8px 0;text-align:left;background:#354b6d}.hidden{display:none}.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.row>*{flex:1}.club{display:flex;justify-content:space-between;gap:10px;padding:10px 2px;border-bottom:1px solid #3b4960}footer{text-align:center;color:#8798b5;padding:20px;font-size:12px}
+</style>
+</head>
+<body>
+<header><div class="wrap"><h1>🏀 B.LEAGUE GM</h1><p>BUILD YOUR DYNASTY — 君の選択で、クラブの未来が変わる。</p></div></header>
+<main class="wrap">
+<div class="panel">
+<div class="stats">
+<div class="stat"><small>シーズン</small><strong id="season">1年目</strong></div>
+<div class="stat"><small>クラブ資金</small><strong id="money">30.0億円</strong></div>
+<div class="stat"><small>勝敗</small><strong id="record">0勝0敗</strong></div>
+</div>
+<p class="muted" id="clubline">信州ブレイブウォリアーズ | GMモード</p>
+</div>
+<nav class="tabs" id="tabs"></nav>
+<section class="panel" id="content"></section>
+<footer>ゲーム内の選手・試合結果・物語は架空のシミュレーションです。実際の公式戦データとは連動していません。</footer>
+</main>
+<script>
+const clubs=[
+["レバンガ北海道","東"],["仙台89ERS","東"],["秋田ノーザンハピネッツ","東"],["茨城ロボッツ","東"],["宇都宮ブレックス","東"],["群馬クレインサンダーズ","東"],["アルティーリ千葉","東"],["千葉ジェッツ","東"],["アルバルク東京","東"],["東京サンロッカーズ","東"],["川崎ブレイブサンダース","東"],["横浜ビー・コルセアーズ","東"],["富山グラウジーズ","東"],["信州ブレイブウォリアーズ","西"],["三遠ネオフェニックス","西"],["シーホース三河","西"],["名古屋ダイヤモンドドルフィンズ","西"],["滋賀レイクス","西"],["京都ハンナリーズ","西"],["大阪エヴェッサ","西"],["神戸ストークス","西"],["島根スサノオマジック","西"],["広島ドラゴンフライズ","西"],["佐賀バルーナーズ","西"],["長崎ヴェルカ","西"],["琉球ゴールデンキングス","西"]
+];
+const chapters=[
+{title:"第1章：再建か、勝負か",body:"新シーズンを前に、オーナーから最初の方針を求められた。限られた資金で、クラブの未来を決める。",choices:[["若手育成に投資する","若手選手の成長を重視する方針を宣言した。",1,3],["即戦力を集めて優勝を狙う","勝利への期待が高まった。", -2,5]]},
+{title:"第2章：ファンの声",body:"連敗が続き、ファンから補強を求める声が届いた。GMとして何を優先する？",choices:[["地道な練習と戦術改善","チームの連携を鍛える。",0,3],["補強を約束して期待に応える","資金は減るが、期待感が高まった。",-1,5]]},
+{title:"第3章：若手の挑戦",body:"若手選手が出場機会を求めている。重要な試合で起用するべきだろうか。",choices:[["若手に大きな役割を任せる","経験が選手を成長させた。",0,4],["実績のある選手を起用する","目先の安定を選んだ。",0,1]]},
+{title:"第4章：経営判断",body:"スポンサーから地域貢献活動の提案があった。費用はかかるが、地域とのつながりを強められる。",choices:[["地域イベントを開催する","地域の応援が少しずつ広がった。",-1,5],["競技力への投資を優先する","練習環境の充実を目指す。",-1,2]]},
+{title:"第5章：運命の最終戦",body:"シーズン最終戦。勝利すればプレーオフ進出に近づく。チームにどんな言葉をかける？",choices:[["全員で最後まで戦おう","チームは一丸となって試合に臨んだ。",0,5],["結果で証明しよう","選手たちに勝利への覚悟が生まれた。",0,3]]}
+];
+let state={season:1,round:0,w:0,l:0,money:30,fan:50,trust:50,team:"信州ブレイブウォリアーズ",chapter:0,storyDone:[],standings:{},log:[]};
+const original=localStorage.getItem("bleagueGM2026");
+if(original){try{state={...state,...JSON.parse(original)}}catch(e){}}
+function initStandings(){clubs.forEach(c=>{if(!state.standings[c[0]])state.standings[c[0]]={w:0,l:0}})}
+initStandings();
+const pages=["ホーム","試合","順位表","クラブ","ストーリー","セーブ"];
+let page="ホーム";
+function save(){localStorage.setItem("bleagueGM2026",JSON.stringify(state));renderHeader()}
+function renderHeader(){document.getElementById("season").textContent=state.season+"年目";document.getElementById("money").textContent=state.money.toFixed(1)+"億円";document.getElementById("record").textContent=state.w+"勝"+state.l+"敗";document.getElementById("clubline").textContent=state.team+" | GMモード"}
+function renderTabs(){document.getElementById("tabs").innerHTML=pages.map(p=>`<button class="${page===p?"active":""}" onclick="go('${p}')">${p}</button>`).join("")}
+function go(p){page=p;render()}
+function render(){
+renderHeader();renderTabs();
+let c=document.getElementById("content");
+if(page==="ホーム"){c.innerHTML=`<h2>GMダッシュボード</h2><p>クラブの未来は、あなたの決断にかかっている。</p><div class="event"><b>今週のミッション</b><p>試合を進め、クラブの勝利と経営の両立を目指そう。</p></div><div class="row"><button onclick="go('試合')">試合に進む</button><button class="secondary" onclick="go('ストーリー')">物語を読む</button></div><h3>直近のニュース</h3>${state.log.slice(-3).reverse().map(x=>`<p class="muted">・${x}</p>`).join("")||"<p class='muted'>まだニュースはありません。</p>"}`}
+if(page==="試合"){let opp=clubs[(state.round*7+4)%clubs.length][0];if(opp===state.team)opp=clubs[(state.round*7+5)%clubs.length][0];c.innerHTML=`<h2>試合日程</h2><p class="muted">${state.season}年目 | 第${state.round+1}節</p><div class="event"><h3>${state.team} vs ${opp}</h3><p>レギュラーシーズン</p></div><button onclick="play('${opp.replace(/'/g,"\\'")}')">試合をシミュレーション</button><p class="muted">結果はゲーム内で生成される架空の試合結果です。</p>`}
+if(page==="順位表"){let rows=clubs.map(x=>({name:x[0],...state.standings[x[0]]})).sort((a,b)=>b.w-a.w||a.l-b.l);c.innerHTML=`<h2>リーグ順位表</h2><table><tr><th>順位</th><th>クラブ</th><th>勝</th><th>敗</th></tr>${rows.map((x,i)=>`<tr><td>${i+1}</td><td>${x.name}</td><td>${x.w}</td><td>${x.l}</td></tr>`).join("")}</table>`}
+if(page==="クラブ"){c.innerHTML=`<h2>クラブ管理</h2><p>所属クラブを選択してください。</p><select id="teamselect">${clubs.map(x=>`<option ${x[0]===state.team?"selected":""}>${x[0]}</option>`).join("")}</select><button onclick="changeTeam()">クラブを選択</button><h3>経営状況</h3><p>資金：${state.money.toFixed(1)}億円</p><p>ファン支持：${state.fan}/100</p><p>オーナー信頼：${state.trust}/100</p><p class="muted">クラブ変更はGMプレイの所属先だけを変更します。</p>`}
+if(page==="ストーリー"){let n=state.chapter;if(n>=chapters.length){c.innerHTML=`<h2>シーズンストーリー完了</h2><p>あなたの決断がクラブの歴史を作った。</p><button onclick="nextSeason()">次のシーズンへ</button><p class="muted">シーズンを進めると物語を再び体験できます。</p>`}else{let a=chapters[n];c.innerHTML=`<p class="muted">STORY ${n+1} / ${chapters.length}</p><h2>${a.title}</h2><div class="event">${a.body}</div>${a.choices.map((q,i)=>`<button class="choice" onclick="choose(${n},${i})">${q[0]}</button>`).join("")}<p class="muted">選択によって資金、信頼、ファン支持が変化します。</p>`}}
+if(page==="セーブ"){c.innerHTML=`<h2>セーブデータ</h2><p>ゲームの進行はこのブラウザに保存されます。</p><button onclick="exportSave()">セーブデータを書き出す</button><p><label>バックアップを読み込む<input id="savefile" type="file" accept=".json,application/json"></label></p><button class="secondary" onclick="importSave()">読み込む</button><p class="muted">機種変更やブラウザのデータ削除に備え、定期的にバックアップしてください。</p>`}
+}
+function play(opp){let home=Math.floor(75+Math.random()*31),away=Math.floor(75+Math.random()*31);if(Math.random()<.5)home+=10;else away+=10;let win=home>away;if(home===away){home++;win=true}state.round++;state.money+=win?.12:-.06;state.fan=Math.max(0,Math.min(100,state.fan+(win?1:-1)));state.trust=Math.max(0,Math.min(100,state.trust+(win?1:-1)));if(win)state.w++;else state.l++;state.standings[state.team][win?"w":"l"]++;state.standings[opp][win?"l":"w"]++;let msg=`第${state.round}節 ${state.team} ${home}-${away} ${opp}：${win?"勝利":"敗戦"}`;state.log.push(msg);save();alert(msg);go("試合")}
+function choose(n,i){let q=chapters[n].choices[i];state.money=Math.max(0,state.money+q[2]);state.trust=Math.max(0,Math.min(100,state.trust+q[3]));state.fan=Math.max(0,Math.min(100,state.fan+Math.round(q[3]/2)));state.log.push(q[1]);state.chapter++;state.storyDone.push(n);save();render()}
+function nextSeason(){state.season++;state.round=0;state.w=0;state.l=0;state.chapter=0;state.log.push(`${state.season}年目の新シーズンが開幕。`);save();go("ホーム")}
+function changeTeam(){state.team=document.getElementById("teamselect").value;save();go("クラブ")}
+function exportSave(){let blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json"});let a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="bleague-gm-save.json";a.click();URL.revokeObjectURL(a.href)}
+function importSave(){let f=document.getElementById("savefile").files[0];if(!f)return alert("バックアップファイルを選択してください");let r=new FileReader();r.onload=()=>{try{state={...state,...JSON.parse(r.result)};initStandings();save();render();alert("読み込みました")}catch(e){alert("ファイルを読み込めませんでした")}};r.readAsText(f)}
+render();
+</script>
+</body>
+</html>
