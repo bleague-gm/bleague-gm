@@ -80,7 +80,7 @@ footer{color:var(--muted);text-align:center;padding:15px;font-size:11px}
 
 <script>
 "use strict";
-const SAVE_KEY="bleague_gm_ultra_b_premier_v2";
+const SAVE_KEY="bleague_gm_ultra_b_premier_v3"; // キーを更新して古い破損データを回避
 const $=id=>document.getElementById(id);
 let G=null,PAGE="home";
 
@@ -100,8 +100,8 @@ const WEST=[
 "長崎ヴェルカ","琉球ゴールデンキングス"
 ];
 const TEAM_NAMES=[...EAST,...WEST];
-const esc=v=>String(v).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const yen=n=>Math.round(n).toLocaleString("ja-JP")+"万円";
+const esc=v=>String(v||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const yen=n=>Math.round(n||0).toLocaleString("ja-JP")+"万円";
 const uid=()=>Math.random().toString(36).slice(2)+Date.now().toString(36);
 
 function makePlayer(name,pos,rating,salary,years=1,type="日本人"){
@@ -180,7 +180,7 @@ PAGE="home";
 }
 
 function validGame(g){
-return !!g&&Array.isArray(g.roster)&&Array.isArray(g.market)&&typeof g.cash==="number";
+return !!g && Array.isArray(g.roster) && Array.isArray(g.market) && Array.isArray(g.teams) && typeof g.cash==="number";
 }
 
 function saveGame(){
@@ -200,19 +200,24 @@ return true;
 }
 
 function log(s){
+if(!G || !Array.isArray(G.log)) return;
 G.log.unshift(new Date().toLocaleTimeString("ja-JP",{hour:"numeric",minute:"numeric"})+" "+s);
 G.log=G.log.slice(0,50);
 }
 
 function capCalculatedSalary(){
+if(!G || !Array.isArray(G.roster)) return 0;
 return G.roster.reduce((sum,p)=>{
 let sal=Number(p.salary)||0;
 return sum + (sal > 15000 ? 15000 : sal);
 },0);
 }
-function rawSalaryTotal(){ return G.roster.reduce((s,p)=>s+(Number(p.salary)||0),0); }
-function foreignCount(){return G.roster.filter(p=>p.type==="外国籍").length;}
-function specialCount(){return G.roster.filter(p=>["アジア特別枠","帰化"].includes(p.type)).length;}
+function rawSalaryTotal(){ 
+if(!G || !Array.isArray(G.roster)) return 0;
+return G.roster.reduce((s,p)=>s+(Number(p.salary)||0),0); 
+}
+function foreignCount(){return G && Array.isArray(G.roster) ? G.roster.filter(p=>p.type==="外国籍").length : 0;}
+function specialCount(){return G && Array.isArray(G.roster) ? G.roster.filter(p=>["アジア特別枠","帰化"].includes(p.type)).length : 0;}
 function cap(){return{salary:capCalculatedSalary(),rawSalary:rawSalaryTotal(),cap:80000,floor:50000};}
 
 function homePage(){
@@ -234,19 +239,20 @@ return `<section class="card">
 </section>
 <section class="card">
 <h2>最新アクティビティ</h2>
-${G.log.slice(0,6).map(x=>`<div class="logline">${esc(x)}</div>`).join("")||"<p class='muted'>履歴はありません。</p>"}
+${(G.log||[]).slice(0,6).map(x=>`<div class="logline">${esc(x)}</div>`).join("")||"<p class='muted'>履歴はありません。</p>"}
 </section>
 ${G.lastResult?`<section class="card"><h2>直近の試合リザルト</h2>${resultHTML(G.lastResult)}</section>`:""}`;
 }
 
 function record(name){
+if(!G || !Array.isArray(G.teams)) return "0勝 0敗";
 const t=G.teams.find(x=>x.name===name);
 return t?`${t.wins}勝 ${t.losses}敗`:"0勝 0敗";
 }
 
 function standingsPage(){
 const division=window.currentDivision||"ALL";
-const arr=[...G.teams].filter(t=>division==="ALL"||t.division===division)
+const arr=[...(G.teams||[])].filter(t=>division==="ALL"||t.division===division)
 .sort((a,b)=>b.wins-a.wins||((b.pf-b.pa)-(a.pf-a.pa)));
 return `<section class="card">
 <h2><span>順位表</span>
@@ -265,7 +271,6 @@ return `<section class="card">
 }
 
 function rosterPage(){
-const c=cap();
 return `<section class="card">
 <h2><span>ロスター管理</span> <span class="pill">${G.roster.length}/14人</span></h2>
 <p class="muted">外国籍: ${foreignCount()}/3人 | 帰化・アジア: ${specialCount()}/1人</p>
@@ -334,12 +339,12 @@ return `<section class="card">
 }
 
 function schedulePage(){
-const remaining=G.schedule.filter(g=>!g.done);
+const remaining=(G.schedule||[]).filter(g=>!g.done);
 const nextRound=remaining.length>0?remaining[0].round:null;
 const nextGames=nextRound?G.schedule.filter(g=>g.round===nextRound):[];
 
 return `<section class="card">
-<h2><span>日程・試合進行</span> <span class="pill">消化: ${G.schedule.filter(g=>g.done).length}/${G.schedule.length}</span></h2>
+<h2><span>日程・試合進行</span> <span class="pill">消化: ${(G.schedule||[]).filter(g=>g.done).length}/${(G.schedule||[]).length}</span></h2>
 <div style="margin-bottom:12px">
 ${nextRound?btn(`第 ${nextRound} 節の全試合を実行`,"nextgame","","primary"):btn("シーズン終了・次年度へ","nextseason","","primary")}
 </div>
@@ -388,9 +393,14 @@ ${TEAM_NAMES.map(n=>`<option value="${esc(n)}" ${n==="信州ブレイブウォ�
 }
 
 function render(){
-if(!validGame(G)){$("app").innerHTML=newGameScreen();return;}
-const pages={home:homePage,standings:standingsPage,roster:rosterPage,market:marketPage,coaches:coachesPage,finance:financePage,season:schedulePage,settings:settingsPage};
-$("app").innerHTML=(pages[PAGE]||homePage)();
+try {
+  if(!validGame(G)){$("app").innerHTML=newGameScreen();return;}
+  const pages={home:homePage,standings:standingsPage,roster:rosterPage,market:marketPage,coaches:coachesPage,finance:financePage,season:schedulePage,settings:settingsPage};
+  $("app").innerHTML=(pages[PAGE]||homePage)();
+} catch(e) {
+  console.error(e);
+  $("app").innerHTML=`<div class="card" style="border-color:var(--danger)"><h2>エラーが発生しました</h2><p class="muted">${esc(e.message)}</p><button class="danger" data-act="newgame" style="width:100%;margin-top:10px">データをリセットしてやり直す</button></div>`;
+}
 }
 
 function calculateTeamPower(isMyTeam){
@@ -470,7 +480,7 @@ createNewGame($("firstClub")?.value||"信州ブレイブウォリアーズ");ren
 if(action==="newgame"){
 if(!confirm("初期データに戻してやり直しますか？"))return;
 G=null;try{localStorage.removeItem(SAVE_KEY);}catch(e){}
-render();return;
+PAGE="home";render();return;
 }
 if(!validGame(G)){alert("ゲームを開始してください。");render();return;}
 if(action==="save"){alert(saveGame()?"データをセーブしました。":"セーブ失敗");return;}
