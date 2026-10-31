@@ -200,11 +200,10 @@ return true;
 }
 
 function log(s){
-G.log.unshift(new Date().toLocaleTimeString("ja-JP","hour:numeric","minute:numeric")+" "+s);
+G.log.unshift(new Date().toLocaleTimeString("ja-JP",{hour:"numeric",minute:"numeric"})+" "+s);
 G.log=G.log.slice(0,50);
 }
 
-// B.PREMIER仕様：1.5億円超の年俸は1.5億円（15000万円）でキャップ計算
 function capCalculatedSalary(){
 return G.roster.reduce((sum,p)=>{
 let sal=Number(p.salary)||0;
@@ -307,7 +306,7 @@ ${G.coaches.map(c=>`<div class="player-item">
 <strong>${esc(c.name)}（${esc(c.role)}）</strong>
 <small>能力: ${c.rating} | 年俸: ${yen(c.salary)}</small>
 </div>
-<div class="player-actions">${btn("解任","firecoach",p=>p.id===","danger")}</div>
+<div class="player-actions">${btn("解任","firecoach",c.id,"danger")}</div>
 </div>`).join("")||"<p class='muted'>コーチがいません。</p>"}
 <h3 style="margin-top:16px">コーチ市場</h3>
 ${G.coachMarket.map(c=>`<div class="player-item">
@@ -394,7 +393,6 @@ const pages={home:homePage,standings:standingsPage,roster:rosterPage,market:mark
 $("app").innerHTML=(pages[PAGE]||homePage)();
 }
 
-// オンザコートフリー計算（全外国籍・帰化枠がフル稼働）
 function calculateTeamPower(isMyTeam){
 if(!isMyTeam) return 76 + Math.random()*5;
 const sorted = [...G.roster].sort((a,b)=>b.rating-a.rating);
