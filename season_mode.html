@@ -1,0 +1,303 @@
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>B.LEAGUE GM｜シーズンモード</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#101827;color:#f4f7fb;font-family:-apple-system,BlinkMacSystemFont,sans-serif}
+header{padding:20px;background:#18263b;border-bottom:3px solid #e7a83e}
+h1{margin:0;font-size:23px}h2{font-size:19px}
+main{padding:14px;max-width:850px;margin:auto}
+.card{background:#1b2940;border:1px solid #34445e;border-radius:12px;padding:14px;margin:12px 0}
+button{border:0;border-radius:8px;padding:12px 14px;margin:4px;background:#e7a83e;color:#172033;font-weight:bold;font-size:14px}
+button.secondary{background:#354762;color:white}
+button:disabled{opacity:.4}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.stat{background:#253751;border-radius:9px;padding:10px;text-align:center}
+.stat strong{display:block;font-size:20px;margin-top:5px}
+.small{font-size:12px;color:#bdc9dc}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th,td{padding:8px 4px;border-bottom:1px solid #34445e;text-align:center}
+th{color:#e7bd70}
+td:first-child,th:first-child{text-align:left}
+.scroll{overflow-x:auto}
+.notice{line-height:1.7;font-size:13px;color:#d3dced}
+</style>
+</head>
+<body>
+<header>
+ <h1>🏀 B.LEAGUE GM</h1>
+ <div class="small">2026-27 B.LEAGUE PREMIER準拠・シーズン管理版</div>
+</header>
+<main>
+ <div class="card">
+  <div id="phase">オフシーズン</div>
+  <h2 id="headline">新シーズンの準備</h2>
+  <div id="description" class="notice"></div>
+  <div class="stats">
+   <div class="stat">シーズン<strong id="season">2026-27</strong></div>
+   <div class="stat">進行<strong id="progress">準備中</strong></div>
+   <div class="stat">試合数<strong id="games">0 / 60</strong></div>
+  </div>
+ </div>
+ <div class="card">
+  <h2>チーム選択</h2>
+  <label for="team">GMとして運営するクラブ</label><br>
+  <select id="team" style="width:100%;padding:12px;margin-top:8px;border-radius:8px"></select>
+  <p id="myTeamInfo" class="notice"></p>
+  <button id="start" onclick="startSeason()">レギュラーシーズンを開始</button>
+  <button class="secondary" onclick="advanceWeek()">次の節へ進む</button>
+  <button class="secondary" onclick="saveGame()">セーブ</button>
+  <button class="secondary" onclick="loadGame()">ロード</button>
+ </div>
+ <div class="card">
+  <h2>シーズンフェーズ</h2>
+  <p id="phaseInfo" class="notice"></p>
+  <button onclick="beginPlayoffs()">レギュラーシーズン終了・順位確定</button>
+  <button onclick="playoffGame()">プレーオフを1試合進める</button>
+  <button onclick="nextOffseason()">次のオフシーズンへ</button>
+ </div>
+ <div class="card">
+  <h2>地区順位表</h2>
+  <div class="scroll"><table id="standings"></table></div>
+ </div>
+ <div class="card">
+  <h2>直近の試合結果</h2>
+  <div id="results" class="notice">まだ試合はありません。</div>
+ </div>
+ <div class="card">
+  <h2>プレーオフ</h2>
+  <div id="bracket" class="notice">レギュラーシーズン終了後に進出クラブが決まります。</div>
+ </div>
+ <div class="card">
+  <h2>ゲームの規定</h2>
+  <div class="notice">
+   ・2026-27シーズンのB.LEAGUE PREMIERを参考にしたシーズン管理モードです。<br>
+   ・東西各13クラブ、各クラブ60試合を想定しています。<br>
+   ・プレーオフは各地区上位3クラブとワイルドカード2クラブの計8クラブ。<br>
+   ・準々決勝と準決勝は2戦先勝、決勝は3戦先勝です。<br>
+   ・試合結果、選手データ、日程の細部はゲーム内シミュレーションであり、公式の実績データではありません。
+  </div>
+ </div>
+</main>
+<script>
+const clubs=[
+["レバンガ北海道","東"],["仙台89ERS","東"],["秋田ノーザンハピネッツ","東"],
+["茨城ロボッツ","東"],["宇都宮ブレックス","東"],["群馬クレインサンダーズ","東"],
+["アルティーリ千葉","東"],["千葉ジェッツ","東"],["アルバルク東京","東"],
+["サンロッカーズ渋谷","東"],["川崎ブレイブサンダース","東"],
+["横浜ビー・コルセアーズ","東"],["富山グラウジーズ","東"],
+["信州ブレイブウォリアーズ","西"],["三遠ネオフェニックス","西"],
+["シーホース三河","西"],["名古屋ダイヤモンドドルフィンズ","西"],
+["滋賀レイクス","西"],["京都ハンナリーズ","西"],["大阪エヴェッサ","西"],
+["神戸ストークス","西"],["島根スサノオマジック","西"],
+["広島ドラゴンフライズ","西"],["佐賀バルーナーズ","西"],
+["長崎ヴェルカ","西"],["琉球ゴールデンキングス","西"]
+];
+let g;
+function fresh(){
+ return {
+ season:2026,phase:"off",user:13,week:0,schedule:[],results:[],
+ teams:clubs.map((c,i)=>({id:i,name:c[0],division:c[1],
+ strength:72+Math.floor(Math.random()*17),w:0,l:0,pf:0,pa:0,
+ h2h:{},budget:30,players:12})),
+ playoffs:[],round:0,champion:null,offseasonYear:2026
+ };
+}
+function init(){
+ g=fresh();
+ const s=document.getElementById("team");
+ s.innerHTML=clubs.map((c,i)=>`<option value="${i}">${c[0]}（${c[1]}地区）</option>`).join("");
+ s.value=13;
+ s.onchange=()=>{g.user=+s.value;render()};
+ render();
+}
+function makeSchedule(){
+ const schedule=[];
+ let id=0;
+ // 同地区：各クラブと3試合
+ for(const div of ["東","西"]){
+  const group=g.teams.filter(t=>t.division===div);
+  for(let a=0;a<group.length;a++)for(let b=a+1;b<group.length;b++){
+   for(let n=0;n<3;n++){
+    const home=(n===0)?group[a]:(n===1)?group[b]:(a%2===0?group[a]:group[b]);
+    const away=home.id===group[a].id?group[b]:group[a];
+    schedule.push({id:id++,home:home.id,away:away.id,played:false});
+   }
+  }
+ }
+ // 他地区：全クラブと1試合、さらに11クラブと追加1試合
+ const east=g.teams.filter(t=>t.division==="東");
+ const west=g.teams.filter(t=>t.division==="西");
+ for(let i=0;i<13;i++)for(let j=0;j<13;j++){
+  const home=(i+j)%2===0?east[i]:west[j];
+  const away=home.id===east[i].id?west[j]:east[i];
+  schedule.push({id:id++,home:home.id,away:away.id,played:false});
+  // 2つの対戦を追加対象から外し、各クラブ11追加試合にする
+  if((j-i+13)%13!==0 && (j-i+13)%13!==1){
+   const home2=home.id===east[i].id?west[j]:east[i];
+   const away2=home2.id===east[i].id?west[j]:east[i];
+   schedule.push({id:id++,home:home2.id,away:away2.id,played:false});
+  }
+ }
+ // 1節ごとに最大13試合。全クラブ60試合を目標に順番に編成
+ // 対戦カードごとの試合数は上記の組み合わせで構成
+ g.schedule=schedule;
+ g.week=0;
+}
+function startSeason(){
+ if(g.phase!=="off"){alert("オフシーズンに実行してください。");return}
+ makeSchedule();
+ g.teams.forEach(t=>{t.w=0;t.l=0;t.pf=0;t.pa=0;t.h2h={}});
+ g.results=[];
+ g.phase="regular";
+ render();
+}
+function playMatch(m){
+ const h=g.teams[m.home],a=g.teams[m.away];
+ const homeScore=Math.max(55,Math.round(75+(h.strength-a.strength)*.65+Math.random()*28));
+ const awayScore=Math.max(55,Math.round(75+(a.strength-h.strength)*.65+Math.random()*28));
+ let hs=homeScore,as=awayScore;
+ if(hs===as){if(Math.random()>.5)hs++;else as++}
+ const win=hs>as?h:a,lose=win.id===h.id?a:h;
+ win.w++;lose.l++;h.pf+=hs;h.pa+=as;a.pf+=as;a.pa+=hs;
+ h.h2h[a.id]=(h.h2h[a.id]||0)+(hs>as?1:0);
+ a.h2h[h.id]=(a.h2h[h.id]||0)+(as>hs?1:0);
+ m.played=true;m.hs=hs;m.as=as;
+ const item=`${h.name} ${hs} - ${as} ${a.name}`;
+ g.results.unshift(item);g.results=g.results.slice(0,20);
+ return item;
+}
+function advanceWeek(){
+ if(g.phase!=="regular"){alert("レギュラーシーズン中に実行してください。");return}
+ const pending=g.schedule.filter(m=>!m.played);
+ if(!pending.length){alert("全試合が終了しました。順位を確定してください。");render();return}
+ // 13試合を消化。対戦の重複を避ける
+ let chosen=[],used=new Set();
+ for(const m of pending){
+  if(!used.has(m.home)&&!used.has(m.away)){
+   chosen.push(m);used.add(m.home);used.add(m.away);
+  }
+  if(chosen.length>=13)break;
+ }
+ chosen.forEach(playMatch);
+ g.week++;
+ if(!g.schedule.some(m=>!m.played))g.phase="regular_done";
+ render();
+}
+function winPct(t){return t.w/(t.w+t.l||1)}
+function sorted(group){
+ return [...group].sort((a,b)=>winPct(b)-winPct(a)||(b.pf-b.pa)-(a.pf-a.pa)||b.pf-a.pf);
+}
+function standings(){
+ const east=sorted(g.teams.filter(t=>t.division==="東"));
+ const west=sorted(g.teams.filter(t=>t.division==="西"));
+ const html=(title,arr)=>`<tr><th colspan="5">${title}</th></tr>
+ <tr><th>順位・クラブ</th><th>勝</th><th>敗</th><th>勝率</th><th>得失点</th></tr>`+
+ arr.map((t,i)=>`<tr><td>${i+1}. ${t.name}</td><td>${t.w}</td><td>${t.l}</td><td>${winPct(t).toFixed(3)}</td><td>${t.pf-t.pa}</td></tr>`).join("");
+ document.getElementById("standings").innerHTML=html("東地区",east)+html("西地区",west);
+ return {east,west};
+}
+function beginPlayoffs(){
+ if(!["regular_done","regular"].includes(g.phase)){alert("レギュラーシーズンを開始してください。");return}
+ if(g.schedule.some(m=>!m.played)){if(!confirm("未消化試合があります。現在の順位でプレーオフを開始しますか？"))return}
+ const {east,west}=standings();
+ const top=[east[0],west[0],east[1],west[1],east[2],west[2]];
+ const rest=sorted(g.teams.filter(t=>!top.some(x=>x.id===t.id)));
+ const qualifiers=[...top,...rest.slice(0,2)];
+ // 地区1位の勝率で1・2位、地区2位で3・4位、地区3位で5・6位
+ const rank=[
+  ...[east[0],west[0]].sort((a,b)=>winPct(b)-winPct(a)),
+  ...[east[1],west[1]].sort((a,b)=>winPct(b)-winPct(a)),
+  ...[east[2],west[2]].sort((a,b)=>winPct(b)-winPct(a)),
+  ...rest.slice(0,2)
+ ];
+ g.playoffs=[
+  {name:"準々決勝",best:2,pairs:[[rank[0],rank[7]],[rank[3],rank[4]],[rank[1],rank[6]],[rank[2],rank[5]]]},
+  {name:"準決勝",best:2,pairs:[]},
+  {name:"決勝",best:3,pairs:[]}
+ ].map(r=>({...r,series:r.pairs.map(p=>({teams:p,wins:[0,0],done:false}))}));
+ g.phase="playoffs";g.round=0;
+ render();
+}
+function playoffGame(){
+ if(g.phase!=="playoffs"){alert("先にプレーオフを開始してください。");return}
+ let round=g.playoffs[g.round];
+ if(!round){return}
+ const series=round.series.find(s=>!s.done);
+ if(!series){advanceRound();return}
+ const [a,b]=series.teams;
+ const win=Math.random()<(0.5+(a.strength-b.strength)/100)?0:1;
+ series.wins[win]++;
+ const total=series.wins[win];
+ g.results.unshift(`プレーオフ ${round.name}：${series.teams[0].name} ${series.wins[0]} - ${series.wins[1]} ${series.teams[1].name}`);
+ if(total>=round.best)series.done=true;
+ if(round.series.every(s=>s.done))advanceRound();
+ render();
+}
+function advanceRound(){
+ if(g.round>=2){
+  const final=g.playoffs[2].series[0];
+  g.champion=final.teams[final.wins[0]>=3?0:1].name;
+  g.phase="champion";
+  alert("優勝クラブ："+g.champion);
+  return;
+ }
+ const previous=g.playoffs[g.round];
+ const winners=previous.series.map(s=>s.teams[s.wins[0]>s.wins[1]?0:1]);
+ const next=g.playoffs[g.round+1];
+ if(g.round===0){
+  next.series=[
+   {teams:[winners[0],winners[1]],wins:[0,0],done:false},
+   {teams:[winners[2],winners[3]],wins:[0,0],done:false}
+  ];
+ }else{
+  next.series=[{teams:[winners[0],winners[1]],wins:[0,0],done:false}];
+ }
+ g.round++;
+}
+function nextOffseason(){
+ if(g.phase!=="champion"&&g.phase!=="regular_done"){alert("シーズン終了後に実行してください。");return}
+ g.season++;
+ g.phase="off";g.week=0;g.schedule=[];g.results=[];g.playoffs=[];g.champion=null;
+ g.teams.forEach(t=>{t.w=0;t.l=0;t.pf=0;t.pa=0;t.h2h={};t.strength=Math.max(60,Math.min(95,t.strength+Math.floor(Math.random()*5)-2))});
+ render();
+}
+function saveGame(){
+ try{localStorage.setItem("bleagueSeasonModeSave",JSON.stringify(g));alert("セーブしました。")}catch(e){alert("セーブできませんでした。")}
+}
+function loadGame(){
+ try{const raw=localStorage.getItem("bleagueSeasonModeSave");if(!raw){alert("セーブデータがありません。");return}g=JSON.parse(raw);render();alert("ロードしました。")}catch(e){alert("ロードできませんでした。")}
+}
+function render(){
+ document.getElementById("team").value=g.user;
+ document.getElementById("season").textContent=g.season+"-"+String(g.season+1).slice(-2);
+ document.getElementById("phase").textContent=({off:"オフシーズン",regular:"レギュラーシーズン",regular_done:"レギュラーシーズン終了",playoffs:"ポストシーズン",champion:"シーズン終了"})[g.phase];
+ document.getElementById("headline").textContent=g.phase==="champion"?"年間優勝："+g.champion:g.phase==="regular"?"第"+g.week+"節 進行中":g.phase==="playoffs"?"プレーオフ進行中":"シーズン管理";
+ document.getElementById("description").textContent=
+ g.phase==="off"?"契約や補強を行うオフシーズンです。この版では編成操作はまだ簡易版です。"+
+ "「レギュラーシーズンを開始」で試合日程を作成します。":
+ g.phase==="regular"?"「次の節へ進む」で試合を進めます。全60試合の消化後、順位を確定してプレーオフに進みます。":
+ g.phase==="playoffs"?"「プレーオフを1試合進める」でシリーズを進めます。準々決勝・準決勝は2勝、決勝は3勝先取です。":
+ g.phase==="champion"?"優勝が決定しました。「次のオフシーズンへ」で次年度を開始できます。":
+ "レギュラーシーズンの結果がまとまりました。順位を確定してプレーオフに進みましょう。";
+ document.getElementById("progress").textContent=g.phase==="regular"?"第"+g.week+"節":g.phase==="off"?"準備中":g.phase==="playoffs"?"ラウンド"+(g.round+1):"終了";
+ const played=g.schedule.filter(m=>m.played).length;
+ document.getElementById("games").textContent=played+" / 60";
+ const my=g.teams[g.user];
+ document.getElementById("myTeamInfo").textContent=`${my.name}｜${my.division}地区｜戦力評価 ${my.strength}｜${my.w}勝 ${my.l}敗`;
+ document.getElementById("phaseInfo").textContent="現在のフェーズ："+document.getElementById("phase").textContent+
+ "。ゲームデータはこのブラウザ内に保存されます。";
+ document.getElementById("results").innerHTML=g.results.length?g.results.map(x=>"・"+x).join("<br>"):"まだ試合はありません。";
+ standings();
+ document.getElementById("bracket").innerHTML=g.playoffs.length?
+ g.playoffs.map((r,i)=>`<b>${r.name}</b><br>`+r.series.map(s=>`${s.teams[0].name} ${s.wins[0]} - ${s.wins[1]} ${s.teams[1].name}${s.done?"（決着）":""}`).join("<br>")).join("<br><br>"):
+ "レギュラーシーズン終了後に進出クラブが決まります。";
+}
+init();
+</script>
+</body>
+</html>
