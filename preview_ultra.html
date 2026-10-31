@@ -80,7 +80,7 @@ footer{color:var(--muted);text-align:center;padding:15px;font-size:11px}
 
 <script>
 "use strict";
-const SAVE_KEY="bleague_gm_ultra_b_premier_v7";
+const SAVE_KEY="bleague_gm_ultra_b_premier_v8";
 const $=id=>document.getElementById(id);
 let G=null,PAGE="home";
 
@@ -111,9 +111,33 @@ function makePlayer(name,pos,rating,salary,years=1,type="日本人"){
 return{id:uid(),name,pos,rating,salary,years,type};
 }
 
+// 【修正追加】チーム配列を生成する関数
+function makeTeams(){
+return TEAM_NAMES.map(name=>({
+name,
+division:EAST.includes(name)?"東地区":"西地区",
+wins:0,losses:0,played:0,pf:0,pa:0
+}));
+}
+
+function makeSchedule(){
+const games=[];
+for(let r=0;r<30;r++){
+const rotation=TEAM_NAMES.map((_,i)=>TEAM_NAMES[(i+r)%26]);
+for(let i=0;i<13;i++){
+let home=rotation[i],away=rotation[25-i];
+if((r+i)%2){const t=home;home=away;away=t;}
+games.push({home,away,done:false,round:r+1});
+}
+}
+const first=games.map(g=>({
+home:g.away,away:g.home,done:false,round:g.round+30
+}));
+return [...games,...first].map((g,i)=>({...g,id:i+1}));
+}
+
 // 全26クラブのリアルロスターデータ定義
 const REAL_ROSTERS={
-// --- 東地区 ---
 "レバンガ北海道":[
   makePlayer("寺園 脩斗","PG",77,3200,2,"日本人"),
   makePlayer("島谷 怜","PG",74,2400,2,"日本人"),
@@ -229,14 +253,13 @@ const REAL_ROSTERS={
   makePlayer("盛實 海翔","SG",75,2600,1,"日本人"),
   makePlayer("小島 元基","PG",77,3400,2,"日本人"),
   makePlayer("田中 力","SG",76,3000,3,"日本人"),
-  makePlayer("1.ジョシュ・ホーキンソン","PF/C",93,22000,1,"帰化"),
+  makePlayer("ジョシュ・ホーキンソン","PF/C",93,22000,1,"帰化"),
   makePlayer("ジェームズ・マイケル・マカドゥ","PF/C",89,16000,1,"外国籍"),
   makePlayer("アンソニー・クレモンズ","PG",87,13500,1,"外国籍"),
   makePlayer("ライアン・ケリー","PF",86,12500,1,"外国籍")
 ],
 "川崎ブレイブサンダース":[
   makePlayer("篠山 竜青","PG",81,5000,1,"日本人"),
-  makePlayer("辻の相棒枠・増田","SF",78,3500,2,"日本人"),
   makePlayer("野口 竜也","PF",74,2300,1,"日本人"),
   makePlayer("長谷川 技","SF",76,3000,1,"日本人"),
   makePlayer("飯田 遼","SG",75,2700,2,"日本人"),
@@ -270,8 +293,6 @@ const REAL_ROSTERS={
   makePlayer("北村 哲也","C",73,2200,2,"日本人"),
   makePlayer("東 宏斗","PG",72,2000,1,"日本人")
 ],
-
-// --- 西地区 ---
 "信州ブレイブウォリアーズ":[
   makePlayer("キーボン・ハリス","SG",86,12000,1,"外国籍"),
   makePlayer("古川 孝敏","SG/SF",83,6000,2,"日本人"),
@@ -365,7 +386,7 @@ const REAL_ROSTERS={
   makePlayer("ジョーダン・ヴォーン","PF",85,11000,1,"外国籍"),
   makePlayer("シャキール・ハインズ","SF/PF",86,12000,1,"外国籍"),
   makePlayer("トレイ・ポーター","C",84,9500,1,"外国籍"),
-  makePlayer("松岡 俊希","PG",72,19000,1,"日本人"),
+  makePlayer("松岡 俊希","PG",72,1900,1,"日本人"),
   makePlayer("内藤 瑛斗","SG",73,2000,2,"日本人")
 ],
 "島根スサノオマジック":[
@@ -431,10 +452,8 @@ const REAL_ROSTERS={
 };
 
 function createNewGame(club="信州ブレイブウォリアーズ"){
-// 選択されたクラブのリアルロスターを取得（未定義の場合はデフォルトの信州）
 const initialRoster = REAL_ROSTERS[club] ? JSON.parse(JSON.stringify(REAL_ROSTERS[club])) : JSON.parse(JSON.stringify(REAL_ROSTERS["信州ブレイブウォリアーズ"]));
 
-// 市場（FA等）には他チームの有名選手や外国人スターを並べる
 const marketPool = [
   makePlayer("渡邊 雄太","SF/PF",95,25000,2,"日本人"),
   makePlayer("富樫 勇樹","PG",92,20000,3,"日本人"),
@@ -783,7 +802,6 @@ if(action==="changeclub"){
 const name=$("clubSelect")?.value;
 if(!name)return;
 G.club=name;
-// クラブ変更時にもそのチームのリアルロスターを反映
 if(REAL_ROSTERS[name]) {
   G.roster = JSON.parse(JSON.stringify(REAL_ROSTERS[name]));
 }
