@@ -3,13 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>B.LEAGUE GM ULTRA - Pro Edition</title>
+<title>B.LEAGUE GM ULTRA - Arena Edition</title>
 <style>
 :root{--bg:#070d16;--card:#0f1a2e;--card-border:#1f3352;--text:#e8f0fe;--muted:#8aa2c0;--primary:#f1c40f;--danger:#e74c3c;--success:#2ecc71;--accent:#3498db}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,sans-serif;padding-bottom:65px}
 
-/* トップ情報バー（動画準拠の高級感） */
 .top-status-bar{background:#04080f;padding:6px 12px;font-size:10px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #142238;white-space:nowrap;overflow-x:auto}
 .top-status-bar::-webkit-scrollbar{height:0px}
 .status-item{display:flex;align-items:center;gap:4px;color:var(--muted)}
@@ -35,12 +34,10 @@ h2{font-size:14px;margin:0 0 10px;display:flex;justify-content:space-between;ali
 h3{font-size:12px;margin:8px 0 4px;color:var(--text)}
 .muted{color:var(--muted);font-size:11px}
 
-/* 球団アリーナ・日程ヘッダーカード */
-.arena-banner{background:linear-gradient(135deg, #091424 0%, #132744 100%);border:1px solid var(--card-border);border-radius:12px;padding:14px;margin-bottom:10px;text-align:center;position:relative}
+.arena-banner{background:linear-gradient(135deg, #091424 0%, #132744 100%);border:1px solid var(--card-border);border-radius:12px;padding:14px;margin-bottom:10px;text-align:center}
 .arena-banner h3{font-size:16px;color:var(--primary);margin:0 0 4px}
 .arena-banner p{font-size:11px;color:var(--muted);margin:0}
 
-/* 日付＆次戦プレビューバー */
 .date-advance-box{background:#0b1526;border:1px solid #1c3150;border-radius:10px;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
 .date-display{font-size:15px;font-weight:bold;color:var(--primary)}
 .match-preview{font-size:11px;color:var(--muted)}
@@ -77,7 +74,6 @@ th{background:#091424;color:var(--muted)}
 .pill.danger{background:#3d1313;color:var(--danger);border:1px solid var(--danger)}
 .pill.success{background:#103822;color:var(--success);border:1px solid var(--success)}
 
-/* 試合結果スコアボード（動画完全準拠） */
 .scoreboard{background:#070d16;border:1px solid var(--card-border);border-radius:10px;padding:12px;text-align:center;margin-top:8px}
 .scoreline{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center;margin:10px 0}
 .team-score{font-size:30px;font-weight:900;color:var(--primary)}
@@ -98,13 +94,12 @@ footer{color:var(--muted);text-align:center;padding:15px;font-size:11px}
 </head>
 <body>
 
-<!-- 動画トップのステータスバー（実質2039年設定＆ファン数・オーナー満足度） -->
 <div class="top-status-bar" id="topStatusBar"></div>
 
 <header>
 <div>
 <h1>🏀 B.LEAGUE GM ULTRA</h1>
-<p>STOVE-LEAGUE PRO EDITION</p>
+<p>ARENA & STOVE-LEAGUE EDITION</p>
 </div>
 <button class="primary" data-act="save">セーブ</button>
 </header>
@@ -127,26 +122,43 @@ footer{color:var(--muted);text-align:center;padding:15px;font-size:11px}
 
 <script>
 "use strict";
-const SAVE_KEY="bleague_gm_ultra_b_premier_v21";
+const SAVE_KEY="bleague_gm_ultra_b_premier_v22";
 const $=id=>document.getElementById(id);
 let G=null,PAGE="home";
 
-const EAST=[
-"レバンガ北海道","仙台89ERS","秋田ノーザンハピネッツ",
-"茨城ロボッツ","宇都宮ブレックス","群馬クレインサンダーズ",
-"アルティーリ千葉","千葉ジェッツ","アルバルク東京",
-"サンロッカーズ渋谷","川崎ブレイブサンダース",
-"横浜ビー・コルセアーズ","富山グラウジーズ"
-];
-const WEST=[
-"信州ブレイブウォリアーズ","三遠ネオフェニックス",
-"シーホース三河","名古屋ダイヤモンドドルフィンズ",
-"滋賀レイクス","京都ハンナリーズ","大阪エヴェッサ",
-"神戸ストークス","島根スサノオマジック",
-"広島ドラゴンフライズ","佐賀バルーナーズ",
-"長崎ヴェルカ","琉球ゴールデンキングス"
-];
+const ARENAS={
+"レバンガ北海道":{name:"北海きたえーる",cap:8000},
+"仙台89ERS":{name:"カメイアリーナ仙台",cap:5000},
+"秋田ノーザンハピネッツ":{name:"CNAアリーナ★あきた",cap:5000},
+"茨城ロボッツ":{name:"アダストリアみとアリーナ",cap:5000},
+"宇都宮ブレックス":{name:"日環アリーナ栃木",cap:6000},
+"群馬クレインサンダーズ":{name:"オープンハウスアリーナ太田",cap:5000},
+"アルティーリ千葉":{name:"千葉ポートアリーナ",cap:7500},
+"千葉ジェッツ":{name:"LaLa arena TOKYO-BAY",cap:10000},
+"アルバルク東京":{name:"国立代々木競技場 第一体育館",cap:13000},
+"サンロッカーズ渋谷":{name:"青山学院記念館",cap:4000},
+"川崎ブレイブサンダース":{name:"川崎市とどろきアリーナ",cap:5000},
+"横浜ビー・コルセアーズ":{name:"横浜国際プール",cap:5000},
+"富山グラウジーズ":{name:"富山市総合体育館",cap:5000},
+"信州ブレイブウォリアーズ":{name:"ホワイトリング",cap:6000},
+"三遠ネオフェニックス":{name:"豊橋市総合体育館",cap:5000},
+"シーホース三河":{name:"ウイングアリーナ刈谷",cap:5000},
+"名古屋ダイヤモンドドルフィンズ":{name:"ドルフィンズアリーナ",cap:6000},
+"滋賀レイクス":{name:"ウカルちゃんアリーナ",cap:5000},
+"京都ハンナリーズ":{name:"京都市体育館",cap:5000},
+"大阪エヴェッサ":{name:"おおきにアリーナ舞洲",cap:7000},
+"神戸ストークス":{name:"ワールド記念ホール",cap:8000},
+"島根スサノオマジック":{name:"松江市総合体育館",cap:5000},
+"広島ドラゴンフライズ":{name:"広島サンプラザホール",cap:6000},
+"佐賀バルーナーズ":{name:"SAGAアリーナ",cap:8400},
+"長崎ヴェルカ":{name:"HAPPINESS ARENA",cap:6000},
+"琉球ゴールデンキングス":{name:"沖縄アリーナ",cap:10000}
+};
+
+const EAST=Object.keys(ARENAS).slice(0,13);
+const WEST=Object.keys(ARENAS).slice(13,26);
 const TEAM_NAMES=[...EAST,...WEST];
+
 const esc=v=>String(v||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const yen=n=>Math.round(n||0).toLocaleString("ja-JP")+"万円";
 const uid=()=>Math.random().toString(36).slice(2)+Date.now().toString(36);
@@ -537,7 +549,7 @@ const initialRoster = REAL_ROSTERS[club] ? JSON.parse(JSON.stringify(REAL_ROSTER
 G={
 club,seasonStart:2026,season:"2026-27",
 fans:1250000,fanSatisfy:85,
-cash:600000,ticket:3500,attendance:4500,
+cash:600000,ticket:3500,attendance:ARENAS[club]?.cap ? Math.round(ARENAS[club].cap*0.8) : 4500,
 week:1,
 roster: initialRoster,
 market: getInitialMarketPool(),
@@ -552,15 +564,15 @@ coachMarket:[
 teams:makeTeams(),
 schedule:makeSchedule(),
 news:[
-  {id:uid(),title:`${club}が新体制でB.PREMIER開幕へ！`,date:"2039年4月1日",body:"ゼネラルマネージャーの手腕にブースターの期待が高まる中、悲願のシーズンへ向けたチーム作りが本格始動した。"},
-  {id:uid(),title:"1.5億円以上のスター条項が適用",date:"2039年4月1日",body:"各クラブ保有できるスーパーエースは1名までとなる新レギュレーションがスタートし、戦力均衡に向けた駆け引きが続いている。"}
+  {id:uid(),title:`${club}が新体制でB.PREMIER開幕へ！`,date:"2039年4月1日",body:`${ARENAS[club]?.name}をホームに迎えるゼネラルマネージャーの手腕にブースターの期待が高まっている。`},
+  {id:uid(),title:"1.5億円以上のスター条項が適用",date:"2039年4月1日",body:"各クラブ保有できるスーパーエースは1名までとなる新レギュレーションがスタートした。"}
 ],
 pendingMeeting:null,
 secretaryMeeting:null,
 phase:"regular",
 csStage:null,
 csResult:null,
-log:[`${club}としてB.PREMIERが開幕しました！秘書サリナと共にチームを勝利へと導きましょう。`],
+log:[`${club}としてB.PREMIERが開幕しました！秘書サリナと共にチームを勝利へ導きましょう。`],
 lastResult:null
 };
 saveGame();
@@ -624,19 +636,20 @@ $("topStatusBar").innerHTML=`
 function homePage(){
 renderTopStatus();
 const c=cap();
+const arenaInfo = ARENAS[G.club] || {name:"専用アリーナ", cap:5000};
 let phaseText=`レギュラーシーズン (第${G.week||1}週進行中)`;
 if(G.phase==="cs") phaseText="🏆 チャンピオンシップ（ポストシーズン）開催中";
 if(G.phase==="off") phaseText="🏖️ オフシーズン（契約更改・補強期間）";
 
 return `<div class="arena-banner">
 <h3>🏀 ${esc(G.club)}</h3>
-<p>ホーム: カメノコ球団ドーム / 定員 45,000人</p>
+<p>ホームアリーナ: ${esc(arenaInfo.name)} / 収容人数 ${arenaInfo.cap.toLocaleString()}人</p>
 </div>
 
 <div class="date-advance-box">
 <div>
 <div class="date-display">2039年 4月 ${G.week||1}日</div>
-<div class="match-preview">次戦: vs 北海ボークス</div>
+<div class="match-preview">次戦ホームアリーナ: ${esc(arenaInfo.name)}</div>
 </div>
 <button class="primary" data-act="nextgame" style="padding:10px 18px;font-size:13px">▶ 今週を進める</button>
 </div>
@@ -795,14 +808,16 @@ ${G.coachMarket.map(c=>`<div class="player-item">
 function financePage(){
 renderTopStatus();
 const c=cap();
+const arenaInfo = ARENAS[G.club] || {name:"専用アリーナ", cap:5000};
 return `<section class="card">
 <h2><span>経営・財務管理</span></h2>
+<div class="notice">ホームアリーナ: <b>${esc(arenaInfo.name)}</b> (最大収容: <b>${arenaInfo.cap.toLocaleString()}人</b>)</div>
 <div class="stats-grid" style="margin-bottom:12px">
 <div class="stat-box">現金資産<strong>${yen(G.cash)}</strong></div>
 <div class="stat-box">実質年俸総額<strong>${yen(c.rawSalary)}</strong></div>
 </div>
 <label><span>チケット平均価格 (円)</span><input id="ticketInput" type="number" min="500" max="30000" step="100" value="${G.ticket}"></label>
-<label><span>見込み動員数 (人)</span><input id="attendanceInput" type="number" min="0" max="20000" step="100" value="${G.attendance}"></label>
+<label><span>見込み動員数 (人) [上限:${arenaInfo.cap}]</span><input id="attendanceInput" type="number" min="0" max="${arenaInfo.cap}" step="100" value="${G.attendance}"></label>
 <button class="primary" data-act="savefinance" style="width:100%;margin-top:8px">経営設定を反映する</button>
 </section>
 ${coachesPage()}`;
@@ -852,9 +867,8 @@ return `<div class="scoreboard">
 </div>
 <div class="periods">${r.periods.map((p,i)=>`<div><b>${i+1}Q</b><br>${p[0]}-${p[1]}</div>`).join("")}
 <div><b>TOTAL</b><br><b>${r.hs}-${r.as}</b></div></div>
-<p style="margin:8px 0 0;font-size:11px;color:var(--muted)">会場: ${esc(r.venue)} / 動員数: ${Number(r.attendance).toLocaleString()}人 (94%)</p>
+<p style="margin:8px 0 0;font-size:11px;color:var(--muted)">会場: ${esc(r.venue)} / 動員数: ${Number(r.attendance).toLocaleString()}人 (${r.attendanceRate}%)</p>
 
-<!-- 収支明細ボックス（動画の報告フォーマット準拠） -->
 <div style="margin-top:10px;background:#091424;padding:10px;border-radius:8px;font-size:11px;text-align:left;border:1px solid #1a2c44">
 <div style="font-weight:bold;color:var(--primary);margin-bottom:4px;border-bottom:1px solid #1f3352;padding-bottom:2px">📊 本日の収支報告</div>
 <div style="display:flex;justify-content:space-between"><span>チケット収入:</span><b style="color:var(--success)">+${yen(r.revenue)}</b></div>
@@ -880,10 +894,10 @@ ${G.teams.map(t=>`<option value="${esc(t.name)}" ${G.club===t.name?"selected":""
 
 function newGameScreen(){
 return `<section class="card" style="margin-top:20px">
-<h2><span>B.PREMIER GM 起動 (PRO EDITION)</span></h2>
+<h2><span>B.PREMIER GM 起動 (ARENA EDITION)</span></h2>
 <p class="muted">お好きなクラブを選択してゼネラルマネージャーに就任してください（秘書サリナが全面サポートします）。</p>
 <label><span>担当クラブ</span><select id="firstClub">
-${TEAM_NAMES.map(n=>`<option value="${esc(n)}" ${n==="信州ブレイブウォリアーズ"?"selected":""}>${esc(n)}</option>`).join("")}
+${TEAM_NAMES.map(n=>`<option value="${esc(n)}" ${n==="信州ブレイブウォリアーズ"?"selected":""}>${esc(n)}（${ARENAS[n]?.name} / ${ARENAS[n]?.cap}人）</option>`).join("")}
 </select></label>
 <button data-act="firstgame" class="primary" style="width:100%;margin-top:10px;padding:12px">GM就任してゲーム開始</button>
 </section>`;
@@ -944,8 +958,10 @@ if(score>against)t.wins++;else t.losses++;
 }
 
 if(isHome||isAway){
-const attendance=Math.round(G.attendance*(.95+Math.random()*0.2));
-// ホームゲーム開催時のみチケット収入が発生し、確実に黒字になる収支計算
+const homeArena = ARENAS[g.home] || {name:"アリーナ", cap:5000};
+const attendance=Math.min(homeArena.cap, Math.round(G.attendance*(.95+Math.random()*0.2)));
+const attendanceRate = Math.round((attendance / homeArena.cap) * 100);
+
 const revenue=isHome?Math.round(attendance*(G.ticket||3500)/6000):0;
 const expenses=isHome?Math.round(800+rawSalaryTotal()/110+G.coaches.reduce((s,c)=>s+c.salary,0)/160):0;
 const profit=isHome?(revenue-expenses):0;
@@ -956,14 +972,14 @@ let isWin = hs > as;
 G.fans=Math.round(G.fans+(isWin?1500:-600));
 G.fanSatisfy=Math.min(100,Math.max(20,G.fanSatisfy+(isWin?1:-2)));
 
-lastRes={home:g.home,away:g.away,hs,as,periods,venue:isHome?"カメノコ球団ドーム":"アウェイ会場",attendance,revenue:isHome?revenue:0,expenses:isHome?expenses:0,profit:isHome?profit:0};
-log(`第${currentRound}週: ${g.home} ${hs}-${as} ${g.away} ${isHome?`(収支: +${yen(profit)})`:""}`);
+lastRes={home:g.home,away:g.away,hs,as,periods,venue:`${homeArena.name} (${homeArena.cap.toLocaleString()}人収容)`,attendance,attendanceRate,revenue:isHome?revenue:0,expenses:isHome?expenses:0,profit:isHome?profit:0};
+log(`第${currentRound}週: ${g.home} vs ${g.away} (${homeArena.name}) ${hs}-${as} ${isHome?`(収支: +${yen(profit)})`:""}`);
 
 if(Math.random()<0.15 && G.roster.length>0){
   const victim = G.roster[Math.floor(Math.random()*G.roster.length)];
   if(victim.injury<=0){
     victim.injury=Math.floor(Math.random()*3)+2;
-    G.news.unshift({id:uid(),title:`【速報】${victim.name}が負傷離脱`,date:`第${currentRound}週`,body:`練習・試合中に${victim.name}選手が負傷し、全治約${victim.injury}週の見込みと診断されました。チーム戦術への影響が懸念されます。`});
+    G.news.unshift({id:uid(),title:`【速報】${victim.name}が負傷離脱`,date:`第${currentRound}週`,body:`練習・試合中に${victim.name}選手が負傷し、全治約${victim.injury}週の見込みと診断されました。`});
     log(`⚠️ ${victim.name}が負傷離脱しました（全治${victim.injury}週）`);
   }
 }
@@ -972,11 +988,11 @@ if(Math.random()<0.15 && G.roster.length>0){
 
 if(lastRes) G.lastResult=lastRes;
 
-// 秘書サリナからの今週のレポート＆面談イベント発生
+const homeArenaInfo = ARENAS[G.club] || {name:"アリーナ", cap:5000};
 const secretaryMsgs=[
-  `マイケルGM、第${currentRound}週の試合お疲れ様でした！ホーム戦のチケット収支は順調にプラスで着地していますよ。`,
-  `第${currentRound}週の経営・試合報告です。ブースターの満足度も上昇傾向にあります。この調子でチームを上位へ導きましょう！`,
-  `今週のスケジュールが無事に終了しました。自由交渉リストやスカウト部門からの新着情報もぜひチェックしてみてくださいね。`
+  `マイケルGM、第${currentRound}週の試合お疲れ様でした！${homeArenaInfo.name}でのホーム戦チケット収支は順調にプラスです。`,
+  `第${currentRound}週の報告です。${homeArenaInfo.name}の熱狂的なブースターの後押しもあり、チームの満足度が向上しています。`,
+  `今週のスケジュールが無事に終了しました。${homeArenaInfo.name}の動員数や経営状況も良好です。`
 ];
 G.secretaryMeeting={text:secretaryMsgs[Math.floor(Math.random()*secretaryMsgs.length)]};
 
@@ -1008,11 +1024,12 @@ periods.push([h,a]);hs+=h;as+=a;
 if(hs===as){as+=1;periods[3][1]++;}
 
 let isWin = hs > as;
+const homeArenaInfo = ARENAS[G.club] || {name:"アリーナ", cap:5000};
 const rev=Math.round(8000*G.ticket/5000);
 const exp=1500;
 const profit=rev-exp;
 G.cash+=profit;
-G.csResult={home:G.club,away:"ライバルクラブ",hs,as,periods,venue:"CS特設アリーナ",attendance:8000,revenue:rev,expenses:exp,profit};
+G.csResult={home:G.club,away:"ライバルクラブ",hs,as,periods,venue:`${homeArenaInfo.name} (CS特設)`,attendance:8000,attendanceRate:Math.round(8000/homeArenaInfo.cap*100),revenue:rev,expenses:exp,profit};
 
 if(isWin){
 if(G.csStage==="quarter"){
@@ -1023,7 +1040,7 @@ if(G.csStage==="quarter"){
   log("チャンピオンシップ 準決勝を突破しました！いよいよファイナルです！");
 }else{
   log("🏆 おめでとうございます！B.PREMIERの年間王者に輝きました！");
-  G.news.unshift({id:uid(),title:`🏆 ${G.club}がB.PREMIER年間王者に輝く！`,date:"CS決勝",body:`激闘のチャンピオンシップを制し、${G.club}が栄光の頂点に立ちました。熱狂的なブースターと共に歓喜の瞬間を迎えています。`});
+  G.news.unshift({id:uid(),title:`🏆 ${G.club}がB.PREMIER年間王者に輝く！`,date:"CS決勝",body:`激闘のチャンピオンシップを制し、${G.club}が栄光の頂点に立ちました。`});
   alert("🏆 チャンピオンシップ優勝おめでとうございます！");
   G.phase="off";
 }
@@ -1112,9 +1129,12 @@ G.club=name;
 if(REAL_ROSTERS[name]) {
   G.roster = JSON.parse(JSON.stringify(REAL_ROSTERS[name]));
 }
-log("操作クラブを"+name+"に変更（ロスター更新）");
+if(ARENAS[name]) {
+  G.attendance = Math.round(ARENAS[name].cap * 0.8);
+}
+log("操作クラブを"+name+"に変更（ロスター・アリーナ更新）");
 saveGame();render();
-alert("操作クラブを変更しました。ロスターも更新されました。");return;
+alert("操作クラブを変更しました。ホームアリーナとロスターも更新されました。");return;
 }
 if(action==="extend"){
 const p=G.roster.find(x=>x.id===id);
@@ -1169,8 +1189,10 @@ G.coaches.splice(i,1);G.coachMarket.push(c);
 log(`${c.name}コーチを解任`);saveGame();render();return;
 }
 if(action==="savefinance"){
-const t=Number($("ticketInput")?.value),a=Number($("attendanceInput")?.value);
-if(!Number.isFinite(t)||t<500||t>30000||!Number.isFinite(a)||a<0||a>20000)return alert("入力値が不正です。");
+const t=Number($("ticketInput")?.value);
+const a=Number($("attendanceInput")?.value);
+const maxCap = ARENAS[G.club]?.cap || 20000;
+if(!Number.isFinite(t)||t<500||t>30000||!Number.isFinite(a)||a<0||a>maxCap)return alert(`入力値が不正です。（動員数はアリーナ上限 ${maxCap.toLocaleString()}人 以下にしてください）`);
 G.ticket=Math.round(t);G.attendance=Math.round(a);
 log("経営方針を更新しました。");saveGame();render();return;
 }
