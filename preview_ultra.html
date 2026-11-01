@@ -3,61 +3,66 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>B.LEAGUE GM ULTRA - Secretary & Weekly Edition</title>
+<title>B.LEAGUE GM ULTRA - Secretary Edition</title>
 <style>
-:root{--bg:#0b1320;--card:#131f33;--card-border:#243652;--text:#e2ebf9;--muted:#94a8c4;--primary:#f5b041;--danger:#e74c3c;--accent:#3498db;--success:#2ecc71}
+:root{--bg:#050b14;--card:#0f1a2e;--card-border:#1e3252;--text:#e8f0fe;--muted:#8aa2c0;--primary:#f1c40f;--danger:#e74c3c;--success:#2ecc71;--accent:#3498db}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,sans-serif;padding-bottom:50px}
-header{background:#0f1a2e;padding:10px 16px;border-bottom:2px solid var(--primary);display:flex;justify-content:space-between;align-items:center}
-h1{font-size:15px;margin:0;display:flex;align-items:center;gap:6px}
+body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,sans-serif;padding-bottom:60px}
+header{background:#091424;padding:12px 16px;border-bottom:2px solid var(--primary);display:flex;justify-content:space-between;align-items:center}
+h1{font-size:15px;margin:0;display:flex;align-items:center;gap:6px;color:var(--primary)}
 header p{margin:2px 0 0;color:var(--muted);font-size:10px}
-.top-bar{background:#09101d;padding:6px 16px;font-size:11px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--card-border);overflow-x:auto}
-nav{display:flex;overflow-x:auto;gap:4px;padding:8px;background:#09101d;position:sticky;top:0;z-index:10;border-bottom:1px solid var(--card-border)}
+.top-bar{background:#070e1a;padding:8px 16px;font-size:11px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--card-border);overflow-x:auto}
+nav{display:flex;overflow-x:auto;gap:4px;padding:8px;background:#070e1a;position:sticky;top:0;z-index:10;border-bottom:1px solid var(--card-border)}
 nav::-webkit-scrollbar{height:4px}
-nav::-webkit-scrollbar-thumb{background:#243652;border-radius:2px}
-button{border:0;border-radius:6px;padding:8px 12px;background:#1e2f4a;color:white;font-weight:700;cursor:pointer;font-size:12px;white-space:nowrap;transition:brightness 0.2s}
-button:hover{filter:brightness(1.15)}
+nav::-webkit-scrollbar-thumb{background:#1e3252;border-radius:2px}
+button{border:0;border-radius:6px;padding:8px 12px;background:#1a2c44;color:white;font-weight:700;cursor:pointer;font-size:12px;white-space:nowrap;transition:filter 0.2s}
+button:hover{filter:brightness(1.2)}
 button.primary{background:var(--primary);color:#111}
 button.danger{background:var(--danger)}
 button.success{background:var(--success);color:#111}
 button:disabled{opacity:.4;cursor:not-allowed}
 main{padding:12px;max-width:1000px;margin:auto}
-.card{background:var(--card);border:1px solid var(--card-border);border-radius:10px;padding:12px;margin-bottom:12px}
-h2{font-size:15px;margin:0 0 10px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--card-border);padding-bottom:6px}
-h3{font-size:13px;margin:10px 0 6px;color:var(--primary)}
+.card{background:var(--card);border:1px solid var(--card-border);border-radius:12px;padding:14px;margin-bottom:12px;box-shadow:0 4px 12px rgba(0,0,0,0.3)}
+h2{font-size:14px;margin:0 0 10px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--card-border);padding-bottom:6px;color:var(--primary)}
+h3{font-size:13px;margin:10px 0 6px;color:var(--text)}
 .muted{color:var(--muted);font-size:12px}
 .stats-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:10px}
-.stat-box{background:#0b1320;border-radius:8px;padding:10px;font-size:11px;border:1px solid #1a2a44}
-.stat-box strong{display:block;font-size:18px;margin-top:3px;color:var(--primary)}
+.stat-box{background:#070e1a;border-radius:8px;padding:10px;font-size:11px;border:1px solid #16263e}
+.stat-box strong{display:block;font-size:17px;margin-top:3px;color:var(--primary)}
 .row{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
-.player-item{background:#0e1726;border:1px solid #20324d;border-radius:8px;padding:10px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.task-item{background:#091424;border:1px solid #1a2c44;border-radius:8px;padding:12px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.task-info{min-width:0;flex:1}
+.task-info strong{display:block;font-size:13px;color:var(--text)}
+.task-info small{color:var(--muted);display:block;margin-top:2px;font-size:11px}
+.player-item{background:#091424;border:1px solid #1a2c44;border-radius:8px;padding:10px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;gap:8px}
 .player-info{min-width:0;flex:1}
 .player-info strong{display:block;font-size:13px}
 .player-info small{color:var(--muted);display:block;margin-top:2px;font-size:11px}
 .player-actions{display:flex;gap:4px;flex-wrap:wrap}
-input,select{background:#0b1320;color:white;border:1px solid #334868;border-radius:6px;padding:8px;width:100%;font-size:13px}
+input,select{background:#070e1a;color:white;border:1px solid #243b5e;border-radius:6px;padding:8px;width:100%;font-size:13px}
 label{display:block;margin:8px 0}
 label span{display:block;font-size:12px;margin-bottom:4px;color:var(--muted)}
-.notice{background:#1a2b45;border-left:3px solid var(--primary);border-radius:4px;padding:8px;font-size:12px;margin:8px 0}
+.notice{background:#112036;border-left:3px solid var(--primary);border-radius:4px;padding:10px;font-size:12px;margin:8px 0}
 .tablewrap{overflow-x:auto}
 table{width:100%;border-collapse:collapse;font-size:12px}
-th,td{padding:6px 5px;border-bottom:1px solid #20324d;text-align:center;white-space:nowrap}
-th{background:#0e1726;color:var(--muted)}
+th,td{padding:6px 5px;border-bottom:1px solid #1a2c44;text-align:center;white-space:nowrap}
+th{background:#091424;color:var(--muted)}
 .highlight{background:#2a2512}
-.pill{display:inline-block;border-radius:10px;background:#20324d;padding:2px 6px;font-size:10px;color:var(--muted)}
+.pill{display:inline-block;border-radius:10px;background:#16263e;padding:2px 6px;font-size:10px;color:var(--muted)}
 .pill.gold{background:#3d2e0e;color:var(--primary);border:1px solid var(--primary)}
 .pill.danger{background:#3d1313;color:var(--danger);border:1px solid var(--danger)}
-.scoreboard{background:#09101d;border:1px solid var(--card-border);border-radius:10px;padding:14px;text-align:center}
+.pill.success{background:#103822;color:var(--success);border:1px solid var(--success)}
+.scoreboard{background:#070e1a;border:1px solid var(--card-border);border-radius:10px;padding:14px;text-align:center}
 .scoreline{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center;margin:14px 0}
-.team-score{font-size:36px;font-weight:900;color:var(--primary)}
+.team-score{font-size:34px;font-weight:900;color:var(--primary)}
 .periods{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;max-width:450px;margin:10px auto}
-.periods div{padding:6px 2px;background:#131f33;border-radius:4px;font-size:11px}
-.logline{border-bottom:1px solid #1a2a44;padding:6px 0;font-size:12px}
-.news-box{background:#0e1726;border:1px solid #20324d;border-radius:8px;padding:10px;margin-bottom:8px;cursor:pointer;transition:border-color 0.2s}
+.periods div{padding:6px 2px;background:#0f1a2e;border-radius:4px;font-size:11px}
+.logline{border-bottom:1px solid #16263e;padding:6px 0;font-size:12px}
+.news-box{background:#091424;border:1px solid #1a2c44;border-radius:8px;padding:10px;margin-bottom:8px;cursor:pointer;transition:border-color 0.2s}
 .news-box:hover{border-color:var(--primary)}
 .news-box small{color:var(--muted)}
-.modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.75);display:flex;justify-content:center;align-items:center;z-index:100;padding:16px}
-.modal-content{background:var(--card);border:1px solid var(--primary);border-radius:12px;padding:20px;max-width:550px;width:100%;box-shadow:0 8px 24px rgba(0,0,0,0.6);max-height:90vh;overflow-y:auto}
+.modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);display:flex;justify-content:center;align-items:center;z-index:100;padding:16px}
+.modal-content{background:#0d1829;border:1px solid var(--primary);border-radius:14px;padding:22px;max-width:550px;width:100%;box-shadow:0 12px 32px rgba(0,0,0,0.7);max-height:90vh;overflow-y:auto}
 footer{color:var(--muted);text-align:center;padding:15px;font-size:11px}
 @media(min-width:650px){.stats-grid{grid-template-columns:repeat(4,1fr)}}
 </style>
@@ -66,7 +71,7 @@ footer{color:var(--muted);text-align:center;padding:15px;font-size:11px}
 <header>
 <div>
 <h1>🏀 B.LEAGUE GM ULTRA</h1>
-<p>秘書＆週詳細進行・完全版</p>
+<p>STOVE-LEAGUE & 秘書サポート搭載</p>
 </div>
 <button class="primary" data-act="save">セーブ</button>
 </header>
@@ -78,20 +83,20 @@ footer{color:var(--muted);text-align:center;padding:15px;font-size:11px}
 <button data-page="team">チーム</button>
 <button data-page="standings">順位表</button>
 <button data-page="news">ニュース</button>
-<button data-page="market">自由交渉リスト</button>
+<button data-page="market">自由交渉</button>
 <button data-page="finance">経営</button>
-<button data-page="season">試合・日程</button>
+<button data-page="season">日程・週</button>
 <button data-page="settings">設定</button>
 </nav>
 
 <main id="app"></main>
 <div id="modalContainer"></div>
 
-<footer>B.LEAGUE GM ULTRA / 総合球団経営シミュレーション</footer>
+<footer>B.LEAGUE GM ULTRA / 秘書サリナ面談・週進行システム</footer>
 
 <script>
 "use strict";
-const SAVE_KEY="bleague_gm_ultra_b_premier_v19";
+const SAVE_KEY="bleague_gm_ultra_b_premier_v20";
 const $=id=>document.getElementById(id);
 let G=null,PAGE="home";
 
@@ -577,7 +582,7 @@ function renderTopBar(){
 if(!G)return "";
 $("topBar").innerHTML=`
 <div><span>ファン数: <b>${G.fans.toLocaleString()}人</b></span> | <span>満足度: <b style="color:var(--primary)">${G.fanSatisfy}%</b></span></div>
-<div><span>現金: <b style="color:var(--primary)">${yen(G.cash)}</b></span> | <span>第 ${G.week||1} 週</span></div>
+<div><span>現金: <b style="color:var(--primary)">${yen(G.cash)}</b></span> | <span class="pill gold">第 ${G.week||1} 週</span></div>
 `;
 }
 
@@ -589,8 +594,8 @@ if(G.phase==="cs") phaseText="🏆 チャンピオンシップ（ポストシー
 if(G.phase==="off") phaseText="🏖️ オフシーズン（契約更改・補強期間）";
 
 return `<section class="card">
-<h2><span>${esc(G.club)} 本部</span> <span class="pill gold">第 ${G.week||1}週 / ${esc(G.season)}</span></h2>
-<div class="notice">現在の状況：<b>${phaseText}</b>（1.5億円以上スター枠: <b>${starCount(G.roster)}/1人</b>）</div>
+<h2><span>🏢 ${esc(G.club)} 本部 (STOVE-LEAGUE)</span> <span class="pill gold">${esc(G.season)}</span></h2>
+<div class="notice">現在の進行状況：<b>${phaseText}</b>（1.5億円以上スター枠: <b>${starCount(G.roster)}/1人</b>）</div>
 <div class="stats-grid">
 <div class="stat-box">手元資金<strong>${yen(G.cash)}</strong></div>
 <div class="stat-box">キャップ対象年俸<strong>${yen(c.salary)}</strong></div>
@@ -600,10 +605,10 @@ return `<section class="card">
 </section>
 
 ${G.secretaryMeeting?`<section class="card" style="border-color:var(--primary)">
-<h2><span>☕ 秘書サリナからのご案内</span> <span class="pill gold">秘書面談</span></h2>
+<h2><span>☕ 秘書サリナからのご案内</span> <span class="pill gold">秘書レポート</span></h2>
 <p><b>サリナ（秘書）:</b> ${esc(G.secretaryMeeting.text)}</p>
 <div class="row" style="margin-top:10px">
-${btn("面談を完了して業務へ","resolvesecretary","","primary")}
+${btn("確認して業務へ戻る","resolvesecretary","","primary")}
 </div>
 </section>`:""}
 
@@ -617,27 +622,27 @@ ${btn("現状維持でいく","resolgemeeting","reject","danger")}
 </section>`:""}
 
 <section class="card">
-<h2><span>業務一覧 (今週のアクション)</span></h2>
-<div class="player-item">
-<div class="player-info">
+<h2><span>📋 業務一覧 (今週のアクション)</span></h2>
+<div class="task-item">
+<div class="task-info">
 <strong>第 ${G.week||1} 週の試合・運営を進める</strong>
-<small>今週の節を進行し、試合結果および収支報告を受け取ります。</small>
+<small>今週の節を進行し、チケット収入・収支報告および試合結果を受け取ります。</small>
 </div>
-<div class="player-actions">${btn("今週を進める","gopage","season","primary")}</div>
+<div class="task-actions">${btn("今週を進める","gopage","season","primary")}</div>
 </div>
-<div class="player-item">
-<div class="player-info">
-<strong>自由交渉リスト (選手獲得)</strong>
-<small>フリーエージェント選手約50名と交渉・獲得します。</small>
+<div class="task-item">
+<div class="task-info">
+<strong>自由交渉選手リストの獲得</strong>
+<small>フリーエージェント選手約50名からチームの補強を行います。</small>
 </div>
-<div class="player-actions">${btn("自由交渉リストを見る","gopage","market")}</div>
+<div class="task-actions">${btn("自由交渉を見る","gopage","market")}</div>
 </div>
-<div class="player-item">
-<div class="player-info">
+<div class="task-item">
+<div class="task-info">
 <strong>ロスター・編成確認</strong>
 <small>怪我人の確認や契約延長、解雇を行います。</small>
 </div>
-<div class="player-actions">${btn("チーム管理","gopage","team")}</div>
+<div class="task-actions">${btn("チーム管理","gopage","team")}</div>
 </div>
 </section>
 
@@ -645,7 +650,7 @@ ${btn("現状維持でいく","resolgemeeting","reject","danger")}
 <h2>最新アクティビティ</h2>
 ${(G.log||[]).slice(0,5).map(x=>`<div class="logline">${esc(x)}</div>`).join("")||"<p class='muted'>履歴はありません。</p>"}
 </section>
-${G.lastResult?`<section class="card"><h2>直近の試合リザルト & 収支</h2>${resultHTML(G.lastResult)}</section>`:""}`;
+${G.lastResult?`<section class="card"><h2>直近の試合リザルト & 収支報告</h2>${resultHTML(G.lastResult)}</section>`:""}`;
 }
 
 function standingsPage(){
@@ -781,17 +786,17 @@ const nextGames=G.schedule.filter(g=>g.round===currentWeek);
 return `<section class="card">
 <h2><span>日程・第 ${currentWeek} 週 進行</span> <span class="pill">消化: ${(G.week||1)-1}/30週</span></h2>
 <div style="margin-bottom:12px">
-${currentWeek<=30?btn(`第 ${currentWeek} 週の試合・経営を進める`,"nextgame","","primary"):btn("ポストシーズンへ進む","startcs","","primary")}
+${currentWeek<=30?btn(`第 ${currentWeek} 週の試合・経営報告を実行`,"nextgame","","primary"):btn("ポストシーズンへ進む","startcs","","primary")}
 </div>
 <h3>第 ${currentWeek} 週 対戦カード</h3>
-${nextGames.map(g=>`<div class="logline">${esc(g.home)} vs ${esc(g.away)} ${g.home===G.club||g.away===G.club?"<span class='pill gold'>自チーム戦</span>":""}</div>`).join("")||"<p class='muted'>今週の試合はありません。</p>"}
+${nextGames.map(g=>`<div class="logline">${esc(g.home)} vs ${esc(g.away)} ${g.home===G.club||g.away===G.club?"<span class='pill gold'>自チーム戦 (ホーム/アウェイ)</span>":""}</div>`).join("")||"<p class='muted'>今週の試合はありません。</p>"}
 </section>
-${G.lastResult?`<section class="card"><h2>直近の試合結果 & 収支</h2>${resultHTML(G.lastResult)}</section>`:""}`;
+${G.lastResult?`<section class="card"><h2>直近の試合結果 & 収支詳細</h2>${resultHTML(G.lastResult)}</section>`:""}`;
 }
 
 function resultHTML(r){
 return `<div class="scoreboard">
-<div style="font-size:10px;color:var(--muted);letter-spacing:1px">B.PREMIER OFFICIAL RESULT & FINANCE</div>
+<div style="font-size:10px;color:var(--muted);letter-spacing:1px">B.PREMIER WEEKLY MATCH & FINANCE REPORT</div>
 <div class="scoreline">
 <div><div style="font-size:12px">${esc(r.home)}</div><div class="team-score">${r.hs}</div></div>
 <div style="font-weight:bold;color:var(--muted)">VS</div>
@@ -799,11 +804,11 @@ return `<div class="scoreboard">
 </div>
 <div class="periods">${r.periods.map((p,i)=>`<div><b>${i+1}Q</b><br>${p[0]}-${p[1]}</div>`).join("")}
 <div><b>TOTAL</b><br><b>${r.hs}-${r.as}</b></div></div>
-<p style="margin:8px 0 0;font-size:11px;color:var(--muted)">会場: ${esc(r.venue)} / 観客数: ${Number(r.attendance).toLocaleString()}人</p>
-<div style="margin-top:8px;background:#131f33;padding:8px;border-radius:6px;font-size:11px">
-<div>チケット収入: <b style="color:var(--success)">+${yen(r.revenue)}</b></div>
-<div>運営コスト: <b>-${yen(r.expenses)}</b></div>
-<div style="margin-top:4px;border-top:1px solid #243652;padding-top:4px">今週の純収支: <b style="color:var(--primary)">+${yen(r.profit)}</b></div>
+<p style="margin:8px 0 0;font-size:11px;color:var(--muted)">会場: ${esc(r.venue)} / 動員数: ${Number(r.attendance).toLocaleString()}人</p>
+<div style="margin-top:10px;background:#091424;padding:10px;border-radius:8px;font-size:11px;text-align:left;border:1px solid #1a2c44">
+<div style="display:flex;justify-content:space-between"><span>チケット収入:</span><b style="color:var(--success)">+${yen(r.revenue)}</b></div>
+<div style="display:flex;justify-content:space-between"><span>運営コスト:</span><b style="color:var(--danger)">-${yen(r.expenses)}</b></div>
+<div style="margin-top:6px;border-top:1px solid #1e3252;padding-top:6px;display:flex;justify-content:space-between"><span>今週の純収支:</span><b style="color:var(--primary)">+${yen(r.profit)}</b></div>
 </div>
 </div>`;
 }
@@ -816,7 +821,7 @@ return `<section class="card">
 ${G.teams.map(t=>`<option value="${esc(t.name)}" ${G.club===t.name?"selected":""}>${esc(t.name)}（${t.division}）</option>`).join("")}
 </select></label>
 <button data-act="changeclub" class="primary" style="width:100%;margin-top:6px">操作クラブを変更する</button>
-<div style="margin-top:16px;border-top:1px solid #20324d;padding-top:12px">
+<div style="margin-top:16px;border-top:1px solid #1a2c44;padding-top:12px">
 <button data-act="newgame" class="danger" style="width:100%">初期データから新しくやり直す (リセット)</button>
 </div>
 </section>`;
@@ -824,8 +829,8 @@ ${G.teams.map(t=>`<option value="${esc(t.name)}" ${G.club===t.name?"selected":""
 
 function newGameScreen(){
 return `<section class="card" style="margin-top:20px">
-<h2><span>B.PREMIER GM 起動</span></h2>
-<p class="muted">お好きなクラブを選択してゼネラルマネージャーに就任してください（秘書サリナがあなたをサポートします）。</p>
+<h2><span>B.PREMIER GM 起動 (STOVE-LEAGUE)</span></h2>
+<p class="muted">お好きなクラブを選択してゼネラルマネージャーに就任してください（秘書サリナが全面サポートします）。</p>
 <label><span>担当クラブ</span><select id="firstClub">
 ${TEAM_NAMES.map(n=>`<option value="${esc(n)}" ${n==="信州ブレイブウォリアーズ"?"selected":""}>${esc(n)}</option>`).join("")}
 </select></label>
@@ -889,8 +894,9 @@ if(score>against)t.wins++;else t.losses++;
 
 if(isHome||isAway){
 const attendance=Math.round(G.attendance*(.95+Math.random()*0.2));
-const revenue=isHome?Math.round(attendance*(G.ticket||3500)/7000):0;
-const expenses=Math.round(1200+rawSalaryTotal()/90+G.coaches.reduce((s,c)=>s+c.salary,0)/140);
+// ホームゲーム開催時のみチケット収入が発生し、確実に黒字になる収支計算
+const revenue=isHome?Math.round(attendance*(G.ticket||3500)/6500):0;
+const expenses=isHome?Math.round(1000+rawSalaryTotal()/100+G.coaches.reduce((s,c)=>s+c.salary,0)/150):0;
 const profit=isHome?(revenue-expenses):0;
 if(isHome){
   G.cash+=profit;
@@ -899,7 +905,7 @@ let isWin = hs > as;
 G.fans=Math.round(G.fans+(isWin?1500:-600));
 G.fanSatisfy=Math.min(100,Math.max(20,G.fanSatisfy+(isWin?1:-2)));
 
-lastRes={home:g.home,away:g.away,hs,as,periods,venue:isHome?"ホームアリーナ":"アウェイ",attendance,revenue:isHome?revenue:0,expenses:isHome?expenses:0,profit:isHome?profit:0};
+lastRes={home:g.home,away:g.away,hs,as,periods,venue:isHome?"ホームアリーナ":"アウェイ戦",attendance,revenue:isHome?revenue:0,expenses:isHome?expenses:0,profit:isHome?profit:0};
 log(`第${currentRound}週: ${g.home} ${hs}-${as} ${g.away} ${isHome?`(収支: +${yen(profit)})`:""}`);
 
 if(Math.random()<0.15 && G.roster.length>0){
@@ -917,9 +923,9 @@ if(lastRes) G.lastResult=lastRes;
 
 // 秘書サリナからの今週のレポート＆面談イベント発生
 const secretaryMsgs=[
-  `マイケルさん、第${currentRound}週の試合お疲れ様でした！チケット売上とクラブ経営は順調に推移していますよ。`,
-  `第${currentRound}週の報告です。ブースターの満足度が向上しています。この調子でチームを勝利に導きましょう！`,
-  `今週の試合日程が無事に終了しました。スカウト部門から新たな選手情報の提供もありますのでご確認ください。`
+  `マイケルさん、第${currentRound}週の試合お疲れ様でした！ホーム戦のチケット収支は順調にプラスで着地していますよ。`,
+  `第${currentRound}週の経営・試合報告です。ブースターの満足度も上昇傾向にあります。この調子でチームを上位へ導きましょう！`,
+  `今週のスケジュールが無事に終了しました。自由交渉リストやスカウト部門からの新着情報もぜひチェックしてみてくださいね。`
 ];
 G.secretaryMeeting={text:secretaryMsgs[Math.floor(Math.random()*secretaryMsgs.length)]};
 
@@ -951,8 +957,8 @@ periods.push([h,a]);hs+=h;as+=a;
 if(hs===as){as+=1;periods[3][1]++;}
 
 let isWin = hs > as;
-const rev=Math.round(8000*G.ticket/7000);
-const exp=2500;
+const rev=Math.round(8000*G.ticket/6000);
+const exp=2000;
 const profit=rev-exp;
 G.cash+=profit;
 G.csResult={home:G.club,away:"ライバルクラブ",hs,as,periods,venue:"CS特設アリーナ",attendance:8000,revenue:rev,expenses:exp,profit};
