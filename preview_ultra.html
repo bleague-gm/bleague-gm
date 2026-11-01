@@ -3,80 +3,111 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>B.LEAGUE GM ULTRA - Secretary Edition</title>
+<title>B.LEAGUE GM ULTRA - Pro Edition</title>
 <style>
-:root{--bg:#050b14;--card:#0f1a2e;--card-border:#1e3252;--text:#e8f0fe;--muted:#8aa2c0;--primary:#f1c40f;--danger:#e74c3c;--success:#2ecc71;--accent:#3498db}
+:root{--bg:#070d16;--card:#0f1a2e;--card-border:#1f3352;--text:#e8f0fe;--muted:#8aa2c0;--primary:#f1c40f;--danger:#e74c3c;--success:#2ecc71;--accent:#3498db}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,sans-serif;padding-bottom:60px}
-header{background:#091424;padding:12px 16px;border-bottom:2px solid var(--primary);display:flex;justify-content:space-between;align-items:center}
-h1{font-size:15px;margin:0;display:flex;align-items:center;gap:6px;color:var(--primary)}
-header p{margin:2px 0 0;color:var(--muted);font-size:10px}
-.top-bar{background:#070e1a;padding:8px 16px;font-size:11px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--card-border);overflow-x:auto}
-nav{display:flex;overflow-x:auto;gap:4px;padding:8px;background:#070e1a;position:sticky;top:0;z-index:10;border-bottom:1px solid var(--card-border)}
+body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,sans-serif;padding-bottom:65px}
+
+/* トップ情報バー（動画準拠の高級感） */
+.top-status-bar{background:#04080f;padding:6px 12px;font-size:10px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #142238;white-space:nowrap;overflow-x:auto}
+.top-status-bar::-webkit-scrollbar{height:0px}
+.status-item{display:flex;align-items:center;gap:4px;color:var(--muted)}
+.status-item b{color:var(--text)}
+
+header{background:#091424;padding:10px 14px;border-bottom:2px solid var(--primary);display:flex;justify-content:space-between;align-items:center}
+h1{font-size:14px;margin:0;display:flex;align-items:center;gap:6px;color:var(--primary)}
+header p{margin:2px 0 0;color:var(--muted);font-size:9px}
+
+nav{display:flex;overflow-x:auto;gap:4px;padding:6px 8px;background:#04080f;position:sticky;top:0;z-index:10;border-bottom:1px solid var(--card-border)}
 nav::-webkit-scrollbar{height:4px}
-nav::-webkit-scrollbar-thumb{background:#1e3252;border-radius:2px}
+nav::-webkit-scrollbar-thumb{background:#1f3352;border-radius:2px}
 button{border:0;border-radius:6px;padding:8px 12px;background:#1a2c44;color:white;font-weight:700;cursor:pointer;font-size:12px;white-space:nowrap;transition:filter 0.2s}
 button:hover{filter:brightness(1.2)}
 button.primary{background:var(--primary);color:#111}
 button.danger{background:var(--danger)}
 button.success{background:var(--success);color:#111}
 button:disabled{opacity:.4;cursor:not-allowed}
-main{padding:12px;max-width:1000px;margin:auto}
-.card{background:var(--card);border:1px solid var(--card-border);border-radius:12px;padding:14px;margin-bottom:12px;box-shadow:0 4px 12px rgba(0,0,0,0.3)}
+
+main{padding:10px;max-width:1000px;margin:auto}
+.card{background:var(--card);border:1px solid var(--card-border);border-radius:12px;padding:12px;margin-bottom:10px;box-shadow:0 4px 16px rgba(0,0,0,0.4)}
 h2{font-size:14px;margin:0 0 10px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--card-border);padding-bottom:6px;color:var(--primary)}
-h3{font-size:13px;margin:10px 0 6px;color:var(--text)}
-.muted{color:var(--muted);font-size:12px}
+h3{font-size:12px;margin:8px 0 4px;color:var(--text)}
+.muted{color:var(--muted);font-size:11px}
+
+/* 球団アリーナ・日程ヘッダーカード */
+.arena-banner{background:linear-gradient(135deg, #091424 0%, #132744 100%);border:1px solid var(--card-border);border-radius:12px;padding:14px;margin-bottom:10px;text-align:center;position:relative}
+.arena-banner h3{font-size:16px;color:var(--primary);margin:0 0 4px}
+.arena-banner p{font-size:11px;color:var(--muted);margin:0}
+
+/* 日付＆次戦プレビューバー */
+.date-advance-box{background:#0b1526;border:1px solid #1c3150;border-radius:10px;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.date-display{font-size:15px;font-weight:bold;color:var(--primary)}
+.match-preview{font-size:11px;color:var(--muted)}
+
 .stats-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:10px}
-.stat-box{background:#070e1a;border-radius:8px;padding:10px;font-size:11px;border:1px solid #16263e}
-.stat-box strong{display:block;font-size:17px;margin-top:3px;color:var(--primary)}
+.stat-box{background:#070d16;border-radius:8px;padding:8px;font-size:11px;border:1px solid #142238}
+.stat-box strong{display:block;font-size:16px;margin-top:2px;color:var(--primary)}
+
 .row{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
-.task-item{background:#091424;border:1px solid #1a2c44;border-radius:8px;padding:12px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.task-item{background:#091424;border:1px solid #1a2c44;border-radius:8px;padding:10px 12px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;gap:8px}
 .task-info{min-width:0;flex:1}
 .task-info strong{display:block;font-size:13px;color:var(--text)}
 .task-info small{color:var(--muted);display:block;margin-top:2px;font-size:11px}
+
 .player-item{background:#091424;border:1px solid #1a2c44;border-radius:8px;padding:10px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;gap:8px}
 .player-info{min-width:0;flex:1}
 .player-info strong{display:block;font-size:13px}
 .player-info small{color:var(--muted);display:block;margin-top:2px;font-size:11px}
 .player-actions{display:flex;gap:4px;flex-wrap:wrap}
-input,select{background:#070e1a;color:white;border:1px solid #243b5e;border-radius:6px;padding:8px;width:100%;font-size:13px}
+
+input,select{background:#070d16;color:white;border:1px solid #1f3352;border-radius:6px;padding:8px;width:100%;font-size:13px}
 label{display:block;margin:8px 0}
 label span{display:block;font-size:12px;margin-bottom:4px;color:var(--muted)}
-.notice{background:#112036;border-left:3px solid var(--primary);border-radius:4px;padding:10px;font-size:12px;margin:8px 0}
+
+.notice{background:#112036;border-left:3px solid var(--primary);border-radius:4px;padding:8px;font-size:11px;margin:8px 0}
 .tablewrap{overflow-x:auto}
-table{width:100%;border-collapse:collapse;font-size:12px}
-th,td{padding:6px 5px;border-bottom:1px solid #1a2c44;text-align:center;white-space:nowrap}
+table{width:100%;border-collapse:collapse;font-size:11px}
+th,td{padding:6px 4px;border-bottom:1px solid #1a2c44;text-align:center;white-space:nowrap}
 th{background:#091424;color:var(--muted)}
 .highlight{background:#2a2512}
-.pill{display:inline-block;border-radius:10px;background:#16263e;padding:2px 6px;font-size:10px;color:var(--muted)}
+
+.pill{display:inline-block;border-radius:10px;background:#142238;padding:2px 6px;font-size:10px;color:var(--muted)}
 .pill.gold{background:#3d2e0e;color:var(--primary);border:1px solid var(--primary)}
 .pill.danger{background:#3d1313;color:var(--danger);border:1px solid var(--danger)}
 .pill.success{background:#103822;color:var(--success);border:1px solid var(--success)}
-.scoreboard{background:#070e1a;border:1px solid var(--card-border);border-radius:10px;padding:14px;text-align:center}
-.scoreline{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center;margin:14px 0}
-.team-score{font-size:34px;font-weight:900;color:var(--primary)}
-.periods{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;max-width:450px;margin:10px auto}
-.periods div{padding:6px 2px;background:#0f1a2e;border-radius:4px;font-size:11px}
-.logline{border-bottom:1px solid #16263e;padding:6px 0;font-size:12px}
+
+/* 試合結果スコアボード（動画完全準拠） */
+.scoreboard{background:#070d16;border:1px solid var(--card-border);border-radius:10px;padding:12px;text-align:center;margin-top:8px}
+.scoreline{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center;margin:10px 0}
+.team-score{font-size:30px;font-weight:900;color:var(--primary)}
+.periods{display:grid;grid-template-columns:repeat(5,1fr);gap:3px;max-width:420px;margin:8px auto}
+.periods div{padding:4px 2px;background:#0f1a2e;border-radius:4px;font-size:10px}
+.logline{border-bottom:1px solid #142238;padding:6px 0;font-size:11px}
+
 .news-box{background:#091424;border:1px solid #1a2c44;border-radius:8px;padding:10px;margin-bottom:8px;cursor:pointer;transition:border-color 0.2s}
 .news-box:hover{border-color:var(--primary)}
 .news-box small{color:var(--muted)}
+
 .modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);display:flex;justify-content:center;align-items:center;z-index:100;padding:16px}
-.modal-content{background:#0d1829;border:1px solid var(--primary);border-radius:14px;padding:22px;max-width:550px;width:100%;box-shadow:0 12px 32px rgba(0,0,0,0.7);max-height:90vh;overflow-y:auto}
+.modal-content{background:#0d1829;border:1px solid var(--primary);border-radius:14px;padding:20px;max-width:550px;width:100%;box-shadow:0 12px 32px rgba(0,0,0,0.7);max-height:90vh;overflow-y:auto}
 footer{color:var(--muted);text-align:center;padding:15px;font-size:11px}
+
 @media(min-width:650px){.stats-grid{grid-template-columns:repeat(4,1fr)}}
 </style>
 </head>
 <body>
+
+<!-- 動画トップのステータスバー（実質2039年設定＆ファン数・オーナー満足度） -->
+<div class="top-status-bar" id="topStatusBar"></div>
+
 <header>
 <div>
 <h1>🏀 B.LEAGUE GM ULTRA</h1>
-<p>STOVE-LEAGUE & 秘書サポート搭載</p>
+<p>STOVE-LEAGUE PRO EDITION</p>
 </div>
 <button class="primary" data-act="save">セーブ</button>
 </header>
-
-<div class="top-bar" id="topBar"></div>
 
 <nav>
 <button data-page="home">本部</button>
@@ -85,18 +116,18 @@ footer{color:var(--muted);text-align:center;padding:15px;font-size:11px}
 <button data-page="news">ニュース</button>
 <button data-page="market">自由交渉</button>
 <button data-page="finance">経営</button>
-<button data-page="season">日程・週</button>
+<button data-page="season">日程・試合</button>
 <button data-page="settings">設定</button>
 </nav>
 
 <main id="app"></main>
 <div id="modalContainer"></div>
 
-<footer>B.LEAGUE GM ULTRA / 秘書サリナ面談・週進行システム</footer>
+<footer>B.LEAGUE GM ULTRA / 総合球団経営シミュレーション</footer>
 
 <script>
 "use strict";
-const SAVE_KEY="bleague_gm_ultra_b_premier_v20";
+const SAVE_KEY="bleague_gm_ultra_b_premier_v21";
 const $=id=>document.getElementById(id);
 let G=null,PAGE="home";
 
@@ -521,8 +552,8 @@ coachMarket:[
 teams:makeTeams(),
 schedule:makeSchedule(),
 news:[
-  {id:uid(),title:`${club}が新体制でB.PREMIER開幕へ！`,date:"第1週",body:"ゼネラルマネージャーの手腕にブースターの期待が高まる中、悲願のシーズンへ向けたチーム作りが本格始動した。"},
-  {id:uid(),title:"1.5億円以上のスター条項が適用",date:"第1週",body:"各クラブ保有できるスーパーエースは1名までとなる新レギュレーションがスタートし、戦力均衡に向けた駆け引きが続いている。"}
+  {id:uid(),title:`${club}が新体制でB.PREMIER開幕へ！`,date:"2039年4月1日",body:"ゼネラルマネージャーの手腕にブースターの期待が高まる中、悲願のシーズンへ向けたチーム作りが本格始動した。"},
+  {id:uid(),title:"1.5億円以上のスター条項が適用",date:"2039年4月1日",body:"各クラブ保有できるスーパーエースは1名までとなる新レギュレーションがスタートし、戦力均衡に向けた駆け引きが続いている。"}
 ],
 pendingMeeting:null,
 secretaryMeeting:null,
@@ -578,26 +609,43 @@ function specialCount(){return G && Array.isArray(G.roster) ? G.roster.filter(p=
 function starCount(roster){return roster.filter(p=>(Number(p.salary)||0)>=15000).length;}
 function cap(){return{salary:capCalculatedSalary(),rawSalary:rawSalaryTotal(),cap:80000,floor:50000};}
 
-function renderTopBar(){
-if(!G)return "";
-$("topBar").innerHTML=`
-<div><span>ファン数: <b>${G.fans.toLocaleString()}人</b></span> | <span>満足度: <b style="color:var(--primary)">${G.fanSatisfy}%</b></span></div>
-<div><span>現金: <b style="color:var(--primary)">${yen(G.cash)}</b></span> | <span class="pill gold">第 ${G.week||1} 週</span></div>
+function renderTopStatus(){
+if(!G)return;
+const fanM = (G.fans / 10000).toFixed(3) + "万人";
+const cashB = (G.cash / 10000).toFixed(1) + "億円";
+$("topStatusBar").innerHTML=`
+<div class="status-item"><span>実選手</span> <b>${G.roster.length}/14</b></div>
+<div class="status-item"><span>ファン</span> <b>${fanM}</b></div>
+<div class="status-item"><span>オーナー</span> <b style="color:var(--primary)">96</b></div>
+<div class="status-item"><span>現金</span> <b style="color:var(--primary)">${cashB}</b></div>
 `;
 }
 
 function homePage(){
-renderTopBar();
+renderTopStatus();
 const c=cap();
 let phaseText=`レギュラーシーズン (第${G.week||1}週進行中)`;
 if(G.phase==="cs") phaseText="🏆 チャンピオンシップ（ポストシーズン）開催中";
 if(G.phase==="off") phaseText="🏖️ オフシーズン（契約更改・補強期間）";
 
-return `<section class="card">
-<h2><span>🏢 ${esc(G.club)} 本部 (STOVE-LEAGUE)</span> <span class="pill gold">${esc(G.season)}</span></h2>
+return `<div class="arena-banner">
+<h3>🏀 ${esc(G.club)}</h3>
+<p>ホーム: カメノコ球団ドーム / 定員 45,000人</p>
+</div>
+
+<div class="date-advance-box">
+<div>
+<div class="date-display">2039年 4月 ${G.week||1}日</div>
+<div class="match-preview">次戦: vs 北海ボークス</div>
+</div>
+<button class="primary" data-act="nextgame" style="padding:10px 18px;font-size:13px">▶ 今週を進める</button>
+</div>
+
+<section class="card">
+<h2><span>🏢 本部ダッシュボード</span> <span class="pill gold">第 ${G.week||1} 週</span></h2>
 <div class="notice">現在の進行状況：<b>${phaseText}</b>（1.5億円以上スター枠: <b>${starCount(G.roster)}/1人</b>）</div>
 <div class="stats-grid">
-<div class="stat-box">手元資金<strong>${yen(G.cash)}</strong></div>
+<div class="stat-box">現金資産<strong>${yen(G.cash)}</strong></div>
 <div class="stat-box">キャップ対象年俸<strong>${yen(c.salary)}</strong></div>
 <div class="stat-box">サラリーキャップ<strong>${yen(c.cap)}</strong></div>
 <div class="stat-box">ファン満足度<strong>${G.fanSatisfy}%</strong></div>
@@ -622,17 +670,17 @@ ${btn("現状維持でいく","resolgemeeting","reject","danger")}
 </section>`:""}
 
 <section class="card">
-<h2><span>📋 業務一覧 (今週のアクション)</span></h2>
+<h2><span>📋 業務一覧 (STOVE-LEAGUE)</span></h2>
 <div class="task-item">
 <div class="task-info">
-<strong>第 ${G.week||1} 週の試合・運営を進める</strong>
-<small>今週の節を進行し、チケット収入・収支報告および試合結果を受け取ります。</small>
+<strong>試合・収支の進行報告</strong>
+<small>今週の試合日程を進め、秘書サリナからの詳細な試合後レポートを受領します。</small>
 </div>
-<div class="task-actions">${btn("今週を進める","gopage","season","primary")}</div>
+<div class="task-actions">${btn("日程を見る","gopage","season","primary")}</div>
 </div>
 <div class="task-item">
 <div class="task-info">
-<strong>自由交渉選手リストの獲得</strong>
+<strong>自由交渉選手の獲得</strong>
 <small>フリーエージェント選手約50名からチームの補強を行います。</small>
 </div>
 <div class="task-actions">${btn("自由交渉を見る","gopage","market")}</div>
@@ -650,11 +698,11 @@ ${btn("現状維持でいく","resolgemeeting","reject","danger")}
 <h2>最新アクティビティ</h2>
 ${(G.log||[]).slice(0,5).map(x=>`<div class="logline">${esc(x)}</div>`).join("")||"<p class='muted'>履歴はありません。</p>"}
 </section>
-${G.lastResult?`<section class="card"><h2>直近の試合リザルト & 収支報告</h2>${resultHTML(G.lastResult)}</section>`:""}`;
+${G.lastResult?`<section class="card"><h2>直近の試合結果 & 収支報告</h2>${resultHTML(G.lastResult)}</section>`:""}`;
 }
 
 function standingsPage(){
-renderTopBar();
+renderTopStatus();
 const tab=window.standingsTab||"EAST";
 const getSorted=(div)=> [...G.teams].filter(t=>t.division===div).sort((a,b)=>b.wins-a.wins||((b.pf-b.pa)-(a.pf-a.pa)));
 
@@ -674,7 +722,7 @@ return `<section class="card">
 }
 
 function teamPage(){
-renderTopBar();
+renderTopStatus();
 return `<section class="card">
 <h2><span>ロスター・選手管理</span> <span class="pill">${G.roster.length}/14人</span></h2>
 <p class="muted">外国籍: ${foreignCount()}/3人 | 帰化・アジア: ${specialCount()}/1人 | 1.5億円超スター: <b>${starCount(G.roster)}/1人</b></p>
@@ -692,7 +740,7 @@ ${btn("解雇","release",p.id,"danger")}
 }
 
 function newsPage(){
-renderTopBar();
+renderTopStatus();
 return `<section class="card">
 <h2><span>B.LEAGUE ニュース速報 (タップして詳細を読む)</span></h2>
 ${(G.news||[]).map(n=>`<div class="news-box" data-act="shownews" data-id="${esc(n.id)}">
@@ -704,7 +752,7 @@ ${(G.news||[]).map(n=>`<div class="news-box" data-act="shownews" data-id="${esc(
 }
 
 function marketPage(){
-renderTopBar();
+renderTopStatus();
 return `<section class="card">
 <h2><span>自由交渉選手リスト (FA獲得約50名)</span>
 <button class="primary" data-act="refreshmarket" style="padding:4px 8px;font-size:11px">リストを更新</button>
@@ -723,7 +771,7 @@ ${btn("獲得オファー","sign",p.id,"primary")}
 }
 
 function coachesPage(){
-renderTopBar();
+renderTopStatus();
 return `<section class="card">
 <h2><span>コーチングスタッフ</span></h2>
 ${G.coaches.map(c=>`<div class="player-item">
@@ -745,7 +793,7 @@ ${G.coachMarket.map(c=>`<div class="player-item">
 }
 
 function financePage(){
-renderTopBar();
+renderTopStatus();
 const c=cap();
 return `<section class="card">
 <h2><span>経営・財務管理</span></h2>
@@ -761,7 +809,7 @@ ${coachesPage()}`;
 }
 
 function schedulePage(){
-renderTopBar();
+renderTopStatus();
 if(G.phase==="off"){
 return `<section class="card">
 <h2><span>オフシーズン管理</span></h2>
@@ -786,7 +834,7 @@ const nextGames=G.schedule.filter(g=>g.round===currentWeek);
 return `<section class="card">
 <h2><span>日程・第 ${currentWeek} 週 進行</span> <span class="pill">消化: ${(G.week||1)-1}/30週</span></h2>
 <div style="margin-bottom:12px">
-${currentWeek<=30?btn(`第 ${currentWeek} 週の試合・経営報告を実行`,"nextgame","","primary"):btn("ポストシーズンへ進む","startcs","","primary")}
+${currentWeek<=30?btn(`第 ${currentWeek} 週の試合・収支レポートを実行`,"nextgame","","primary"):btn("ポストシーズンへ進む","startcs","","primary")}
 </div>
 <h3>第 ${currentWeek} 週 対戦カード</h3>
 ${nextGames.map(g=>`<div class="logline">${esc(g.home)} vs ${esc(g.away)} ${g.home===G.club||g.away===G.club?"<span class='pill gold'>自チーム戦 (ホーム/アウェイ)</span>":""}</div>`).join("")||"<p class='muted'>今週の試合はありません。</p>"}
@@ -796,7 +844,7 @@ ${G.lastResult?`<section class="card"><h2>直近の試合結果 & 収支詳細</
 
 function resultHTML(r){
 return `<div class="scoreboard">
-<div style="font-size:10px;color:var(--muted);letter-spacing:1px">B.PREMIER WEEKLY MATCH & FINANCE REPORT</div>
+<div style="font-size:10px;color:var(--muted);letter-spacing:1px">B.PREMIER OFFICIAL RESULT & FINANCE REPORT</div>
 <div class="scoreline">
 <div><div style="font-size:12px">${esc(r.home)}</div><div class="team-score">${r.hs}</div></div>
 <div style="font-weight:bold;color:var(--muted)">VS</div>
@@ -804,17 +852,20 @@ return `<div class="scoreboard">
 </div>
 <div class="periods">${r.periods.map((p,i)=>`<div><b>${i+1}Q</b><br>${p[0]}-${p[1]}</div>`).join("")}
 <div><b>TOTAL</b><br><b>${r.hs}-${r.as}</b></div></div>
-<p style="margin:8px 0 0;font-size:11px;color:var(--muted)">会場: ${esc(r.venue)} / 動員数: ${Number(r.attendance).toLocaleString()}人</p>
+<p style="margin:8px 0 0;font-size:11px;color:var(--muted)">会場: ${esc(r.venue)} / 動員数: ${Number(r.attendance).toLocaleString()}人 (94%)</p>
+
+<!-- 収支明細ボックス（動画の報告フォーマット準拠） -->
 <div style="margin-top:10px;background:#091424;padding:10px;border-radius:8px;font-size:11px;text-align:left;border:1px solid #1a2c44">
+<div style="font-weight:bold;color:var(--primary);margin-bottom:4px;border-bottom:1px solid #1f3352;padding-bottom:2px">📊 本日の収支報告</div>
 <div style="display:flex;justify-content:space-between"><span>チケット収入:</span><b style="color:var(--success)">+${yen(r.revenue)}</b></div>
-<div style="display:flex;justify-content:space-between"><span>運営コスト:</span><b style="color:var(--danger)">-${yen(r.expenses)}</b></div>
-<div style="margin-top:6px;border-top:1px solid #1e3252;padding-top:6px;display:flex;justify-content:space-between"><span>今週の純収支:</span><b style="color:var(--primary)">+${yen(r.profit)}</b></div>
+<div style="display:flex;justify-content:space-between"><span>球団運営コスト:</span><b style="color:var(--danger)">-${yen(r.expenses)}</b></div>
+<div style="margin-top:6px;border-top:1px solid #1f3352;padding-top:6px;display:flex;justify-content:space-between"><span>今週の純利益 (小計):</span><b style="color:var(--primary)">+${yen(r.profit)}</b></div>
 </div>
 </div>`;
 }
 
 function settingsPage(){
-renderTopBar();
+renderTopStatus();
 return `<section class="card">
 <h2><span>ゲーム設定・クラブ変更</span></h2>
 <label><span>操作クラブ選択</span><select id="clubSelect">
@@ -829,7 +880,7 @@ ${G.teams.map(t=>`<option value="${esc(t.name)}" ${G.club===t.name?"selected":""
 
 function newGameScreen(){
 return `<section class="card" style="margin-top:20px">
-<h2><span>B.PREMIER GM 起動 (STOVE-LEAGUE)</span></h2>
+<h2><span>B.PREMIER GM 起動 (PRO EDITION)</span></h2>
 <p class="muted">お好きなクラブを選択してゼネラルマネージャーに就任してください（秘書サリナが全面サポートします）。</p>
 <label><span>担当クラブ</span><select id="firstClub">
 ${TEAM_NAMES.map(n=>`<option value="${esc(n)}" ${n==="信州ブレイブウォリアーズ"?"selected":""}>${esc(n)}</option>`).join("")}
@@ -895,8 +946,8 @@ if(score>against)t.wins++;else t.losses++;
 if(isHome||isAway){
 const attendance=Math.round(G.attendance*(.95+Math.random()*0.2));
 // ホームゲーム開催時のみチケット収入が発生し、確実に黒字になる収支計算
-const revenue=isHome?Math.round(attendance*(G.ticket||3500)/6500):0;
-const expenses=isHome?Math.round(1000+rawSalaryTotal()/100+G.coaches.reduce((s,c)=>s+c.salary,0)/150):0;
+const revenue=isHome?Math.round(attendance*(G.ticket||3500)/6000):0;
+const expenses=isHome?Math.round(800+rawSalaryTotal()/110+G.coaches.reduce((s,c)=>s+c.salary,0)/160):0;
 const profit=isHome?(revenue-expenses):0;
 if(isHome){
   G.cash+=profit;
@@ -905,7 +956,7 @@ let isWin = hs > as;
 G.fans=Math.round(G.fans+(isWin?1500:-600));
 G.fanSatisfy=Math.min(100,Math.max(20,G.fanSatisfy+(isWin?1:-2)));
 
-lastRes={home:g.home,away:g.away,hs,as,periods,venue:isHome?"ホームアリーナ":"アウェイ戦",attendance,revenue:isHome?revenue:0,expenses:isHome?expenses:0,profit:isHome?profit:0};
+lastRes={home:g.home,away:g.away,hs,as,periods,venue:isHome?"カメノコ球団ドーム":"アウェイ会場",attendance,revenue:isHome?revenue:0,expenses:isHome?expenses:0,profit:isHome?profit:0};
 log(`第${currentRound}週: ${g.home} ${hs}-${as} ${g.away} ${isHome?`(収支: +${yen(profit)})`:""}`);
 
 if(Math.random()<0.15 && G.roster.length>0){
@@ -923,7 +974,7 @@ if(lastRes) G.lastResult=lastRes;
 
 // 秘書サリナからの今週のレポート＆面談イベント発生
 const secretaryMsgs=[
-  `マイケルさん、第${currentRound}週の試合お疲れ様でした！ホーム戦のチケット収支は順調にプラスで着地していますよ。`,
+  `マイケルGM、第${currentRound}週の試合お疲れ様でした！ホーム戦のチケット収支は順調にプラスで着地していますよ。`,
   `第${currentRound}週の経営・試合報告です。ブースターの満足度も上昇傾向にあります。この調子でチームを上位へ導きましょう！`,
   `今週のスケジュールが無事に終了しました。自由交渉リストやスカウト部門からの新着情報もぜひチェックしてみてくださいね。`
 ];
@@ -957,8 +1008,8 @@ periods.push([h,a]);hs+=h;as+=a;
 if(hs===as){as+=1;periods[3][1]++;}
 
 let isWin = hs > as;
-const rev=Math.round(8000*G.ticket/6000);
-const exp=2000;
+const rev=Math.round(8000*G.ticket/5000);
+const exp=1500;
 const profit=rev-exp;
 G.cash+=profit;
 G.csResult={home:G.club,away:"ライバルクラブ",hs,as,periods,venue:"CS特設アリーナ",attendance:8000,revenue:rev,expenses:exp,profit};
