@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>B.LEAGUE GM ULTRA - Fixed Schedule & Revenue Edition</title>
+<title>B.LEAGUE GM ULTRA - Ultimate Edition</title>
 <style>
 :root{--bg:#070d16;--card:#0f1a2e;--card-border:#1f3352;--text:#e8f0fe;--muted:#8aa2c0;--primary:#f1c40f;--danger:#e74c3c;--success:#2ecc71;--accent:#3498db}
 *{box-sizing:border-box}
@@ -99,7 +99,7 @@ footer{color:var(--muted);text-align:center;padding:15px;font-size:11px}
 <header>
 <div>
 <h1>🏀 B.LEAGUE GM ULTRA</h1>
-<p>B.PREMIER 60-GAMES & REVENUE FIXED EDITION</p>
+<p>B.PREMIER 60-GAMES & DRAFT EDITION</p>
 </div>
 <button class="primary" data-act="save">セーブ</button>
 </header>
@@ -122,7 +122,7 @@ footer{color:var(--muted);text-align:center;padding:15px;font-size:11px}
 
 <script>
 "use strict";
-const SAVE_KEY="bleague_gm_ultra_b_premier_v60_fix_v2";
+const SAVE_KEY="bleague_gm_ultra_ultimate_v1";
 const $=id=>document.getElementById(id);
 let G=null,PAGE="home";
 
@@ -159,16 +159,11 @@ const EAST=Object.keys(ARENAS).slice(0,13);
 const WEST=Object.keys(ARENAS).slice(13,26);
 const TEAM_NAMES=[...EAST,...WEST];
 
-const SEASON_DATES = [
-"10月3日(土) - 10月4日(日)", "10月10日(土) - 10月11日(日)", "10月17日(土) - 10月18日(日)", "10月21日(水) [水曜開催]",
-"10月24日(土) - 10月25日(日)", "10月31日(土) - 11月1日(日)", "11月7日(土) - 11月8日(日)", "11月11日(水) [水曜開催]",
-"11月14日(土) - 11月15日(日)", "12月5日(土) - 12月6日(日)", "12月12日(土) - 12月13日(日)", "12月16日(水) [水曜開催]",
-"12月19日(土) - 12月20日(日)", "12月26日(土) - 12月27日(日)", "1月2日(土) - 1月3日(日)", "1月20日(水) [水曜開催]",
-"1月23日(土) - 1月24日(日)", "1月30日(土) - 1月31日(日)", "2月6日(土) - 2月7日(日)", "3月6日(土) - 3月7日(日)",
-"3月13日(土) - 3月14日(日)", "3月17日(水) [水曜開催]", "3月20日(土) - 3月21日(日)", "3月27日(土) - 3月28日(日)",
-"4月3日(土) - 4月4日(日)", "4月10日(土) - 4月11日(日)", "4月14日(水) [水曜開催]", "4月17日(土) - 4月18日(日)",
-"4月24日(土) - 4月25日(日)", "5月1日(土) - 5月2日(日) [最終節]"
-];
+// 全60試合（全60節）のスケジュールに対応する日付テーブル
+const SEASON_DATES = Array.from({length:60}, (_, i) => {
+  const m = i < 12 ? 10 : i < 24 ? 11 : i < 35 ? 12 : i < 44 ? 1 : i < 50 ? 2 : 3;
+  return `第${i+1}節 (${m}月下旬)`;
+});
 
 const esc=v=>String(v||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const yen=n=>Math.round(n||0).toLocaleString("ja-JP")+"万円";
@@ -176,8 +171,8 @@ const uid=()=>Math.random().toString(36).slice(2)+Date.now().toString(36);
 
 const btn=(label,action,id="",cls="")=>`<button class="${cls}" data-act="${action}" data-id="${esc(id)}">${label}</button>`;
 
-function makePlayer(name,pos,rating,salary,years=1,type="日本人"){
-return{id:uid(),name,pos,rating,salary,years,type,injury:0};
+function makePlayer(name,pos,rating,salary,years=1,type="日本人",age=25){
+return{id:uid(),name,pos,rating,salary,years,type,injury:0,age};
 }
 
 function makeTeams(){
@@ -188,13 +183,11 @@ wins:0,losses:0,played:0,pf:0,pa:0
 }));
 }
 
-// 26チーム総当たり（ホーム＆アウェー各1試合＝計50試合）＋同地区内追加対戦（10試合）＝計60試合を確実に生成
+// 各チーム全60試合のホーム＆アウェー完全スケジュールを生成
 function makeSchedule(){
 const games=[];
 let gameId=1;
-
-// 1. レギュラーシーズン全26チームによるホーム＆アウェー総当たり対戦表を確実に構築 (各チーム相手に対しホーム/アウェーで2試合ずつ、計50節ベース)
-for(let r=0; r<25; r++){
+for(let r=0; r<60; r++){
   const roundGames=[];
   const paired=new Set();
   const rotation = TEAM_NAMES.map((_,i)=>TEAM_NAMES[(i+r)%26]);
@@ -204,399 +197,385 @@ for(let r=0; r<25; r++){
     if(r%2===1){ const t=home; home=away; away=t; }
     if(!paired.has(home) && !paired.has(away) && home!==away){
       paired.add(home); paired.add(away);
-      roundGames.push({home, away, done:false, round:r+1, dateStr:SEASON_DATES[r] || "第"+(r+1)+"節", id:gameId++});
+      roundGames.push({home, away, done:false, round:r+1, dateStr:SEASON_DATES[r], id:gameId++});
     }
   }
-  // 残りチームのペアリング補完（対戦相手が消えないように確実なマッチングを実行）
   const unmatched = TEAM_NAMES.filter(t=>!paired.has(t));
   for(let i=0; i<unmatched.length; i+=2){
     if(i+1 < unmatched.length){
       let home=unmatched[i], away=unmatched[i+1];
-      roundGames.push({home, away, done:false, round:r+1, dateStr:SEASON_DATES[r] || "第"+(r+1)+"節", id:gameId++});
+      roundGames.push({home, away, done:false, round:r+1, dateStr:SEASON_DATES[r], id:gameId++});
     }
   }
   games.push(...roundGames);
 }
-
-// 2. 残り5節（第26〜30節：計10試合分）は地区内対戦等で全60試合を完全補完
-for(let r=25; r<30; r++){
-  const roundGames=[];
-  const paired=new Set();
-  
-  // 東西地区内でペアリング
-  [EAST, WEST].forEach(divList=>{
-    for(let i=0; i<divList.length; i+=2){
-      let home = divList[i];
-      let away = divList[(i+r)%divList.length];
-      if(home===away) away = divList[(i+1)%divList.length];
-      if(!paired.has(home+away) && !paired.has(away+home) && home!==away){
-        paired.add(home+away);
-        roundGames.push({home, away, done:false, round:r+1, dateStr:SEASON_DATES[r] || "第"+(r+1)+"節", id:gameId++});
-      }
-    }
-  });
-
-  // 万が一ペアが足りない場合のフォールバック補完
-  const unmatched = TEAM_NAMES.filter(t=>!roundGames.some(g=>g.home===t||g.away===t));
-  for(let i=0; i<unmatched.length; i+=2){
-    if(i+1 < unmatched.length){
-      roundGames.push({home:unmatched[i], away:unmatched[i+1], done:false, round:r+1, dateStr:SEASON_DATES[r] || "第"+(r+1)+"節", id:gameId++});
-    }
-  }
-  games.push(...roundGames);
-}
-
 return games;
 }
 
 const REAL_ROSTERS={
 "レバンガ北海道":[
-  makePlayer("富永 啓生","SG",93,25000,2,"日本人"),
-  makePlayer("ドワイト・ラモス","SG/SF",84,7500,2,"アジア特別枠"),
-  makePlayer("ゲイリー・クラーク","PF",87,14000,1,"外国籍"),
-  makePlayer("マークイーズ・ボールデン","C",88,14500,1,"外国籍"),
-  makePlayer("寺園 脩斗","PG",76,3000,2,"日本人"),
-  makePlayer("関野 剛平","SG/SF",77,3200,2,"日本人"),
-  makePlayer("島谷 怜","PG",75,2800,2,"日本人"),
-  makePlayer("松崎 裕樹","SF",77,3400,2,"日本人"),
-  makePlayer("内藤 耀悠","SF",74,2400,3,"日本人"),
-  makePlayer("大崎 裕太","PG",73,2200,1,"日本人")
+  makePlayer("富永 啓生","SG",93,25000,2,"日本人",25),
+  makePlayer("ドワイト・ラモス","SG/SF",84,7500,2,"アジア特別枠",27),
+  makePlayer("ゲイリー・クラーク","PF",87,14000,1,"外国籍",31),
+  makePlayer("マークイーズ・ボールデン","C",88,14500,1,"外国籍",28),
+  makePlayer("寺園 脩斗","PG",76,3000,2,"日本人",31),
+  makePlayer("関野 剛平","SG/SF",77,3200,2,"日本人",31),
+  makePlayer("島谷 怜","PG",75,2800,2,"日本人",25),
+  makePlayer("松崎 裕樹","SF",77,3400,2,"日本人",25),
+  makePlayer("内藤 耀悠","SF",74,2400,3,"日本人",20),
+  makePlayer("大崎 裕太","PG",73,2200,1,"日本人",23)
 ],
 "仙台89ERS":[
-  makePlayer("ジャレット・カルバー","SG/SF",88,15000,1,"外国籍"),
-  makePlayer("シェーファーアヴィ幸樹","C",83,5500,2,"日本人"),
-  makePlayer("ジェイク・レイマン","SF/PF",87,13500,1,"外国籍"),
-  makePlayer("青木 保憲","PG",77,3500,2,"日本人"),
-  makePlayer("杉浦 佑成","SF",76,3200,2,"日本人"),
-  makePlayer("片岡 大晴","SG",73,2200,1,"日本人"),
-  makePlayer("半澤 凌太","SF",73,2200,2,"日本人"),
-  makePlayer("渡辺 翔太","PG",74,2500,2,"日本人"),
-  makePlayer("船生 誠也","SF",76,3000,1,"日本人"),
-  makePlayer("岡島 和真","PG",73,2400,2,"日本人")
+  makePlayer("ジャレット・カルバー","SG/SF",88,15000,1,"外国籍",27),
+  makePlayer("シェーファーアヴィ幸樹","C",83,5500,2,"日本人",28),
+  makePlayer("ジェイク・レイマン","SF/PF",87,13500,1,"外国籍",32),
+  makePlayer("青木 保憲","PG",77,3500,2,"日本人",30),
+  makePlayer("杉浦 佑成","SF",76,3200,2,"日本人",30),
+  makePlayer("片岡 大晴","SG",73,2200,1,"日本人",39),
+  makePlayer("半澤 凌太","SF",73,2200,2,"日本人",26),
+  makePlayer("渡辺 翔太","PG",74,2500,2,"日本人",27),
+  makePlayer("船生 誠也","SF",76,3000,1,"日本人",32),
+  makePlayer("岡島 和真","PG",73,2400,2,"日本人",24)
 ],
 "秋田ノーザンハピネッツ":[
-  makePlayer("ヤニー・ウェッツェル","C/PF",88,14500,1,"外国籍"),
-  makePlayer("キアヌ・ピンダー","PF/C",87,13500,1,"外国籍"),
-  makePlayer("中山 拓哉","PG/SG",80,5000,2,"日本人"),
-  makePlayer("田口 成浩","SG",77,3500,2,"日本人"),
-  makePlayer("古川 孝敏","SG/SF",81,5200,1,"日本人"),
-  makePlayer("保岡 龍斗","SG",78,4000,2,"日本人"),
-  makePlayer("赤穂 雷太","SG/SF",75,3000,2,"日本人"),
-  makePlayer("長谷川 暢","PG",76,3300,2,"日本人"),
-  makePlayer("マーク・スミス","SG",86,12000,1,"外国籍"),
-  makePlayer("トロイ・マーフィージュニア","PF",74,2600,1,"日本人")
+  makePlayer("ヤニー・ウェッツェル","C/PF",88,14500,1,"外国籍",29),
+  makePlayer("キアヌ・ピンダー","PF/C",87,13500,1,"外国籍",30),
+  makePlayer("中山 拓哉","PG/SG",80,5000,2,"日本人",31),
+  makePlayer("田口 成浩","SG",77,3500,2,"日本人",35),
+  makePlayer("古川 孝敏","SG/SF",81,5200,1,"日本人",38),
+  makePlayer("保岡 龍斗","SG",78,4000,2,"日本人",30),
+  makePlayer("赤穂 雷太","SG/SF",75,3000,2,"日本人",27),
+  makePlayer("長谷川 暢","PG",76,3300,2,"日本人",29),
+  makePlayer("マーク・スミス","SG",86,12000,1,"外国籍",27),
+  makePlayer("トロイ・マーフィージュニア","PF",74,2600,1,"日本人",23)
 ],
 "茨城ロボッツ":[
-  makePlayer("ヴィック・ロー","SF/PF",90,18000,1,"外国籍"),
-  makePlayer("吉井 裕鷹","SF",81,5800,3,"日本人"),
-  makePlayer("渡邉 飛勇","C",79,4800,3,"日本人"),
-  makePlayer("ティム・ソアレス","C/PF",87,13500,1,"外国籍"),
-  makePlayer("フィン・ディレイニー","PF",86,12500,1,"外国籍"),
-  makePlayer("小島 元基","PG",79,4800,2,"日本人"),
-  makePlayer("平尾 充庸","PG",75,3000,1,"日本人"),
-  makePlayer("ヤン ジェミン","SF",76,3200,2,"アジア特別枠"),
-  makePlayer("中村 功平","PG/SG",74,2500,2,"日本人"),
-  makePlayer("前田 怜緒","SF",76,3300,2,"日本人")
+  makePlayer("ヴィック・ロー","SF/PF",90,18000,1,"外国籍",30),
+  makePlayer("吉井 裕鷹","SF",81,5800,3,"日本人",28),
+  makePlayer("渡邉 飛勇","C",79,4800,3,"日本人",27),
+  makePlayer("ティム・ソアレス","C/PF",87,13500,1,"外国籍",28),
+  makePlayer("フィン・ディレイニー","PF",86,12500,1,"外国籍",30),
+  makePlayer("小島 元基","PG",79,4800,2,"日本人",32),
+  makePlayer("平尾 充庸","PG",75,3000,1,"日本人",36),
+  makePlayer("ヤン ジェミン","SF",76,3200,2,"アジア特別枠",26),
+  makePlayer("中村 功平","PG/SG",74,2500,2,"日本人",29),
+  makePlayer("前田 怜緒","SF",76,3300,2,"日本人",28)
 ],
 "宇都宮ブレックス":[
-  makePlayer("D.J・ニュービル","PG/SG",95,30000,1,"外国籍"),
-  makePlayer("比江島 慎","SG",91,20000,2,"日本人"),
-  makePlayer("アイザック・フォトゥ","PF",88,15000,1,"外国籍"),
-  makePlayer("ギャビン・エドワーズ","PF",84,9500,1,"帰化"),
-  makePlayer("トレイ・ケル","SG/SF",86,13000,1,"外国籍"),
-  makePlayer("遠藤 祐亮","SG",81,5500,2,"日本人"),
-  makePlayer("鵤 誠司","PG",79,4500,2,"日本人"),
-  makePlayer("竹内 公輔","C/PF",77,3800,1,"日本人"),
-  makePlayer("田臥 勇太","PG",75,3200,1,"日本人"),
-  makePlayer("市岡 ショーン","C/PF",75,3000,2,"日本人")
+  makePlayer("D.J・ニュービル","PG/SG",95,30000,1,"外国籍",34),
+  makePlayer("比江島 慎","SG",91,20000,2,"日本人",35),
+  makePlayer("アイザック・フォトゥ","PF",88,15000,1,"外国籍",32),
+  makePlayer("ギャビン・エドワーズ","PF",84,9500,1,"帰化",37),
+  makePlayer("トレイ・ケル","SG/SF",86,13000,1,"外国籍",30),
+  makePlayer("遠藤 祐亮","SG",81,5500,2,"日本人",36),
+  makePlayer("鵤 誠司","PG",79,4500,2,"日本人",31),
+  makePlayer("竹内 公輔","C/PF",77,3800,1,"日本人",41),
+  makePlayer("田臥 勇太","PG",75,3200,1,"日本人",45),
+  makePlayer("市岡 ショーン","C/PF",75,3000,2,"日本人",34)
 ],
 "群馬クレインサンダーズ":[
-  makePlayer("藤井 祐眞","PG/SG",88,15000,2,"日本人"),
-  makePlayer("辻 直人","SG",83,8500,2,"日本人"),
-  makePlayer("ヨハネス・ティーマン","C/PF",88,15000,1,"外国籍"),
-  makePlayer("ケリー・ブラックシアー・ジュニア","C/PF",87,13500,1,"外国籍"),
-  makePlayer("コー・フリッピン","PG/SG",81,5200,2,"日本人"),
-  makePlayer("エージェー・エドゥ","C/PF",82,7000,2,"アジア特別枠"),
-  makePlayer("中村 拓人","PG",77,3600,2,"日本人"),
-  makePlayer("細川 一輝","SG",76,3200,2,"日本人"),
-  makePlayer("並里 成","PG",80,5000,2,"日本人"),
-  makePlayer("マイケル・パーカー","PF",84,9000,1,"帰化")
+  makePlayer("藤井 祐眞","PG/SG",88,15000,2,"日本人",34),
+  makePlayer("辻 直人","SG",83,8500,2,"日本人",36),
+  makePlayer("ヨハネス・ティーマン","C/PF",88,15000,1,"外国籍",32),
+  makePlayer("ケリー・ブラックシアー・ジュニア","C/PF",87,13500,1,"外国籍",29),
+  makePlayer("コー・フリッピン","PG/SG",81,5200,2,"日本人",29),
+  makePlayer("エージェー・エドゥ","C/PF",82,7000,2,"アジア特別枠",26),
+  makePlayer("中村 拓人","PG",77,3600,2,"日本人",25),
+  makePlayer("細川 一輝","SG",76,3200,2,"日本人",28),
+  makePlayer("並里 成","PG",80,5000,2,"日本人",36),
+  makePlayer("マイケル・パーカー","PF",84,9000,1,"帰化",44)
 ],
 "アルティーリ千葉":[
-  makePlayer("デレク・パードン","C",87,13500,1,"外国籍"),
-  makePlayer("ブランドン・アシュリー","PF",85,11000,1,"外国籍"),
-  makePlayer("エヴァンス ルーク","PF",83,8000,1,"帰化"),
-  makePlayer("安藤 誓哉","PG",89,17000,2,"日本人"),
-  makePlayer("長谷川 智也","SG",76,3200,1,"日本人"),
-  makePlayer("杉本 慶","PG",75,3000,2,"日本人"),
-  makePlayer("渡邉 伶音","SF/PF",80,5200,1,"日本人"),
-  makePlayer("熊谷 尚也","SF",75,2800,1,"日本人"),
-  makePlayer("黒川 虎徹","PG",74,2500,2,"日本人"),
-  makePlayer("青木 ブレイク","PF",74,2300,1,"日本人")
+  makePlayer("デレク・パードン","C",87,13500,1,"外国籍",29),
+  makePlayer("ブランドン・アシュリー","PF",85,11000,1,"外国籍",32),
+  makePlayer("エヴァンス ルーク","PF",83,8000,1,"帰化",34),
+  makePlayer("安藤 誓哉","PG",89,17000,2,"日本人",33),
+  makePlayer("長谷川 智也","SG",76,3200,1,"日本人",36),
+  makePlayer("杉本 慶","PG",75,3000,2,"日本人",33),
+  makePlayer("渡邉 伶音","SF/PF",80,5200,1,"日本人",20),
+  makePlayer("熊谷 尚也","SF",75,2800,1,"日本人",35),
+  makePlayer("黒川 虎徹","PG",74,2500,2,"日本人",24),
+  makePlayer("青木 ブレイク","PF",74,2300,1,"日本人",32)
 ],
 "千葉ジェッツ":[
-  makePlayer("富樫 勇樹","PG",96,32000,3,"日本人"),
-  makePlayer("原 修太","SF",82,6000,2,"日本人"),
-  makePlayer("金近 廉","SF",81,5000,3,"日本人"),
-  makePlayer("ネイト・ウィリアムズ","SG/SF",89,16000,1,"外国籍"),
-  makePlayer("ブランドン・ランドルフ","SG",88,14500,1,"外国籍"),
-  makePlayer("菅野 ブルース","SG/SF",77,3500,2,"日本人"),
-  makePlayer("田代 直希","SF",75,2600,2,"日本人"),
-  makePlayer("小川 麻斗","PG",74,2400,2,"日本人"),
-  makePlayer("荒尾 岳","C",73,2200,1,"日本人"),
-  makePlayer("ウィリアムス ニカ","C",78,4500,1,"帰化")
+  makePlayer("富樫 勇樹","PG",96,32000,3,"日本人",33),
+  makePlayer("原 修太","SF",82,6000,2,"日本人",32),
+  makePlayer("金近 廉","SF",81,5000,3,"日本人",23),
+  makePlayer("ネイト・ウィリアムズ","SG/SF",89,16000,1,"外国籍",27),
+  makePlayer("ブランドン・ランドルフ","SG",88,14500,1,"外国籍",28),
+  makePlayer("菅野 ブルース","SG/SF",77,3500,2,"日本人",23),
+  makePlayer("田代 直希","SF",75,2600,2,"日本人",32),
+  makePlayer("小川 麻斗","PG",74,2400,2,"日本人",24),
+  makePlayer("荒尾 岳","C",73,2200,1,"日本人",38),
+  makePlayer("ウィリアムス ニカ","C",78,4500,1,"帰化",38)
 ],
 "アルバルク東京":[
-  makePlayer("ライアン・ロシター","C/PF",89,16000,1,"帰化"),
-  makePlayer("セバスチャン・サイズ","C/PF",88,15000,1,"外国籍"),
-  makePlayer("アンソニー・クレモンズ","PG",87,13500,1,"外国籍"),
-  makePlayer("安藤 周人","SG",82,6500,2,"日本人"),
-  makePlayer("吉井 裕鷹","SF",81,5800,3,"日本人"),
-  makePlayer("小酒部 泰暉","SG/SF",80,5000,2,"日本人"),
-  makePlayer("大倉 颯太","PG/SG",77,3600,2,"日本人"),
-  makePlayer("テーブス 海","PG",83,7000,2,"日本人"),
-  makePlayer("飯田 遼","SG/SF",75,2600,2,"日本人"),
-  makePlayer("平岩 玄","C",74,2500,1,"日本人")
+  makePlayer("ライアン・ロシター","C/PF",89,16000,1,"帰化",37),
+  makePlayer("セバスチャン・サイズ","C/PF",88,15000,1,"外国籍",32),
+  makePlayer("アンソニー・クレモンズ","PG",87,13500,1,"外国籍",32),
+  makePlayer("安藤 周人","SG",82,6500,2,"日本人",32),
+  makePlayer("吉井 裕鷹","SF",81,5800,3,"日本人",28),
+  makePlayer("小酒部 泰暉","SG/SF",80,5000,2,"日本人",27),
+  makePlayer("大倉 颯太","PG/SG",77,3600,2,"日本人",27),
+  makePlayer("テーブス 海","PG",83,7000,2,"日本人",28),
+  makePlayer("飯田 遼","SG/SF",75,2600,2,"日本人",31),
+  makePlayer("平岩 玄","C",74,2500,1,"日本人",28)
 ],
 "サンロッカーズ渋谷":[
-  makePlayer("ジョシュ・ホーキンソン","C/PF",94,27000,1,"帰化"),
-  makePlayer("ディディ・ロウザダ","SF",87,13500,1,"外国籍"),
-  makePlayer("トーマス・ウェルシュ","C",86,12500,1,"外国籍"),
-  makePlayer("マーカス・ジョージズ＝ハント","SG/SF",87,13500,1,"外国籍"),
-  makePlayer("ベンドラメ 礼生","PG/SG",82,6500,2,"日本人"),
-  makePlayer("田中 大貴","SG",84,9000,1,"日本人"),
-  makePlayer("野﨑 零也","SG",75,2600,2,"日本人"),
-  makePlayer("山﨑 一渉","SF/PF",76,3100,2,"日本人"),
-  makePlayer("永吉 佑也","C/PF",73,2100,1,"日本人"),
-  makePlayer("狩野 富成","C",74,2300,1,"日本人")
+  makePlayer("ジョシュ・ホーキンソン","C/PF",94,27000,1,"帰化",31),
+  makePlayer("ディディ・ロウザダ","SF",87,13500,1,"外国籍",27),
+  makePlayer("トーマス・ウェルシュ","C",86,12500,1,"外国籍",30),
+  makePlayer("マーカス・ジョージズ＝ハント","SG/SF",87,13500,1,"外国籍",32),
+  makePlayer("ベンドラメ 礼生","PG/SG",82,6500,2,"日本人",32),
+  makePlayer("田中 大貴","SG",84,9000,1,"日本人",34),
+  makePlayer("野﨑 零也","SG",75,2600,2,"日本人",27),
+  makePlayer("山﨑 一渉","SF/PF",76,3100,2,"日本人",23),
+  makePlayer("永吉 佑也","C/PF",73,2100,1,"日本人",34),
+  makePlayer("狩野 富成","C",74,2300,1,"日本人",27)
 ],
 "川崎ブレイブサンダース":[
-  makePlayer("アレックス・カーク","C",89,16000,1,"外国籍"),
-  makePlayer("エマニュエル・テリー","C/PF",87,13500,1,"外国籍"),
-  makePlayer("マット・ボンズ","SF/PF",88,14500,1,"外国籍"),
-  makePlayer("モハメド-アリ・アブドゥル-ラフマン","SG/SF",86,12500,1,"外国籍"),
-  makePlayer("篠山 竜青","PG",79,4500,1,"日本人"),
-  makePlayer("長谷川 技","SF",74,2700,1,"日本人"),
-  makePlayer("松山 駿","PG/SG",74,2600,2,"日本人"),
-  makePlayer("津山 尚大","SG",75,2800,2,"日本人"),
-  makePlayer("米須 玲音","PG",74,2500,2,"日本人"),
-  makePlayer("野本 建吾","PF",73,2100,1,"日本人")
+  makePlayer("アレックス・カーク","C",89,16000,1,"外国籍",34),
+  makePlayer("エマニュエル・テリー","C/PF",87,13500,1,"外国籍",30),
+  makePlayer("マット・ボンズ","SF/PF",88,14500,1,"外国籍",30),
+  makePlayer("モハメド-アリ・アブドゥル-ラフマン","SG/SF",86,12500,1,"外国籍",31),
+  makePlayer("篠山 竜青","PG",79,4500,1,"日本人",37),
+  makePlayer("長谷川 技","SF",74,2700,1,"日本人",36),
+  makePlayer("松山 駿","PG/SG",74,2600,2,"日本人",24),
+  makePlayer("津山 尚大","SG",75,2800,2,"日本人",30),
+  makePlayer("米須 玲音","PG",74,2500,2,"日本人",24),
+  makePlayer("野本 建吾","PF",73,2100,1,"日本人",34)
 ],
 "横浜ビー・コルセアーズ":[
-  makePlayer("ダミアン・イングリス","C/PF",88,15000,1,"外国籍"),
-  makePlayer("ケーレブ・ターズースキー","C",87,13500,1,"外国籍"),
-  makePlayer("ドノバン・ウィリアムズ","SF",86,12500,1,"外国籍"),
-  makePlayer("河村 勇輝","PG",97,35000,2,"日本人"),
-  makePlayer("森井 健太","PG",76,3200,2,"日本人"),
-  makePlayer("須藤 昂矢","SG",75,2600,1,"日本人"),
-  makePlayer("松崎 裕樹","SF",76,3100,3,"日本人"),
-  makePlayer("杉浦 佑成","SF",75,2900,2,"日本人"),
-  makePlayer("大庭 岳輝","SG",73,2200,1,"日本人"),
-  makePlayer("キング・オブ・ダミアン","C",86,12500,1,"外国籍")
+  makePlayer("ダミアン・イングリス","C/PF",88,15000,1,"外国籍",31),
+  makePlayer("ケーレブ・ターズースキー","C",87,13500,1,"外国籍",33),
+  makePlayer("ドノバン・ウィリアムズ","SF",86,12500,1,"外国籍",25),
+  makePlayer("河村 勇輝","PG",97,35000,2,"日本人",25),
+  makePlayer("森井 健太","PG",76,3200,2,"日本人",30),
+  makePlayer("須藤 昂矢","SG",75,2600,1,"日本人",28),
+  makePlayer("松崎 裕樹","SF",76,3100,3,"日本人",25),
+  makePlayer("杉浦 佑成","SF",75,2900,2,"日本人",30),
+  makePlayer("大庭 岳輝","SG",73,2200,1,"日本人",29),
+  makePlayer("キング・オブ・ダミアン","C",86,12500,1,"外国籍",31)
 ],
 "富山グラウジーズ":[
-  makePlayer("ジュリアン・マブンガ","SF/PF",87,13500,1,"外国籍"),
-  makePlayer("ジョシュ・スコット","C",86,12500,1,"外国籍"),
-  makePlayer("宇都 直輝","PG",77,3800,1,"日本人"),
-  makePlayer("野﨑 由之","SG",73,2400,2,"日本人"),
-  makePlayer("鎌田 隼","SG/SF",73,2200,2,"日本人"),
-  makePlayer("橋本 尚明","SG",74,2400,1,"日本人"),
-  makePlayer("阿部 翔太","PG",73,2100,2,"日本人"),
-  makePlayer("水戸 健史","SG",72,2000,1,"日本人"),
-  makePlayer("北村 哲也","C",72,2000,2,"日本人"),
-  makePlayer("上田 隼輔","SF",72,2000,1,"日本人")
+  makePlayer("ジュリアン・マブンガ","SF/PF",87,13500,1,"外国籍",35),
+  makePlayer("ジョシュ・スコット","C",86,12500,1,"外国籍",33),
+  makePlayer("宇都 直輝","PG",77,3800,1,"日本人",35),
+  makePlayer("野﨑 由之","SG",73,2400,2,"日本人",25),
+  makePlayer("鎌田 隼","SG/SF",73,2200,2,"日本人",26),
+  makePlayer("橋本 尚明","SG",74,2400,1,"日本人",33),
+  makePlayer("阿部 翔太","PG",73,2100,2,"日本人",28),
+  makePlayer("水戸 健史","SG",72,2000,1,"日本人",40),
+  makePlayer("北村 哲也","C",72,2000,2,"日本人",28),
+  makePlayer("上田 隼輔","SF",72,2000,1,"日本人",26)
 ],
 "信州ブレイブウォリアーズ":[
-  makePlayer("マイク・ダウム","PF/C",89,16000,1,"外国籍"),
-  makePlayer("マーカス・リー","C/PF",87,13500,1,"外国籍"),
-  makePlayer("キーボン・ハリス","SG",86,12500,1,"外国籍"),
-  makePlayer("古川 孝敏","SG/SF",81,5200,2,"日本人"),
-  makePlayer("土家 大輝","PG",76,3100,2,"日本人"),
-  makePlayer("星野 京介","SG",75,2800,2,"日本人"),
-  makePlayer("河田 チリジ","C",78,4500,1,"帰化"),
-  makePlayer("トビン マーカス海舟","PF",74,2500,2,"日本人"),
-  makePlayer("加藤 ダニエル","C/PF",73,2300,2,"日本人"),
-  makePlayer("小栗 瑛哉","PG",73,2000,2,"日本人")
+  makePlayer("マイク・ダウム","PF/C",89,16000,1,"外国籍",30),
+  makePlayer("マーカス・リー","C/PF",87,13500,1,"外国籍",32),
+  makePlayer("キーボン・ハリス","SG",86,12500,1,"外国籍",29),
+  makePlayer("古川 孝敏","SG/SF",81,5200,2,"日本人",38),
+  makePlayer("土家 大輝","PG",76,3100,2,"日本人",25),
+  makePlayer("星野 京介","SG",75,2800,2,"日本人",26),
+  makePlayer("河田 チリジ","C",78,4500,1,"帰化",36),
+  makePlayer("トビン マーカス海舟","PF",74,2500,2,"日本人",24),
+  makePlayer("加藤 ダニエル","C/PF",73,2300,2,"日本人",24),
+  makePlayer("小栗 瑛哉","PG",73,2000,2,"日本人",22)
 ],
 "三遠ネオフェニックス":[
-  makePlayer("ヤンテ・メイテン","PF/C",89,16000,1,"外国籍"),
-  makePlayer("ヴィット・ブラウン","PF",87,13500,1,"外国籍"),
-  makePlayer("テレンス・デイビス","SG/SF",88,15000,1,"外国籍"),
-  makePlayer("ジョシュ・ハレルソン","C/PF",84,9500,1,"帰化"),
-  makePlayer("大浦 颯太","PG",81,5200,2,"日本人"),
-  makePlayer("佐々木 隆成","PG",76,3200,1,"日本人"),
-  makePlayer("二上 耀","SG",77,3600,2,"日本人"),
-  makePlayer("湧川 颯斗","SG",74,2500,1,"日本人"),
-  makePlayer("太田 敦也","C",73,2200,1,"日本人"),
-  makePlayer("浅井 英矢","C",73,2100,2,"日本人")
+  makePlayer("ヤンテ・メイテン","PF/C",89,16000,1,"外国籍",30),
+  makePlayer("ヴィット・ブラウン","PF",87,13500,1,"外国籍",30),
+  makePlayer("テレンス・デイビス","SG/SF",88,15000,1,"外国籍",29),
+  makePlayer("ジョシュ・ハレルソン","C/PF",84,9500,1,"帰化",37),
+  makePlayer("大浦 颯太","PG",81,5200,2,"日本人",28),
+  makePlayer("佐々木 隆成","PG",76,3200,1,"日本人",30),
+  makePlayer("二上 耀","SG",77,3600,2,"日本人",27),
+  makePlayer("湧川 颯斗","SG",74,2500,1,"日本人",21),
+  makePlayer("太田 敦也","C",73,2200,1,"日本人",41),
+  makePlayer("浅井 英矢","C",73,2100,2,"日本人",26)
 ],
 "シーホース三河":[
-  makePlayer("ダバンテ・ガードナー","PF/C",90,17500,1,"外国籍"),
-  makePlayer("アーロン・ホワイト","C/PF",87,13500,1,"外国籍"),
-  makePlayer("ショーン・オマラ","C",86,12500,1,"外国籍"),
-  makePlayer("ジェイク・レイマン","SF/PF",86,12500,1,"外国籍"),
-  makePlayer("西田 優大","SG/SF",87,14000,3,"日本人"),
-  makePlayer("須田 侑太郎","SG/SF",82,6500,2,"日本人"),
-  makePlayer("角野 亮伍","SF",76,3200,2,"日本人"),
-  makePlayer("長野 誠史","PG",75,3000,2,"日本人"),
-  makePlayer("石井 講祐","SG",74,2500,1,"日本人"),
-  makePlayer("小阪 彰久","C",73,2200,2,"日本人")
+  makePlayer("ダバンテ・ガードナー","PF/C",90,17500,1,"外国籍",34),
+  makePlayer("アーロン・ホワイト","C/PF",87,13500,1,"外国籍",33),
+  makePlayer("ショーン・オマラ","C",86,12500,1,"外国籍",31),
+  makePlayer("ジェイク・レイマン","SF/PF",86,12500,1,"外国籍",32),
+  makePlayer("西田 優大","SG/SF",87,14000,3,"日本人",27),
+  makePlayer("須田 侑太郎","SG/SF",82,6500,2,"日本人",34),
+  makePlayer("角野 亮伍","SF",76,3200,2,"日本人",30),
+  makePlayer("長野 誠史","PG",75,3000,2,"日本人",31),
+  makePlayer("石井 講祐","SG",74,2500,1,"日本人",38),
+  makePlayer("小阪 彰久","C",73,2200,2,"日本人",34)
 ],
 "名古屋ダイヤモンドドルフィンズ":[
-  makePlayer("スコット・エサトン","PF/C",89,16000,1,"外国籍"),
-  makePlayer("アラン・ウィリアムズ","C",90,18000,1,"外国籍"),
-  makePlayer("クエンティン・ミロラ・ブラウン","PF/C",86,12500,1,"外国籍"),
-  makePlayer("齋藤 拓実","PG",85,11000,2,"日本人"),
-  makePlayer("今村 佳太","SF",83,8500,2,"日本人"),
-  makePlayer("アイザイア・マーフィー","SG",81,5500,2,"日本人"),
-  makePlayer("張本 天傑","PF",77,3800,1,"日本人"),
-  makePlayer("中東 泰斗","SG/SF",75,2700,1,"日本人"),
-  makePlayer("加藤 嵩都","PG",74,2400,2,"日本人"),
-  makePlayer("小澤 飛悠","SG",73,2200,2,"日本人")
+  makePlayer("スコット・エサトン","PF/C",89,16000,1,"外国籍",34),
+  makePlayer("アラン・ウィリアムズ","C",90,18000,1,"外国籍",33),
+  makePlayer("クエンティン・ミロラ・ブラウン","PF/C",86,12500,1,"外国籍",27),
+  makePlayer("齋藤 拓実","PG",85,11000,2,"日本人",31),
+  makePlayer("今村 佳太","SF",83,8500,2,"日本人",30),
+  makePlayer("アイザイア・マーフィー","SG",81,5500,2,"日本人",28),
+  makePlayer("張本 天傑","PF",77,3800,1,"日本人",34),
+  makePlayer("中東 泰斗","SG/SF",75,2700,1,"日本人",34),
+  makePlayer("加藤 嵩都","PG",74,2400,2,"日本人",26),
+  makePlayer("小澤 飛悠","SG",73,2200,2,"日本人",23)
 ],
 "滋賀レイクス":[
-  makePlayer("ゼイビア・スニード","SF",87,13500,1,"外国籍"),
-  makePlayer("ザック・オーガスト","C",86,12500,1,"外国籍"),
-  makePlayer("ライアン・クリーナー","C/PF",85,11000,1,"外国籍"),
-  makePlayer("テーブス 海","PG",82,6500,2,"日本人"),
-  makePlayer("遊 艾喆","PG",79,4800,2,"アジア特別枠"),
-  makePlayer("岡田 泰希","SG",74,2600,2,"日本人"),
-  makePlayer("駒水 大雅","SF",73,2400,2,"日本人"),
-  makePlayer("野本 大智","PG",73,2500,1,"日本人"),
-  makePlayer("川真田 紘也","C",75,3100,2,"日本人"),
-  makePlayer("柏倉 哲平","PG",75,2600,2,"日本人")
+  makePlayer("ゼイビア・スニード","SF",87,13500,1,"外国籍",28),
+  makePlayer("ザック・オーガスト","C",86,12500,1,"外国籍",32),
+  makePlayer("ライアン・クリーナー","C/PF",85,11000,1,"外国籍",28),
+  makePlayer("テーブス 海","PG",82,6500,2,"日本人",28),
+  makePlayer("遊 艾喆","PG",79,4800,2,"アジア特別枠",24),
+  makePlayer("岡田 泰希","SG",74,2600,2,"日本人",26),
+  makePlayer("駒水 大雅","SF",73,2400,2,"日本人",27),
+  makePlayer("野本 大智","PG",73,2500,1,"日本人",29),
+  makePlayer("川真田 紘也","C",75,3100,2,"日本人",28),
+  makePlayer("柏倉 哲平","PG",75,2600,2,"日本人",31)
 ],
 "京都ハンナリーズ":[
-  makePlayer("チャールズ・ジャクソン","C",87,13500,1,"外国籍"),
-  makePlayer("デメトレ・リバース","SF",86,12500,1,"外国籍"),
-  makePlayer("マイケル・フィリップス","PF",85,11000,1,"外国籍"),
-  makePlayer("前田 悟","SG/SF",80,5000,2,"日本人"),
-  makePlayer("澁田 怜音","PG",76,3200,1,"日本人"),
-  makePlayer("水野 幹太","PG",75,3000,1,"日本人"),
-  makePlayer("川嶋 勇人","SG",74,2600,1,"日本人"),
-  makePlayer("渡辺 竜之佑","SF",74,2500,2,"日本人"),
-  makePlayer("満田 丈太郎","SF",73,2400,2,"日本人"),
-  makePlayer("西部 秀馬","PG",72,2000,1,"日本人")
+  makePlayer("チャールズ・ジャクソン","C",87,13500,1,"外国籍",33),
+  makePlayer("デメトレ・リバース","SF",86,12500,1,"外国籍",31),
+  makePlayer("マイケル・フィリップス","PF",85,11000,1,"外国籍",29),
+  makePlayer("前田 悟","SG/SF",80,5000,2,"日本人",29),
+  makePlayer("澁田 怜音","PG",76,3200,1,"日本人",28),
+  makePlayer("水野 幹太","PG",75,3000,1,"日本人",28),
+  makePlayer("川嶋 勇人","SG",74,2600,1,"日本人",32),
+  makePlayer("渡辺 竜之佑","SF",74,2500,2,"日本人",31),
+  makePlayer("満田 丈太郎","SF",73,2400,2,"日本人",31),
+  makePlayer("西部 秀馬","PG",72,2000,1,"日本人",24)
 ],
 "大阪エヴェッサ":[
-  makePlayer("ジェイムズ・パルマー・ジュニア","SG/SF",89,16000,1,"外国籍"),
-  makePlayer("セバスチャン・サイズ","C/PF",88,15000,1,"外国籍"),
-  makePlayer("ヴォーディミル・ゲルン","C",87,13500,1,"外国籍"),
-  makePlayer("青木 保憲","PG",77,3800,2,"日本人"),
-  makePlayer("牧 隼利","SG/SF",76,3200,2,"日本人"),
-  makePlayer("木下 誠","PG",74,2300,1,"日本人"),
-  makePlayer("高橋 快成","PG",73,2100,2,"日本人"),
-  makePlayer("竹内 譲次","PF",77,3500,1,"日本人"),
-  makePlayer("合田 怜","SG",75,2700,1,"日本人"),
-  makePlayer("坂本 聖芽","SG",73,2000,2,"日本人")
+  makePlayer("ジェイムズ・パルマー・ジュニア","SG/SF",89,16000,1,"外国籍",29),
+  makePlayer("セバスチャン・サイズ","C/PF",88,15000,1,"外国籍",32),
+  makePlayer("ヴォーディミル・ゲルン","C",87,13500,1,"外国籍",33),
+  makePlayer("青木 保憲","PG",77,3800,2,"日本人",30),
+  makePlayer("牧 隼利","SG/SF",76,3200,2,"日本人",28),
+  makePlayer("木下 誠","PG",74,2300,1,"日本人",29),
+  makePlayer("高橋 快成","PG",73,2100,2,"日本人",22),
+  makePlayer("竹内 譲次","PF",77,3500,1,"日本人",41),
+  makePlayer("合田 怜","SG",75,2700,1,"日本人",33),
+  makePlayer("坂本 聖芽","SG",73,2000,2,"日本人",26)
 ],
 "神戸ストークス":[
-  makePlayer("ジェイレン・マクダニエルズ","SF/PF",90,18000,1,"外国籍"),
-  makePlayer("ファーダウス・アイマク","C",87,13500,1,"外国籍"),
-  makePlayer("ルーカス・サレー","PF",85,11000,1,"外国籍"),
-  makePlayer("寺園 脩斗","PG",76,3200,2,"日本人"),
-  makePlayer("小川 麻斗","PG",75,3000,2,"日本人"),
-  makePlayer("山口 颯斗","SF",79,4000,2,"日本人"),
-  makePlayer("八村 阿蓮","SF",74,2500,2,"日本人"),
-  makePlayer("中野 司","SG",74,2600,1,"日本人"),
-  makePlayer("道原 紀晃","SG",73,2100,1,"日本人"),
-  makePlayer("金田 龍弥","SF",73,2300,2,"日本人")
+  makePlayer("ジェイレン・マクダニエルズ","SF/PF",90,18000,1,"外国籍",28),
+  makePlayer("ファーダウス・アイマク","C",87,13500,1,"外国籍",27),
+  makePlayer("ルーカス・サレー","PF",85,11000,1,"外国籍",30),
+  makePlayer("寺園 脩斗","PG",76,3200,2,"日本人",31),
+  makePlayer("小川 麻斗","PG",75,3000,2,"日本人",24),
+  makePlayer("山口 颯斗","SF",79,4000,2,"日本人",27),
+  makePlayer("八村 阿蓮","SF",74,2500,2,"日本人",26),
+  makePlayer("中野 司","SG",74,2600,1,"日本人",29),
+  makePlayer("道原 紀晃","SG",73,2100,1,"日本人",36),
+  makePlayer("金田 龍弥","SF",73,2300,2,"日本人",24)
 ],
 "島根スサノオマジック":[
-  makePlayer("ニック・ケイ","PF",90,18000,1,"外国籍"),
-  makePlayer("ジョーダン・ヒース","PF/C",87,13500,1,"外国籍"),
-  makePlayer("デクスター・デニス","SG/SF",88,15000,1,"外国籍"),
-  makePlayer("安藤 誓哉","PG",89,17000,2,"日本人"),
-  makePlayer("岡田 侑大","SG",84,9500,2,"日本人"),
-  makePlayer("納見 悠仁","PG",76,3200,2,"日本人"),
-  makePlayer("中村 太地","PG",75,3000,1,"日本人"),
-  makePlayer("井上 宗一郎","PF",75,2700,2,"日本人"),
-  makePlayer("白濱 僚祐","SF",74,2300,1,"日本人"),
-  makePlayer("北川 弘","PG",75,2500,1,"日本人")
+  makePlayer("ニック・ケイ","PF",90,18000,1,"外国籍",34),
+  makePlayer("ジョーダン・ヒース","PF/C",87,13500,1,"外国籍",34),
+  makePlayer("デクスター・デニス","SG/SF",88,15000,1,"外国籍",27),
+  makePlayer("安藤 誓哉","PG",89,17000,2,"日本人",33),
+  makePlayer("岡田 侑大","SG",84,9500,2,"日本人",28),
+  makePlayer("納見 悠仁","PG",76,3200,2,"日本人",29),
+  makePlayer("中村 太地","PG",75,3000,1,"日本人",28),
+  makePlayer("井上 宗一郎","PF",75,2700,2,"日本人",27),
+  makePlayer("白濱 僚祐","SF",74,2300,1,"日本人",34),
+  makePlayer("北川 弘","PG",75,2500,1,"日本人",35)
 ],
 "広島ドラゴンフライズ":[
-  makePlayer("コフィ・コーバーン","C",89,16000,1,"外国籍"),
-  makePlayer("ドウェイン・エバンス","SF/PF",89,16000,1,"外国籍"),
-  makePlayer("ニック・メイヨ","PF/C",88,15000,1,"外国籍"),
-  makePlayer("クリストファー・スミス","SG/SF",86,12500,1,"外国籍"),
-  makePlayer("寺嶋 良","PG",80,5000,2,"日本人"),
-  makePlayer("伊藤 達哉","PG",78,3600,1,"日本人"),
-  makePlayer("三谷 桂司朗","SF",76,3100,2,"日本人"),
-  makePlayer("渡部 琉","SG/SF",74,2600,2,"日本人"),
-  makePlayer("晴山 ケビン","SF",76,3100,2,"日本人"),
-  makePlayer("上澤 俊喜","PG",74,2400,2,"日本人")
+  makePlayer("コフィ・コーバーン","C",89,16000,1,"外国籍",27),
+  makePlayer("ドウェイン・エバンス","SF/PF",89,16000,1,"外国籍",34),
+  makePlayer("ニック・メイヨ","PF/C",88,15000,1,"外国籍",29),
+  makePlayer("クリストファー・スミス","SG/SF",86,12500,1,"外国籍",31),
+  makePlayer("寺嶋 良","PG",80,5000,2,"日本人",28),
+  makePlayer("伊藤 達哉","PG",78,3600,1,"日本人",31),
+  makePlayer("三谷 桂司朗","SF",76,3100,2,"日本人",25),
+  makePlayer("渡部 琉","SG/SF",74,2600,2,"日本人",27),
+  makePlayer("晴山 ケビン","SF",76,3100,2,"日本人",33),
+  makePlayer("上澤 俊喜","PG",74,2400,2,"日本人",27)
 ],
 "佐賀バルーナーズ":[
-  makePlayer("デイミアン・ドットソン","SG/SF",89,16000,1,"外国籍"),
-  makePlayer("ナシール・リトル","SF/PF",90,18000,1,"外国籍"),
-  makePlayer("デリック・マイケル・エクスザビエロ","PF",85,11000,1,"外国籍"),
-  makePlayer("金丸 晃輔","SF",83,8500,2,"日本人"),
-  makePlayer("角田 太輝","PG",75,2600,2,"日本人"),
-  makePlayer("橋本 晃佑","PF",75,2500,1,"日本人"),
-  makePlayer("岸田 篤生","PG",74,2300,1,"日本人"),
-  makePlayer("阿部 諒","SG",75,2600,1,"日本人"),
-  makePlayer("内尾 聡理","PG/SG",73,2100,2,"日本人"),
-  makePlayer("山下 泰弘","PG",75,2600,1,"日本人")
+  makePlayer("デイミアン・ドットソン","SG/SF",89,16000,1,"外国籍",32),
+  makePlayer("ナシール・リトル","SF/PF",90,18000,1,"外国籍",26),
+  makePlayer("デリック・マイケル・エクスザビエロ","PF",85,11000,1,"外国籍",25),
+  makePlayer("金丸 晃輔","SF",83,8500,2,"日本人",37),
+  makePlayer("角田 太輝","PG",75,2600,2,"日本人",26),
+  makePlayer("橋本 晃佑","PF",75,2500,1,"日本人",32),
+  makePlayer("岸田 篤生","PG",74,2300,1,"日本人",31),
+  makePlayer("阿部 諒","SG",75,2600,1,"日本人",30),
+  makePlayer("内尾 聡理","PG/SG",73,2100,2,"日本人",24),
+  makePlayer("山下 泰弘","PG",75,2600,1,"日本人",39)
 ],
 "長崎ヴェルカ":[
-  makePlayer("ジャレル・ブラントリー","PF",89,16000,1,"外国籍"),
-  makePlayer("リーヴァイ・ランドルフ","SG/SF",90,17500,1,"外国籍"),
-  makePlayer("アキル・ミッチェル","C/PF",88,15000,1,"外国籍"),
-  makePlayer("馬場 雄大","SG/SF",92,21000,1,"日本人"),
-  makePlayer("熊谷 航","PG",77,3300,2,"日本人"),
-  makePlayer("森川 正明","SG/SF",77,3200,2,"日本人"),
-  makePlayer("星川 堅信","SF",75,2500,2,"日本人"),
-  makePlayer("髙比良 寛治","SG",75,2600,2,"日本人"),
-  makePlayer("松本 健児リオン","SG",74,2300,1,"日本人"),
-  makePlayer("土屋アリスター時生","C",74,2400,1,"日本人")
+  makePlayer("ジャレル・ブラントリー","PF",89,16000,1,"外国籍",30),
+  makePlayer("リーヴァイ・ランドルフ","SG/SF",90,17500,1,"外国籍",33),
+  makePlayer("アキル・ミッチェル","C/PF",88,15000,1,"外国籍",34),
+  makePlayer("馬場 雄大","SG/SF",92,21000,1,"日本人",31),
+  makePlayer("熊谷 航","PG",77,3300,2,"日本人",30),
+  makePlayer("森川 正明","SG/SF",77,3200,2,"日本人",34),
+  makePlayer("星川 堅信","SF",75,2500,2,"日本人",25),
+  makePlayer("髙比良 寛治","SG",75,2600,2,"日本人",33),
+  makePlayer("松本 健児リオン","SG",74,2300,1,"日本人",32),
+  makePlayer("土屋アリスター時生","C",74,2400,1,"日本人",30)
 ],
 "琉球ゴールデンキングス":[
-  makePlayer("グラント・ジェレット","PF",88,15000,1,"外国籍"),
-  makePlayer("デイビッド・ヌワバ","SF/PF",90,18000,1,"外国籍"),
-  makePlayer("ジャック・クーリー","C",88,15000,1,"外国籍"),
-  makePlayer("ケビン・ジョーンズ","PF",86,12500,1,"外国籍"),
-  makePlayer("キーファー・ラベナ","PG/SG",85,11000,2,"アジア特別枠"),
-  makePlayer("大浦 颯太","PG",82,6500,2,"日本人"),
-  makePlayer("佐土原 遼","SF/PF",76,3200,2,"日本人"),
-  makePlayer("松脇 圭志","SG",76,3100,2,"日本人"),
-  makePlayer("小野寺 祥太","SG",77,3600,2,"日本人"),
-  makePlayer("川真田 紘也","C",75,3100,2,"日本人")
+  makePlayer("グラント・ジェレット","PF",88,15000,1,"外国籍",33),
+  makePlayer("デイビッド・ヌワバ","SF/PF",90,18000,1,"外国籍",32),
+  makePlayer("ジャック・クーリー","C",88,15000,1,"外国籍",35),
+  makePlayer("ケビン・ジョーンズ","PF",86,12500,1,"外国籍",37),
+  makePlayer("キーファー・ラベナ","PG/SG",85,11000,2,"アジア特別枠",32),
+  makePlayer("大浦 颯太","PG",82,6500,2,"日本人",28),
+  makePlayer("佐土原 遼","SF/PF",76,3200,2,"日本人",27),
+  makePlayer("松脇 圭志","SG",76,3100,2,"日本人",28),
+  makePlayer("小野寺 祥太","SG",77,3600,2,"日本人",31),
+  makePlayer("川真田 紘也","C",75,3100,2,"日本人",28)
 ]
 };
 
 function getInitialMarketPool(){
 return [
-  makePlayer("渡邊 雄太","SF/PF",96,30000,2,"日本人"),
-  makePlayer("アイラ・ブラウン","PF",83,8500,1,"帰化"),
-  makePlayer("ジョーダン・ナタイ","SF/PF",84,9500,1,"外国籍"),
-  makePlayer("カイ・ソット","C",85,11000,1,"外国籍"),
-  makePlayer("セクー・ドゥムブヤ","SF/PF",88,14000,1,"外国籍"),
-  makePlayer("ジャレル・マーティン","PF",87,13500,1,"外国籍"),
-  makePlayer("ショーン・オマラ","C",86,12000,1,"外国籍"),
-  makePlayer("ライアン・フォンテイン","PF",85,11000,1,"外国籍"),
-  makePlayer("ジャスティン・ハーパー","PF",86,12000,1,"外国籍"),
-  makePlayer("ペリー・エリス","PF",85,11000,1,"外国籍"),
-  makePlayer("ライアン・ケリー","PF",87,13000,1,"外国籍"),
-  makePlayer("ジュリアン・ライト","SF/PF",86,12000,1,"外国籍"),
-  makePlayer("ジャマール・フランクリン","SG/SF",88,14500,1,"外国籍"),
-  makePlayer("小野 龍猛","SF",75,2500,1,"日本人"),
-  makePlayer("ラシード ファラーズ","SF/PF",76,2800,1,"日本人"),
-  makePlayer("會田 圭佑","PG",74,2200,1,"日本人"),
-  makePlayer("村上 駿斗","SG",74,2300,1,"日本人"),
-  makePlayer("駒沢 颯","PG",74,2200,1,"日本人"),
-  makePlayer("石崎 巧","PG",73,2000,1,"日本人"),
-  makePlayer("網野 友雄","SF",73,2000,1,"日本人"),
-  makePlayer("岡田 優介","SG",74,2200,1,"日本人"),
-  makePlayer("佐藤 託矢","PF",73,2000,1,"日本人"),
-  makePlayer("遙山 智樹","SF",73,2000,1,"日本人"),
-  makePlayer("鹿毛 誠一郎","C",72,1800,1,"日本人"),
-  makePlayer("栗原 貴宏","SF",74,2300,1,"日本人"),
-  makePlayer("喜多川 修平","SG",75,2500,1,"日本人"),
-  makePlayer("中川 直之","PG",73,2000,1,"日本人"),
-  makePlayer("呉屋 貴教","SF",73,2000,1,"日本人"),
-  makePlayer("太田 和利","PG",72,1800,1,"日本人"),
-  makePlayer("桜木 ジェイアール","C",80,5000,1,"帰化")
+  makePlayer("渡邊 雄太","SF/PF",96,30000,2,"日本人",32),
+  makePlayer("アイラ・ブラウン","PF",83,8500,1,"帰化",43),
+  makePlayer("ジョーダン・ナタイ","SF/PF",84,9500,1,"外国籍",28),
+  makePlayer("カイ・ソット","C",85,11000,1,"外国籍",24),
+  makePlayer("セクー・ドゥムブヤ","SF/PF",88,14000,1,"外国籍",26),
+  makePlayer("ジャレル・マーティン","PF",87,13500,1,"外国籍",32),
+  makePlayer("ショーン・オマラ","C",86,12000,1,"外国籍",31),
+  makePlayer("ライアン・フォンテイン","PF",85,11000,1,"外国籍",29),
+  makePlayer("ジャスティン・ハーパー","PF",86,12000,1,"外国籍",37),
+  makePlayer("ペリー・エリス","PF",85,11000,1,"外国籍",32),
+  makePlayer("ライアン・ケリー","PF",87,13000,1,"外国籍",35),
+  makePlayer("ジュリアン・ライト","SF/PF",86,12000,1,"外国籍",39),
+  makePlayer("ジャマール・フランクリン","SG/SF",88,14500,1,"外国籍",35),
+  makePlayer("小野 龍猛","SF",75,2500,1,"日本人",38),
+  makePlayer("ラシード ファラーズ","SF/PF",76,2800,1,"日本人",29),
+  makePlayer("會田 圭佑","PG",74,2200,1,"日本人",30),
+  makePlayer("村上 駿斗","SG",74,2300,1,"日本人",29),
+  makePlayer("駒沢 颯","PG",74,2200,1,"日本人",27),
+  makePlayer("石崎 巧","PG",73,2000,1,"日本人",42),
+  makePlayer("網野 友雄","SF",73,2000,1,"日本人",45),
+  makePlayer("岡田 優介","SG",74,2200,1,"日本人",41),
+  makePlayer("佐藤 託矢","PF",73,2000,1,"日本人",42),
+  makePlayer("遙山 智樹","SF",73,2000,1,"日本人",33),
+  makePlayer("鹿毛 誠一郎","C",72,1800,1,"日本人",34),
+  makePlayer("栗原 貴宏","SF",74,2300,1,"日本人",38),
+  makePlayer("喜多川 修平","SG",75,2500,1,"日本人",37),
+  makePlayer("中川 直之","PG",73,2000,1,"日本人",33),
+  makePlayer("呉屋 貴教","SF",73,2000,1,"日本人",41),
+  makePlayer("太田 和利","PG",72,1800,1,"日本人",43),
+  makePlayer("桜木 ジェイアール","C",80,5000,1,"帰化",50)
 ];
+}
+
+// オフシーズン用ドラフト候補生成プール
+function generateDraftClass(){
+  const posList=["PG","SG","SF","PF","C"];
+  const names=["佐藤 健太","鈴木 翔","高橋 蓮","田中 悠人","伊藤 陽翔","渡辺 湊","山本 陸","中村 樹","小林 蒼","加藤 蓮","吉田 大輝","山田 隼人","佐々木 翼","山口 颯太","松本 悠真"];
+  const list=[];
+  for(let i=0; i<8; i++){
+    const name = names[Math.floor(Math.random()*names.length)] + " (" + (i+1) + ")";
+    const pos = posList[Math.floor(Math.random()*posList.length)];
+    const rating = Math.floor(74 + Math.random()*12); // 74〜85の即戦力ルーキー
+    const salary = Math.floor(2000 + Math.random()*2500); // 2000〜45万円
+    const age = Math.floor(18 + Math.random()*3); // 18〜20歳
+    list.push(makePlayer(name, pos, rating, salary, 3, "日本人", age));
+  }
+  return list;
 }
 
 function createNewGame(club="信州ブレイブウォリアーズ", gmName="マイケル"){
@@ -605,10 +584,11 @@ const initialRoster = REAL_ROSTERS[club] ? JSON.parse(JSON.stringify(REAL_ROSTER
 G={
 club,gmName,seasonStart:2026,season:"2026-27",
 fans:1250000,fanSatisfy:85,
-cash:600000,ticket:3500,attendance:ARENAS[club]?.cap ? Math.round(ARENAS[club].cap*0.8) : 4500,
+cash:800000,ticket:4000,attendance:ARENAS[club]?.cap ? Math.round(ARENAS[club].cap*0.85) : 4500,
 week:1,
 roster: initialRoster,
 market: getInitialMarketPool(),
+draftClass: [],
 coaches:[
   {id:uid(),name:"日本バスケ界の名将",role:"HC",rating:85,salary:12000}
 ],
@@ -620,13 +600,12 @@ coachMarket:[
 teams:makeTeams(),
 schedule:makeSchedule(),
 news:[
-  {id:uid(),title:`${club}が新体制でB.PREMIER開幕へ！`,date:"10月1日",body:`${gmName}GMの手腕にブースターの期待が高まる中、${ARENAS[club]?.name}を拠点とする60試合の長丁場シーズンが本格始動した。`}
+  {id:uid(),title:`${club}が新体制でB.PREMIER 60試合シーズン開幕へ！`,date:"10月1日",body:`${gmName}GMの手腕にブースターの期待が高まる中、${ARENAS[club]?.name}を拠点とする全60試合の長丁場シーズンが本格始動した。`}
 ],
-secretaryMeeting:null,
 phase:"regular",
 csStage:null,
 csResult:null,
-log:[`${gmName}氏が${club}のGMに就任しました！B.PREMIER開幕です。`],
+log:[`${gmName}氏が${club}のGMに就任しました！全60試合のB.PREMIER制覇を目指しましょう。`],
 lastResult:null
 };
 saveGame();
@@ -691,10 +670,10 @@ function homePage(){
 renderTopStatus();
 const c=cap();
 const arenaInfo = ARENAS[G.club] || {name:"専用アリーナ", cap:5000};
-const currentDateStr = SEASON_DATES[(G.week||1)-1] || "5月 最終節";
+const currentDateStr = SEASON_DATES[(G.week||1)-1] || "シーズン終了";
 let phaseText=`レギュラーシーズン (全60試合 / 第${G.week||1}節進行中)`;
 if(G.phase==="cs") phaseText="🏆 チャンピオンシップ（ポストシーズン）開催中";
-if(G.phase==="off") phaseText="🏖️ オフシーズン（契約更改・補強期間）";
+if(G.phase==="off") phaseText="🏖️ オフシーズン（ドラフト・契約更改期間）";
 
 return `<div class="arena-banner">
 <h3>🏀 ${esc(G.club)} (GM: ${esc(G.gmName)})</h3>
@@ -703,14 +682,14 @@ return `<div class="arena-banner">
 
 <div class="date-advance-box">
 <div>
-<div class="date-display">📅 第 ${G.week||1} 節: ${currentDateStr}</div>
+<div class="date-display">📅 第 ${G.week||1}/60 節: ${currentDateStr}</div>
 <div class="match-preview">次戦ホームアリーナ: ${esc(arenaInfo.name)}</div>
 </div>
-<button class="primary" data-act="nextgame" style="padding:10px 18px;font-size:13px">▶ 試合を進める (節進行)</button>
+${G.week<=60 ? `<button class="primary" data-act="nextgame" style="padding:10px 18px;font-size:13px">▶ 試合を進める (節進行)</button>` : `<button class="primary" data-act="startcs" style="padding:10px 18px;font-size:13px">🏆 CSに進む</button>`}
 </div>
 
 <section class="card">
-<h2><span>🏢 本部ダッシュボード</span> <span class="pill gold">第 ${G.week||1}/30 節</span></h2>
+<h2><span>🏢 本部ダッシュボード</span> <span class="pill gold">第 ${G.week||1}/60 節</span></h2>
 <div class="notice">現在の進行状況：<b>${phaseText}</b>（1.5億円以上スター枠: <b>${starCount(G.roster)}/1人</b>）</div>
 <div class="stats-grid">
 <div class="stat-box">現金資産<strong>${yen(G.cash)}</strong></div>
@@ -725,7 +704,7 @@ return `<div class="arena-banner">
 <div class="task-item" style="cursor:pointer" data-act="gopage" data-id="season">
 <div class="task-info">
 <strong>🏀 60試合日程・節スケジュール進行</strong>
-<small>全30節の対戦カード確認と試合結果の実行を行います。</small>
+<small>全60節の対戦カード確認と試合結果の実行を行います。</small>
 </div>
 <div class="task-actions"><button class="primary" style="padding:6px 10px">開く</button></div>
 </div>
@@ -738,14 +717,14 @@ return `<div class="arena-banner">
 </div>
 <div class="task-item" style="cursor:pointer" data-act="gopage" data-id="team">
 <div class="task-info">
-<strong>👤 ロスター・チーム編成管理</strong>
-<small>保有選手のコンディション確認や契約更改を行います。</small>
+<strong>👤 ロスター・選手管理 (年齢・成長確認)</strong>
+<small>保有選手の年齢、コンディション、契約更改を行います。</small>
 </div>
 <div class="task-actions"><button style="padding:6px 10px">開く</button></div>
 </div>
 </section>
 
-${G.lastResult?`<section class="card"><h2>直近の試合結果 & チケット収入報告</h2>${resultHTML(G.lastResult)}</section>`:""}
+${G.lastResult?`<section class="card"><h2>直近の試合結果 & 収支詳細報告</h2>${resultHTML(G.lastResult)}</section>`:""}
 
 <section class="card">
 <h2>最新アクティビティ</h2>
@@ -759,7 +738,7 @@ const tab=window.standingsTab||"EAST";
 const getSorted=(div)=> [...G.teams].filter(t=>t.division===div).sort((a,b)=>b.wins-a.wins||((b.pf-b.pa)-(a.pf-a.pa)));
 
 return `<section class="card">
-<h2><span>B.PREMIER 公式順位表</span>
+<h2><span>B.PREMIER 公式順位表 (全60試合制)</span>
 <div class="row" style="gap:4px">
 <button class="${tab==='EAST'?'primary':''}" data-act="st-east" style="padding:4px 8px;font-size:11px">東地区</button>
 <button class="${tab==='WEST'?'primary':''}" data-act="st-west" style="padding:4px 8px;font-size:11px">西地区</button>
@@ -776,11 +755,11 @@ return `<section class="card">
 function teamPage(){
 renderTopStatus();
 return `<section class="card">
-<h2><span>ロスター・選手管理</span> <span class="pill">${G.roster.length}/14人</span></h2>
+<h2><span>ロスター・選手管理 (年齢・能力)</span> <span class="pill">${G.roster.length}/14人</span></h2>
 <p class="muted">外国籍: ${foreignCount()}/3人 | 帰化・アジア: ${specialCount()}/1人 | 1.5億円超スター: <b>${starCount(G.roster)}/1人</b></p>
 ${G.roster.map(p=>`<div class="player-item">
 <div class="player-info">
-<strong>${esc(p.name)}（${esc(p.pos)}） ${p.injury>0?"<span class='pill danger'>怪我離脱</span>":""} ${p.salary>=15000?"<span class='pill gold'>1.5億スター枠</span>":""}</strong>
+<strong>${esc(p.name)}（${esc(p.pos)}） 歳:${p.age} ${p.injury>0?"<span class='pill danger'>怪我離脱</span>":""} ${p.salary>=15000?"<span class='pill gold'>1.5億スター枠</span>":""}</strong>
 <small>能力: <b>${p.rating}</b> | 年俸: ${yen(p.salary)} | 契約残り: ${p.years}年 | 区分: ${esc(p.type)}</small>
 </div>
 <div class="player-actions">
@@ -806,13 +785,13 @@ ${(G.news||[]).map(n=>`<div class="news-box" data-act="shownews" data-id="${esc(
 function marketPage(){
 renderTopStatus();
 return `<section class="card">
-<h2><span>自由交渉選手リスト (FA獲得約30名)</span>
+<h2><span>自由交渉選手リスト (FA補強約30名)</span>
 <button class="primary" data-act="refreshmarket" style="padding:4px 8px;font-size:11px">リストを更新</button>
 </h2>
 <p class="muted">現在フリーの選手リストです（1.5億円以上のスター選手は各チーム1人まで）。</p>
 ${G.market.map(p=>`<div class="player-item">
 <div class="player-info">
-<strong>${esc(p.name)}（${esc(p.pos)}） ${p.salary>=15000?"<span class='pill gold'>1.5億スター</span>":""}</strong>
+<strong>${esc(p.name)}（${esc(p.pos)}） 歳:${p.age} ${p.salary>=15000?"<span class='pill gold'>1.5億スター</span>":""}</strong>
 <small>能力: <b>${p.rating}</b> | 年俸: ${yen(p.salary)} | 契約: ${p.years}年 | 区分: ${esc(p.type)}</small>
 </div>
 <div class="player-actions">
@@ -849,13 +828,13 @@ renderTopStatus();
 const c=cap();
 const arenaInfo = ARENAS[G.club] || {name:"専用アリーナ", cap:5000};
 return `<section class="card">
-<h2><span>経営・財務管理 (チケット収入設定)</span></h2>
-<div class="notice">ホームアリーナ: <b>${esc(arenaInfo.name)}</b> (最大収容: <b>${arenaInfo.cap.toLocaleString()}人</b>)</div>
+<h2><span>経営・財務管理 (ホームチケット収入大幅プラス設定)</span></h2>
+<div class="notice">ホームアリーナ: <b>${esc(arenaInfo.name)}</b> (最大収容: <b>${arenaInfo.cap.toLocaleString()}人</b>)<br>※ホーム開催時は大量のチケット収入およびグッズ・飲食収入が加算され大幅なプラス収支になります！</div>
 <div class="stats-grid" style="margin-bottom:12px">
 <div class="stat-box">現金資産<strong>${yen(G.cash)}</strong></div>
 <div class="stat-box">実質年俸総額<strong>${yen(c.rawSalary)}</strong></div>
 </div>
-<label><span>チケット平均価格 (円)</span><input id="ticketInput" type="number" min="500" max="30000" step="100" value="${G.ticket}"></label>
+<label><span>チケット平均価格 (円)</span><input id="ticketInput" type="number" min="1000" max="50000" step="500" value="${G.ticket}"></label>
 <label><span>見込み動員数 (人) [上限:${arenaInfo.cap}]</span><input id="attendanceInput" type="number" min="0" max="${arenaInfo.cap}" step="100" value="${G.attendance}"></label>
 <button class="primary" data-act="savefinance" style="width:100%;margin-top:8px">経営・チケット設定を反映する</button>
 </section>
@@ -865,10 +844,30 @@ ${coachesPage()}`;
 function schedulePage(){
 renderTopStatus();
 if(G.phase==="off"){
+let draftHTML = "";
+if(G.draftClass && G.draftClass.length > 0){
+  draftHTML = `
+  <section class="card" style="border:2px solid var(--primary);margin-top:14px">
+  <h2><span>🌟 新人ドラフト会議 (ルーキー獲得)</span> <span class="pill gold">開催中</span></h2>
+  <p class="muted">将来有望なルーキー選手がドラフト候補としてエントリーしています。指名してチームに迎えましょう！</p>
+  ${G.draftClass.map(p=>`<div class="player-item">
+  <div class="player-info">
+  <strong>${esc(p.name)}（${esc(p.pos)}） 歳:${p.age}</strong>
+  <small>初期能力: <b>${p.rating}</b> | 契約年俸: ${yen(p.salary)} | 区分: ${esc(p.type)}</small>
+  </div>
+  <div class="player-actions">
+  ${btn("ドラフト指名","signdraft",p.id,"primary")}
+  </div>
+  </div>`).join("")}
+  </section>`;
+}
+
 return `<section class="card">
-<h2><span>オフシーズン管理</span></h2>
-<p class="muted">シーズンが終了しました。契約更改や新シーズンへの移行を行ってください。</p>
-<button class="primary" data-act="nextseason" style="width:100%;margin-top:12px;padding:12px">新シーズンへ移行する</button>
+<h2><span>🏖️ オフシーズン管理 (ドラフト・契約更改)</span></h2>
+<p class="muted">シーズンが終了しました。新人ドラフト会議の実施、選手の年齢変化・能力成長、新シーズンへの移行を行ってください。</p>
+${!G.draftClass || G.draftClass.length===0 ? `<button class="success" data-act="opendraft" style="width:100%;margin-top:10px;padding:12px">🌟 新人ドラフト会議を開催する</button>` : ""}
+${draftHTML}
+<button class="primary" data-act="nextseason" style="width:100%;margin-top:12px;padding:12px">🚀 新シーズンへ移行する (年齢・能力変動)</button>
 </section>`;
 }
 
@@ -883,18 +882,18 @@ ${G.csResult?`<div style="margin-top:12px">${resultHTML(G.csResult)}</div>`:""}
 }
 
 const currentWeek=G.week||1;
-const currentDateStr=SEASON_DATES[currentWeek-1] || "5月 最終節";
+const currentDateStr=SEASON_DATES[currentWeek-1] || "最終節";
 const nextGames=G.schedule.filter(g=>g.round===currentWeek);
 
 return `<section class="card">
-<h2><span>日程・第 ${currentWeek} 節 (${currentDateStr})</span> <span class="pill">消化: ${(G.week||1)-1}/30節</span></h2>
+<h2><span>日程・第 ${currentWeek} 節 (${currentDateStr})</span> <span class="pill">消化: ${(G.week||1)-1}/60節</span></h2>
 <div style="margin-bottom:12px">
-${currentWeek<=30?btn(`▶ 第 ${currentWeek} 節の試合を実行 (${currentDateStr})`,"nextgame","","primary"):btn("ポストシーズンへ進む","startcs","","primary")}
+${currentWeek<=60?btn(`▶ 第 ${currentWeek} 節の試合を実行 (${currentDateStr})`,"nextgame","","primary"):btn("ポストシーズンへ進む","startcs","","primary")}
 </div>
 <h3>第 ${currentWeek} 節 対戦カード (${nextGames.length}試合)</h3>
 ${nextGames.map(g=>`<div class="logline">${esc(g.home)} vs ${esc(g.away)} ${g.home===G.club||g.away===G.club?"<span class='pill gold'>自チーム戦</span>":""}</div>`).join("")||"<p class='muted'>今節の試合はありません。</p>"}
 </section>
-${G.lastResult?`<section class="card"><h2>直近の試合結果 & チケット収入詳細</h2>${resultHTML(G.lastResult)}</section>`:""}`;
+${G.lastResult?`<section class="card"><h2>直近の試合結果 & 収支詳細報告</h2>${resultHTML(G.lastResult)}</section>`:""}`;
 }
 
 function showSecretaryReportModal(r){
@@ -904,9 +903,9 @@ const matchDate = SEASON_DATES[(G.week-2)>=0?(G.week-2):0] || "";
 
 let secretaryText = `${G.gmName}GM、第${G.week-1}節 (${matchDate}) の試合お疲れ様でした！`;
 if(isHomeMatch) {
-  secretaryText += `${arenaInfo.name}でのホーム戦、チケット収入が確実にクラブ資産に反映されています。試合結果と地区順位をご確認ください。`;
+  secretaryText += `${arenaInfo.name}でのホーム戦大盛況により、大量のチケット・グッズ収入が計上され大幅な黒字となりました！`;
 } else {
-  secretaryText += `今節はアウェー戦となります。アウェーでの戦果と地区順位のご報告です。`;
+  secretaryText += `今節はアウェー戦となります。アウェーでの戦果と財務状況のご報告です。`;
 }
 
 $("modalContainer").innerHTML=`
@@ -928,10 +927,11 @@ $("modalContainer").innerHTML=`
 <p style="margin:8px 0 0;font-size:11px;color:var(--muted)">会場: ${esc(r.venue)} / 動員数: ${Number(r.attendance).toLocaleString()}人 (${r.attendanceRate}%)</p>
 
 <div style="margin-top:10px;background:#091424;padding:10px;border-radius:8px;font-size:11px;text-align:left;border:1px solid #1a2c44">
-<div style="font-weight:bold;color:var(--primary);margin-bottom:4px;border-bottom:1px solid #1f3352;padding-bottom:2px">📊 本日のチケット収入 & 収支</div>
-<div style="display:flex;justify-content:space-between"><span>チケット収入:</span><b style="color:var(--success)">+${yen(r.revenue)}</b></div>
-<div style="display:flex;justify-content:space-between"><span>球団運営コスト:</span><b style="color:var(--danger)">-${yen(r.expenses)}</b></div>
-<div style="margin-top:6px;border-top:1px solid #1f3352;padding-top:6px;display:flex;justify-content:space-between"><span>今節の純利益:</span><b style="color:var(--primary)">+${yen(r.profit)}</b></div>
+<div style="font-weight:bold;color:var(--primary);margin-bottom:4px;border-bottom:1px solid #1f3352;padding-bottom:2px">📊 詳細収支レポート (${isHomeMatch ? 'ホーム開催・大幅プラス' : 'アウェー開催'})</div>
+<div style="display:flex;justify-content:space-between"><span>チケット収入:</span><b style="color:var(--success)">+${yen(r.ticketRev)}</b></div>
+<div style="display:flex;justify-content:space-between"><span>グッズ・飲食収入:</span><b style="color:var(--success)">+${yen(r.goodsRev)}</b></div>
+<div style="display:flex;justify-content:space-between"><span>球団運営・遠征コスト:</span><b style="color:var(--danger)">-${yen(r.expenses)}</b></div>
+<div style="margin-top:6px;border-top:1px solid #1f3352;padding-top:6px;display:flex;justify-content:space-between"><span>本節の純利益:</span><b style="color:var(--primary)">+${yen(r.profit)}</b></div>
 </div>
 </div>
 
@@ -956,6 +956,7 @@ $("closeReportBtn").onclick = () => {
 }
 
 function resultHTML(r){
+const isHome = r.ticketRev > 0;
 return `<div class="scoreboard">
 <div style="font-size:10px;color:var(--muted);letter-spacing:1px">B.PREMIER OFFICIAL RESULT & FINANCE REPORT</div>
 <div class="scoreline">
@@ -968,10 +969,11 @@ return `<div class="scoreboard">
 <p style="margin:8px 0 0;font-size:11px;color:var(--muted)">会場: ${esc(r.venue)} / 動員数: ${Number(r.attendance).toLocaleString()}人 (${r.attendanceRate}%)</p>
 
 <div style="margin-top:10px;background:#091424;padding:10px;border-radius:8px;font-size:11px;text-align:left;border:1px solid #1a2c44">
-<div style="font-weight:bold;color:var(--primary);margin-bottom:4px;border-bottom:1px solid #1f3352;padding-bottom:2px">📊 本日のチケット収入 & 収支</div>
-<div style="display:flex;justify-content:space-between"><span>チケット収入:</span><b style="color:var(--success)">+${yen(r.revenue)}</b></div>
-<div style="display:flex;justify-content:space-between"><span>球団運営コスト:</span><b style="color:var(--danger)">-${yen(r.expenses)}</b></div>
-<div style="margin-top:6px;border-top:1px solid #1f3352;padding-top:6px;display:flex;justify-content:space-between"><span>今節の純利益:</span><b style="color:var(--primary)">+${yen(r.profit)}</b></div>
+<div style="font-weight:bold;color:var(--primary);margin-bottom:4px;border-bottom:1px solid #1f3352;padding-bottom:2px">📊 詳細収支レポート (${isHome ? 'ホーム開催・大幅プラス' : 'アウェー開催'})</div>
+<div style="display:flex;justify-content:space-between"><span>チケット収入:</span><b style="color:var(--success)">+${yen(r.ticketRev)}</b></div>
+<div style="display:flex;justify-content:space-between"><span>グッズ・飲食収入:</span><b style="color:var(--success)">+${yen(r.goodsRev)}</b></div>
+<div style="display:flex;justify-content:space-between"><span>球団運営・遠征コスト:</span><b style="color:var(--danger)">-${yen(r.expenses)}</b></div>
+<div style="margin-top:6px;border-top:1px solid #1f3352;padding-top:6px;display:flex;justify-content:space-between"><span>本節の純利益:</span><b style="color:var(--primary)">+${yen(r.profit)}</b></div>
 </div>
 </div>`;
 }
@@ -993,7 +995,7 @@ ${G.teams.map(t=>`<option value="${esc(t.name)}" ${G.club===t.name?"selected":""
 
 function newGameScreen(){
 return `<section class="card" style="margin-top:20px">
-<h2><span>B.PREMIER GM 起動 (FIXED EDITION)</span></h2>
+<h2><span>B.PREMIER GM 起動 (ULTIMATE EDITION)</span></h2>
 <p class="muted">GMのお名前と、指揮を執るクラブを選択して就任してください（秘書サリナが全面サポートします）。</p>
 <label><span>GMのお名前</span><input id="firstGmName" type="text" value="マイケル" placeholder="例: 田中GM"></label>
 <label><span>担当クラブ</span><select id="firstClub">
@@ -1026,7 +1028,7 @@ return base + cBonus;
 
 function simulateGame(){
 const currentRound=G.week||1;
-if(currentRound>30){alert("レギュラーシーズンは終了しています。ポストシーズンへ進んでください。");return;}
+if(currentRound>60){alert("レギュラーシーズンは全60試合終了しています。ポストシーズンへ進んでください。");return;}
 const roundGames=G.schedule.filter(g=>g.round===currentRound);
 const dateStr=SEASON_DATES[currentRound-1] || "";
 
@@ -1063,15 +1065,16 @@ const arena = ARENAS[g.home] || {name:"アリーナ", cap:5000};
 const attendance = Math.min(arena.cap, Math.round(G.attendance * (0.95 + Math.random() * 0.1)));
 const attendanceRate = Math.round((attendance / arena.cap) * 100);
 
-// ホーム戦の場合のみチケット収入を正確に計上、アウェーはチケット収入なし
-const revenue = isHome ? Math.round(attendance * (G.ticket || 3500) / 10000) : 0;
-const expenses = Math.round(800 + rawSalaryTotal() / 110 + G.coaches.reduce((s,c)=>s+c.salary,0) / 160);
-const profit = revenue - expenses;
+// ホーム開催時は大規模なチケット・グッズ収入で大幅にプラスにする（例: 収容人数×単価×倍率）
+const ticketRev = isHome ? Math.round(attendance * (G.ticket || 4000) / 800) : 0;
+const goodsRev = isHome ? Math.round(ticketRev * 0.45) : 0; // グッズ・飲食売上追加
+const expenses = Math.round(600 + rawSalaryTotal() / 140 + G.coaches.reduce((s,c)=>s+c.salary,0) / 200);
+const profit = (ticketRev + goodsRev) - expenses;
 
 G.cash += profit;
 
 let isWin = (isHome && hs > as) || (isAway && as > hs);
-G.fans = Math.round(G.fans + (isWin ? 1500 : -600));
+G.fans = Math.round(G.fans + (isWin ? 1800 : -500));
 G.fanSatisfy = Math.min(100, Math.max(20, G.fanSatisfy + (isWin ? 1 : -2)));
 
 myTeamMatchRes = {
@@ -1081,14 +1084,15 @@ myTeamMatchRes = {
   venue: `${arena.name} (${arena.cap.toLocaleString()}人収容)`,
   attendance,
   attendanceRate,
-  revenue,
+  ticketRev,
+  goodsRev,
   expenses,
   profit
 };
 
 log(`第${currentRound}節 (${dateStr}): ${g.home} vs ${g.away} (${hs}-${as}) 収支: ${profit>=0?'+':''}${yen(profit)}`);
 
-if(Math.random()<0.15 && G.roster.length>0){
+if(Math.random()<0.12 && G.roster.length>0){
   const victim = G.roster[Math.floor(Math.random()*G.roster.length)];
   if(victim.injury<=0){
     victim.injury=Math.floor(Math.random()*3)+2;
@@ -1103,12 +1107,13 @@ if(myTeamMatchRes) {
 }
 
 G.week++;
-if(G.week>30){
-  G.news.unshift({id:uid(),title:"レギュラーシーズン全日程が終了",date:"5月",body:`全30節・60試合の激闘が終了しました。いよいよチャンピオンシップ（CS）が開幕します。`});
+if(G.week>60){
+  G.phase="off";
+  G.news.unshift({id:uid(),title:"レギュラーシーズン全60試合が終了",date:"5月",body:`全60節・60試合の長丁場なレギュラーシーズンが終了しました。オフシーズンに入り、ドラフト会議と契約更改が行われます。`});
 }
 
 saveGame();
-showSecretaryReportModal(myTeamMatchRes || {home:G.club,away:"対戦相手",hs:0,as:0,periods:[[0,0],[0,0],[0,0],[0,0]],venue:"アリーナ",attendance:4000,attendanceRate:80,revenue:0,expenses:0,profit:0});
+showSecretaryReportModal(myTeamMatchRes || {home:G.club,away:"対戦相手",hs:0,as:0,periods:[[0,0],[0,0],[0,0],[0,0]],venue:"アリーナ",attendance:4000,attendanceRate:80,ticketRev:0,goodsRev:0,expenses:0,profit:0});
 }
 
 function startCS(){
@@ -1132,11 +1137,12 @@ if(hs===as){as+=1;periods[3][1]++;}
 
 let isWin = hs > as;
 const homeArenaInfo = ARENAS[G.club] || {name:"アリーナ", cap:5000};
-const rev=Math.round(8000*G.ticket/10000);
-const exp=1500;
-const profit=rev-exp;
+const ticketRev=Math.round(8000*G.ticket/800);
+const goodsRev=Math.round(ticketRev*0.5);
+const exp=1200;
+const profit=(ticketRev+goodsRev)-exp;
 G.cash+=profit;
-G.csResult={home:G.club,away:"ライバルクラブ",hs,as,periods,venue:`${homeArenaInfo.name} (CS特設)`,attendance:8000,attendanceRate:Math.round(8000/homeArenaInfo.cap*100),revenue:rev,expenses:exp,profit};
+G.csResult={home:G.club,away:"ライバルクラブ",hs,as,periods,venue:`${homeArenaInfo.name} (CS特設)`,attendance:8000,attendanceRate:Math.round(8000/homeArenaInfo.cap*100),ticketRev,goodsRev,expenses:exp,profit};
 
 if(isWin){
 if(G.csStage==="quarter"){
@@ -1160,8 +1166,25 @@ saveGame();render();
 }
 
 function processNextSeason(){
-if(!confirm("シーズンを終了して次の年度へ移行しますか？"))return;
-G.roster.forEach(p=>p.years--);
+if(!confirm("シーズンを終了して次の年度（年齢変化・能力成長反映）へ移行しますか？"))return;
+
+// 1. 選手の年齢変化と能力変動（若い選手は成長、ベテランは衰退）
+G.roster.forEach(p=>{
+  p.age = (p.age || 25) + 1;
+  p.years--;
+  if(p.age <= 25){
+    // 若手は能力アップ (+1〜+3)
+    let growth = Math.floor(1 + Math.random()*3);
+    p.rating = Math.min(99, p.rating + growth);
+    log(`${p.name} (歳:${p.age}) は若手成長により能力が ${p.rating} にアップしました！`);
+  }else if(p.age >= 34){
+    // ベテランは衰退 (-1〜-3)
+    let decline = Math.floor(1 + Math.random()*3);
+    p.rating = Math.max(65, p.rating - decline);
+    log(`${p.name} (歳:${p.age}) はベテランによる能力低下で ${p.rating} になりました。`);
+  }
+});
+
 const expired=G.roster.filter(p=>p.years<=0);
 G.roster=G.roster.filter(p=>p.years>0);
 expired.forEach(p=>{p.years=1;G.market.push(p);});
@@ -1176,6 +1199,7 @@ G.phase="regular";
 G.csStage=null;
 G.csResult=null;
 G.lastResult=null;
+G.draftClass=[];
 log(`新シーズン (${G.season}) が開幕しました。`);
 saveGame();render();
 }
@@ -1197,6 +1221,26 @@ if(action==="save"){alert(saveGame()?"データをセーブしました。":"セ
 if(action==="gopage"){PAGE=id;render();return;}
 if(action==="st-east"){window.standingsTab="EAST";render();return;}
 if(action==="st-west"){window.standingsTab="WEST";render();return;}
+if(action==="opendraft"){
+G.draftClass = generateDraftClass();
+log("新人のドラフト候補リストが発表されました。");
+saveGame();render();
+alert("新人ドラフト候補リストが発表されました！下部から選手を指名してください。");return;
+}
+if(action==="signdraft"){
+const i=G.draftClass.findIndex(p=>p.id===id);
+if(i<0)return;
+const p=G.draftClass[i];
+if(G.roster.length>=14)return alert("ロスター上限（14名）に達しています。");
+if(G.cash < p.salary)return alert("資金が不足しています。");
+
+G.cash -= p.salary;
+G.roster.push(p);
+G.draftClass.splice(i,1);
+log(`ドラフトで ${p.name} (${p.pos}) を獲得しました！`);
+saveGame();render();
+alert(`${p.name} とドラフト契約を結びました！`);return;
+}
 if(action==="refreshmarket"){
 G.market = getInitialMarketPool();
 log("自由交渉リストを最新情報に更新しました。");
@@ -1226,7 +1270,7 @@ if(REAL_ROSTERS[name]) {
   G.roster = JSON.parse(JSON.stringify(REAL_ROSTERS[name]));
 }
 if(ARENAS[name]) {
-  G.attendance = Math.round(ARENAS[name].cap * 0.8);
+  G.attendance = Math.round(ARENAS[name].cap * 0.85);
 }
 log("設定を更新しました。");
 saveGame();render();
@@ -1288,7 +1332,7 @@ if(action==="savefinance"){
 const t=Number($("ticketInput")?.value);
 const a=Number($("attendanceInput")?.value);
 const maxCap = ARENAS[G.club]?.cap || 20000;
-if(!Number.isFinite(t)||t<500||t>30000||!Number.isFinite(a)||a<0||a>maxCap)return alert(`入力値が不正です。（動員数はアリーナ上限 ${maxCap.toLocaleString()}人 以下にしてください）`);
+if(!Number.isFinite(t)||t<1000||t>50000||!Number.isFinite(a)||a<0||a>maxCap)return alert(`入力値が不正です。（動員数はアリーナ上限 ${maxCap.toLocaleString()}人 以下にしてください）`);
 G.ticket=Math.round(t);G.attendance=Math.round(a);
 log("経営方針を更新しました。");saveGame();render();return;
 }
@@ -1300,7 +1344,7 @@ if(action==="nextseason"){processNextSeason();return;}
 
 document.addEventListener("click",e=>{
 const b=e.target.closest("button") || e.target.closest(".news-box") || e.target.closest(".task-item");
-if(!b)return;
+|if(!b)return;
 if(b.dataset.page){PAGE=b.dataset.page;render();return;}
 if(b.dataset.act){
 try{act(b.dataset.act,b.dataset.id||"");}
