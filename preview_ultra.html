@@ -122,7 +122,7 @@ footer{color:var(--muted);text-align:center;padding:15px;font-size:11px}
 
 <script>
 "use strict";
-const SAVE_KEY="bleague_gm_ultra_b_premier_v23";
+const SAVE_KEY="bleague_gm_ultra_b_premier_v24";
 const $=id=>document.getElementById(id);
 let G=null,PAGE="home";
 
@@ -688,6 +688,8 @@ return `<div class="arena-banner">
 </div>
 </section>
 
+${G.lastResult?`<section class="card"><h2>直近の試合結果 & 収支報告</h2>${resultHTML(G.lastResult)}</section>`:""}
+
 <section class="card">
 <h2>最新アクティビティ</h2>
 ${(G.log||[]).slice(0,5).map(x=>`<div class="logline">${esc(x)}</div>`).join("")||"<p class='muted'>履歴はありません。</p>"}
@@ -833,25 +835,30 @@ ${currentWeek<=30?btn(`▶ 第 ${currentWeek} 週の試合・収支を実行`,"n
 </div>
 <h3>第 ${currentWeek} 週 対戦カード</h3>
 ${nextGames.map(g=>`<div class="logline">${esc(g.home)} vs ${esc(g.away)} ${g.home===G.club||g.away===G.club?"<span class='pill gold'>自チーム戦 (ホーム/アウェイ)</span>":""}</div>`).join("")||"<p class='muted'>今週の試合はありません。</p>"}
-</section>`;
+</section>
+${G.lastResult?`<section class="card"><h2>直近の試合結果 & 収支詳細</h2>${resultHTML(G.lastResult)}</section>`:""}`;
 }
 
 function showSecretaryReportModal(r){
 const arenaInfo = ARENAS[G.club] || {name:"アリーナ", cap:5000};
-const secretaryText = `
-${G.gmName}GM、第${G.week-1}週の試合お疲れ様でした！${arenaInfo.name}でのチームの戦いぶり、素晴らしかったですよ。
-本日の試合結果および収支のご報告です。
-`;
+const isHomeMatch = r.home === G.club;
+
+let secretaryText = `${G.gmName}GM、第${G.week-1}週の試合お疲れ様でした！`;
+if(isHomeMatch) {
+  secretaryText += `${arenaInfo.name}でのホーム戦、ブースターの熱気も最高潮でした。本日の試合結果および正確な収支のご報告です。`;
+} else {
+  secretaryText += `今週はアウェーゲームのためホーム興行収益はありませんが、アウェーでの戦果とクラブ財務のご報告です。`;
+}
 
 $("modalContainer").innerHTML=`
 <div class="modal-overlay" id="reportModal">
 <div class="modal-content" onclick="event.stopPropagation()">
-<h3 style="margin-top:0;color:var(--primary)">受・球団業務 第${G.week-1}週の報告</h3>
-<small style="color:var(--muted)">サリナ（秘書） / 宛先: ${esc(G.gmName)}GM</small>
+<h3 style="margin-top:0;color:var(--primary)">☕ 秘書サリナの業務報告 (第${G.week-1}週)</h3>
+<small style="color:var(--muted)">宛先: ${esc(G.gmName)}GM</small>
 <p style="font-size:12px;line-height:1.5;margin:8px 0">${esc(secretaryText)}</p>
 
 <div class="scoreboard">
-<div style="font-size:10px;color:var(--muted);letter-spacing:1px">B.PREMIER OFFICIAL RESULT & FINANCE</div>
+<div style="font-size:10px;color:var(--muted);letter-spacing:1px">B.PREMIER OFFICIAL RESULT & FINANCE REPORT</div>
 <div class="scoreline">
 <div><div style="font-size:12px">${esc(r.home)}</div><div class="team-score">${r.hs}</div></div>
 <div style="font-weight:bold;color:var(--muted)">VS</div>
@@ -956,7 +963,7 @@ const roundGames=G.schedule.filter(g=>g.round===currentRound);
 
 G.roster.forEach(p=>{if(p.injury>0)p.injury--;});
 
-let lastRes=null;
+let myTeamMatchRes=null;
 
 roundGames.forEach(g=>{
 let isHome=g.home===G.club;
@@ -982,36 +989,50 @@ if(score>against)t.wins++;else t.losses++;
 }
 }
 
+// 自チームの試合である場合は収支計算を確実に実行して保存
 if(isHome||isAway){
-const homeArena = ARENAS[g.home] || {name:"アリーナ", cap:5000};
-const attendance=Math.min(homeArena.cap, Math.round(G.attendance*(.95+Math.random()*0.2)));
-const attendanceRate = Math.round((attendance / homeArena.cap) * 100);
+const arena = ARENAS[g.home] || {name:"アリーナ", cap:5000};
+const attendance = Math.min(arena.cap, Math.round(G.attendance * (0.95 + Math.random() * 0.1)));
+const attendanceRate = Math.round((attendance / arena.cap) * 100);
 
-const revenue=isHome?Math.round(attendance*(G.ticket||3500)/6000):0;
-const expenses=isHome?Math.round(800+rawSalaryTotal()/110+G.coaches.reduce((s,c)=>s+c.salary,0)/160):0;
-const profit=isHome?(revenue-expenses):0;
-if(isHome){
-  G.cash+=profit;
-}
-let isWin = hs > as;
-G.fans=Math.round(G.fans+(isWin?1500:-600));
-G.fanSatisfy=Math.min(100,Math.max(20,G.fanSatisfy+(isWin?1:-2)));
+// ホーム戦の場合のみチケット収入と運営コストが発生、アウェー戦はコストのみ発生（またはゼロ）
+const revenue = isHome ? Math.round(attendance * (G.ticket || 3500) / 6000) : 0;
+const expenses = Math.round(800 + rawSalaryTotal() / 110 + G.coaches.reduce((s,c)=>s+c.salary,0) / 160);
+const profit = revenue - expenses;
 
-lastRes={home:g.home,away:g.away,hs,as,periods,venue:`${homeArena.name} (${homeArena.cap.toLocaleString()}人収容)`,attendance,attendanceRate,revenue:isHome?revenue:0,expenses:isHome?expenses:0,profit:isHome?profit:0};
-log(`第${currentRound}週: ${g.home} vs ${g.away} (${homeArena.name}) ${hs}-${as} ${isHome?`(収支: +${yen(profit)})`:""}`);
+G.cash += profit;
+
+let isWin = (isHome && hs > as) || (isAway && as > hs);
+G.fans = Math.round(G.fans + (isWin ? 1500 : -600));
+G.fanSatisfy = Math.min(100, Math.max(20, G.fanSatisfy + (isWin ? 1 : -2)));
+
+myTeamMatchRes = {
+  home: g.home,
+  away: g.away,
+  hs, as, periods,
+  venue: `${arena.name} (${arena.cap.toLocaleString()}人収容)`,
+  attendance,
+  attendanceRate,
+  revenue,
+  expenses,
+  profit
+};
+
+log(`第${currentRound}週: ${g.home} vs ${g.away} (${hs}-${as}) 収支: ${profit>=0?'+':''}${yen(profit)}`);
 
 if(Math.random()<0.15 && G.roster.length>0){
   const victim = G.roster[Math.floor(Math.random()*G.roster.length)];
   if(victim.injury<=0){
     victim.injury=Math.floor(Math.random()*3)+2;
     G.news.unshift({id:uid(),title:`【速報】${victim.name}が負傷離脱`,date:`第${currentRound}週`,body:`練習・試合中に${victim.name}選手が負傷し、全治約${victim.injury}週の見込みと診断されました。`});
-    log(`⚠️ ${victim.name}が負傷離脱しました（全治${victim.injury}週）`);
   }
 }
 }
 });
 
-if(lastRes) G.lastResult=lastRes;
+if(myTeamMatchRes) {
+  G.lastResult = myTeamMatchRes;
+}
 
 G.week++;
 if(G.week>30){
@@ -1019,8 +1040,8 @@ if(G.week>30){
 }
 
 saveGame();
-// 動画のように「日付進行ボタンを押したら、即座に秘書サリナのレポートモーダルが立ち上がる」仕様
-showSecretaryReportModal(lastRes || {home:G.club,away:"対戦相手",hs:0,as:0,periods:[[0,0],[0,0],[0,0],[0,0]],venue:"アリーナ",attendance:4000,attendanceRate:80,revenue:0,expenses:0,profit:0});
+// 試合終了後、即座に正しい計算結果の収支レポートモーダルを表示
+showSecretaryReportModal(myTeamMatchRes || {home:G.club,away:"対戦相手",hs:0,as:0,periods:[[0,0],[0,0],[0,0],[0,0]],venue:"アリーナ",attendance:4000,attendanceRate:80,revenue:0,expenses:0,profit:0});
 }
 
 function startCS(){
@@ -1100,7 +1121,7 @@ createNewGame(selectedClub, typedGmName);
 render();return;
 }
 if(action==="newgame"){
-if(!confirm("初期データに戻してやり実データをリセットしますか？"))return;
+if(!confirm("初期データに戻してやり直しますか？"))return;
 G=null;try{localStorage.removeItem(SAVE_KEY);}catch(e){}
 PAGE="home";render();return;
 }
