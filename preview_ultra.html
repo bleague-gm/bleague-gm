@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>B.LEAGUE GM ULTRA - Arena Edition</title>
+<title>B.LEAGUE GM ULTRA - Pro Edition</title>
 <style>
 :root{--bg:#070d16;--card:#0f1a2e;--card-border:#1f3352;--text:#e8f0fe;--muted:#8aa2c0;--primary:#f1c40f;--danger:#e74c3c;--success:#2ecc71;--accent:#3498db}
 *{box-sizing:border-box}
@@ -38,7 +38,7 @@ h3{font-size:12px;margin:8px 0 4px;color:var(--text)}
 .arena-banner h3{font-size:16px;color:var(--primary);margin:0 0 4px}
 .arena-banner p{font-size:11px;color:var(--muted);margin:0}
 
-.date-advance-box{background:#0b1526;border:1px solid #1c3150;border-radius:10px;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.date-advance-box{background:#0b1526;border:1px solid #1c3150;border-radius:10px;padding:12px 14px;display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
 .date-display{font-size:15px;font-weight:bold;color:var(--primary)}
 .match-preview{font-size:11px;color:var(--muted)}
 
@@ -85,7 +85,7 @@ th{background:#091424;color:var(--muted)}
 .news-box:hover{border-color:var(--primary)}
 .news-box small{color:var(--muted)}
 
-.modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);display:flex;justify-content:center;align-items:center;z-index:100;padding:16px}
+.modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);display:flex;justify-content:center;align-items:center;z-index:100;padding:16px}
 .modal-content{background:#0d1829;border:1px solid var(--primary);border-radius:14px;padding:20px;max-width:550px;width:100%;box-shadow:0 12px 32px rgba(0,0,0,0.7);max-height:90vh;overflow-y:auto}
 footer{color:var(--muted);text-align:center;padding:15px;font-size:11px}
 
@@ -99,7 +99,7 @@ footer{color:var(--muted);text-align:center;padding:15px;font-size:11px}
 <header>
 <div>
 <h1>🏀 B.LEAGUE GM ULTRA</h1>
-<p>ARENA & STOVE-LEAGUE EDITION</p>
+<p>STOVE-LEAGUE PRO EDITION</p>
 </div>
 <button class="primary" data-act="save">セーブ</button>
 </header>
@@ -122,7 +122,7 @@ footer{color:var(--muted);text-align:center;padding:15px;font-size:11px}
 
 <script>
 "use strict";
-const SAVE_KEY="bleague_gm_ultra_b_premier_v22";
+const SAVE_KEY="bleague_gm_ultra_b_premier_v23";
 const $=id=>document.getElementById(id);
 let G=null,PAGE="home";
 
@@ -543,11 +543,11 @@ return [
 ];
 }
 
-function createNewGame(club="信州ブレイブウォリアーズ"){
+function createNewGame(club="信州ブレイブウォリアーズ", gmName="マイケル"){
 const initialRoster = REAL_ROSTERS[club] ? JSON.parse(JSON.stringify(REAL_ROSTERS[club])) : JSON.parse(JSON.stringify(REAL_ROSTERS["信州ブレイブウォリアーズ"]));
 
 G={
-club,seasonStart:2026,season:"2026-27",
+club,gmName,seasonStart:2026,season:"2026-27",
 fans:1250000,fanSatisfy:85,
 cash:600000,ticket:3500,attendance:ARENAS[club]?.cap ? Math.round(ARENAS[club].cap*0.8) : 4500,
 week:1,
@@ -564,15 +564,13 @@ coachMarket:[
 teams:makeTeams(),
 schedule:makeSchedule(),
 news:[
-  {id:uid(),title:`${club}が新体制でB.PREMIER開幕へ！`,date:"2039年4月1日",body:`${ARENAS[club]?.name}をホームに迎えるゼネラルマネージャーの手腕にブースターの期待が高まっている。`},
-  {id:uid(),title:"1.5億円以上のスター条項が適用",date:"2039年4月1日",body:"各クラブ保有できるスーパーエースは1名までとなる新レギュレーションがスタートした。"}
+  {id:uid(),title:`${club}が新体制でB.PREMIER開幕へ！`,date:"2039年4月1日",body:`${gmName}GMの手腕にブースターの期待が高まる中、${ARENAS[club]?.name}を拠点とするシーズンが本格始動した。`}
 ],
-pendingMeeting:null,
 secretaryMeeting:null,
 phase:"regular",
 csStage:null,
 csResult:null,
-log:[`${club}としてB.PREMIERが開幕しました！秘書サリナと共にチームを勝利へ導きましょう。`],
+log:[`${gmName}氏が${club}のGMに就任しました！秘書サリナと共にチームを勝利へと導きましょう。`],
 lastResult:null
 };
 saveGame();
@@ -626,7 +624,7 @@ if(!G)return;
 const fanM = (G.fans / 10000).toFixed(3) + "万人";
 const cashB = (G.cash / 10000).toFixed(1) + "億円";
 $("topStatusBar").innerHTML=`
-<div class="status-item"><span>実選手</span> <b>${G.roster.length}/14</b></div>
+<div class="status-item"><span>GM</span> <b>${esc(G.gmName||"GM")}</b></div>
 <div class="status-item"><span>ファン</span> <b>${fanM}</b></div>
 <div class="status-item"><span>オーナー</span> <b style="color:var(--primary)">96</b></div>
 <div class="status-item"><span>現金</span> <b style="color:var(--primary)">${cashB}</b></div>
@@ -642,16 +640,16 @@ if(G.phase==="cs") phaseText="🏆 チャンピオンシップ（ポストシー
 if(G.phase==="off") phaseText="🏖️ オフシーズン（契約更改・補強期間）";
 
 return `<div class="arena-banner">
-<h3>🏀 ${esc(G.club)}</h3>
+<h3>🏀 ${esc(G.club)} (GM: ${esc(G.gmName)})</h3>
 <p>ホームアリーナ: ${esc(arenaInfo.name)} / 収容人数 ${arenaInfo.cap.toLocaleString()}人</p>
 </div>
 
 <div class="date-advance-box">
 <div>
 <div class="date-display">2039年 4月 ${G.week||1}日</div>
-<div class="match-preview">次戦ホームアリーナ: ${esc(arenaInfo.name)}</div>
+<div class="match-preview">次戦ホーム: ${esc(arenaInfo.name)}</div>
 </div>
-<button class="primary" data-act="nextgame" style="padding:10px 18px;font-size:13px">▶ 今週を進める</button>
+<button class="primary" data-act="nextgame" style="padding:10px 18px;font-size:13px">▶ 日を送る (週進行)</button>
 </div>
 
 <section class="card">
@@ -665,53 +663,35 @@ return `<div class="arena-banner">
 </div>
 </section>
 
-${G.secretaryMeeting?`<section class="card" style="border-color:var(--primary)">
-<h2><span>☕ 秘書サリナからのご案内</span> <span class="pill gold">秘書レポート</span></h2>
-<p><b>サリナ（秘書）:</b> ${esc(G.secretaryMeeting.text)}</p>
-<div class="row" style="margin-top:10px">
-${btn("確認して業務へ戻る","resolvesecretary","","primary")}
-</div>
-</section>`:""}
-
-${G.pendingMeeting?`<section class="card" style="border-color:var(--primary)">
-<h2><span>👔 首脳陣からの緊急相談</span> <span class="pill gold">要対応</span></h2>
-<p><b>ヘッドコーチ:</b> ${esc(G.pendingMeeting.text)}</p>
-<div class="row" style="margin-top:10px">
-${btn("コーチの意見を受け入れる","resolgemeeting","accept","primary")}
-${btn("現状維持でいく","resolgemeeting","reject","danger")}
-</div>
-</section>`:""}
-
 <section class="card">
-<h2><span>📋 業務一覧 (STOVE-LEAGUE)</span></h2>
-<div class="task-item">
+<h2><span>📋 業務一覧 (タップして移行)</span> <span class="pill">残り 3</span></h2>
+<div class="task-item" style="cursor:pointer" data-act="gopage" data-id="season">
 <div class="task-info">
-<strong>試合・収支の進行報告</strong>
-<small>今週の試合日程を進め、秘書サリナからの詳細な試合後レポートを受領します。</small>
+<strong>🏀 試合・週スケジュール進行</strong>
+<small>日程の確認および週の試合結果を実行します。</small>
 </div>
-<div class="task-actions">${btn("日程を見る","gopage","season","primary")}</div>
+<div class="task-actions"><button class="primary" style="padding:6px 10px">開く</button></div>
 </div>
-<div class="task-item">
+<div class="task-item" style="cursor:pointer" data-act="gopage" data-id="market">
 <div class="task-info">
-<strong>自由交渉選手の獲得</strong>
-<small>フリーエージェント選手約50名からチームの補強を行います。</small>
+<strong>⭐ 自由交渉選手リスト (FA補強)</strong>
+<small>25名以上の自由交渉選手から獲得を目指します。</small>
 </div>
-<div class="task-actions">${btn("自由交渉を見る","gopage","market")}</div>
+<div class="task-actions"><button style="padding:6px 10px">開く</button></div>
 </div>
-<div class="task-item">
+<div class="task-item" style="cursor:pointer" data-act="gopage" data-id="team">
 <div class="task-info">
-<strong>ロスター・編成確認</strong>
-<small>怪我人の確認や契約延長、解雇を行います。</small>
+<strong>👤 ロスター・チーム編成管理</strong>
+<small>保有選手のコンディション確認や契約更改を行います。</small>
 </div>
-<div class="task-actions">${btn("チーム管理","gopage","team")}</div>
+<div class="task-actions"><button style="padding:6px 10px">開く</button></div>
 </div>
 </section>
 
 <section class="card">
 <h2>最新アクティビティ</h2>
 ${(G.log||[]).slice(0,5).map(x=>`<div class="logline">${esc(x)}</div>`).join("")||"<p class='muted'>履歴はありません。</p>"}
-</section>
-${G.lastResult?`<section class="card"><h2>直近の試合結果 & 収支報告</h2>${resultHTML(G.lastResult)}</section>`:""}`;
+</section>`;
 }
 
 function standingsPage(){
@@ -849,12 +829,55 @@ const nextGames=G.schedule.filter(g=>g.round===currentWeek);
 return `<section class="card">
 <h2><span>日程・第 ${currentWeek} 週 進行</span> <span class="pill">消化: ${(G.week||1)-1}/30週</span></h2>
 <div style="margin-bottom:12px">
-${currentWeek<=30?btn(`第 ${currentWeek} 週の試合・収支レポートを実行`,"nextgame","","primary"):btn("ポストシーズンへ進む","startcs","","primary")}
+${currentWeek<=30?btn(`▶ 第 ${currentWeek} 週の試合・収支を実行`,"nextgame","","primary"):btn("ポストシーズンへ進む","startcs","","primary")}
 </div>
 <h3>第 ${currentWeek} 週 対戦カード</h3>
 ${nextGames.map(g=>`<div class="logline">${esc(g.home)} vs ${esc(g.away)} ${g.home===G.club||g.away===G.club?"<span class='pill gold'>自チーム戦 (ホーム/アウェイ)</span>":""}</div>`).join("")||"<p class='muted'>今週の試合はありません。</p>"}
-</section>
-${G.lastResult?`<section class="card"><h2>直近の試合結果 & 収支詳細</h2>${resultHTML(G.lastResult)}</section>`:""}`;
+</section>`;
+}
+
+function showSecretaryReportModal(r){
+const arenaInfo = ARENAS[G.club] || {name:"アリーナ", cap:5000};
+const secretaryText = `
+${G.gmName}GM、第${G.week-1}週の試合お疲れ様でした！${arenaInfo.name}でのチームの戦いぶり、素晴らしかったですよ。
+本日の試合結果および収支のご報告です。
+`;
+
+$("modalContainer").innerHTML=`
+<div class="modal-overlay" id="reportModal">
+<div class="modal-content" onclick="event.stopPropagation()">
+<h3 style="margin-top:0;color:var(--primary)">受・球団業務 第${G.week-1}週の報告</h3>
+<small style="color:var(--muted)">サリナ（秘書） / 宛先: ${esc(G.gmName)}GM</small>
+<p style="font-size:12px;line-height:1.5;margin:8px 0">${esc(secretaryText)}</p>
+
+<div class="scoreboard">
+<div style="font-size:10px;color:var(--muted);letter-spacing:1px">B.PREMIER OFFICIAL RESULT & FINANCE</div>
+<div class="scoreline">
+<div><div style="font-size:12px">${esc(r.home)}</div><div class="team-score">${r.hs}</div></div>
+<div style="font-weight:bold;color:var(--muted)">VS</div>
+<div><div style="font-size:12px">${esc(r.away)}</div><div class="team-score">${r.as}</div></div>
+</div>
+<div class="periods">${r.periods.map((p,i)=>`<div><b>${i+1}Q</b><br>${p[0]}-${p[1]}</div>`).join("")}
+<div><b>TOTAL</b><br><b>${r.hs}-${r.as}</b></div></div>
+<p style="margin:8px 0 0;font-size:11px;color:var(--muted)">会場: ${esc(r.venue)} / 動員数: ${Number(r.attendance).toLocaleString()}人 (${r.attendanceRate}%)</p>
+
+<div style="margin-top:10px;background:#091424;padding:10px;border-radius:8px;font-size:11px;text-align:left;border:1px solid #1a2c44">
+<div style="font-weight:bold;color:var(--primary);margin-bottom:4px;border-bottom:1px solid #1f3352;padding-bottom:2px">📊 本日の収支報告</div>
+<div style="display:flex;justify-content:space-between"><span>チケット収入:</span><b style="color:var(--success)">+${yen(r.revenue)}</b></div>
+<div style="display:flex;justify-content:space-between"><span>球団運営コスト:</span><b style="color:var(--danger)">-${yen(r.expenses)}</b></div>
+<div style="margin-top:6px;border-top:1px solid #1f3352;padding-top:6px;display:flex;justify-content:space-between"><span>今週の純利益 (小計):</span><b style="color:var(--primary)">+${yen(r.profit)}</b></div>
+</div>
+</div>
+
+<button class="primary" id="closeReportBtn" style="width:100%;margin-top:14px;padding:10px">確認済 (本部へ戻る)</button>
+</div></div>
+`;
+
+$("closeReportBtn").onclick = () => {
+  $("modalContainer").innerHTML="";
+  PAGE="home";
+  render();
+};
 }
 
 function resultHTML(r){
@@ -881,11 +904,12 @@ return `<div class="scoreboard">
 function settingsPage(){
 renderTopStatus();
 return `<section class="card">
-<h2><span>ゲーム設定・クラブ変更</span></h2>
+<h2><span>ゲーム設定・GM名変更</span></h2>
+<label><span>GM名 (あなたのお名前)</span><input id="gmNameInput" type="text" value="${esc(G.gmName||"マイケル")}"></label>
 <label><span>操作クラブ選択</span><select id="clubSelect">
 ${G.teams.map(t=>`<option value="${esc(t.name)}" ${G.club===t.name?"selected":""}>${esc(t.name)}（${t.division}）</option>`).join("")}
 </select></label>
-<button data-act="changeclub" class="primary" style="width:100%;margin-top:6px">操作クラブを変更する</button>
+<button data-act="changeclub" class="primary" style="width:100%;margin-top:6px">設定を保存する</button>
 <div style="margin-top:16px;border-top:1px solid #1a2c44;padding-top:12px">
 <button data-act="newgame" class="danger" style="width:100%">初期データから新しくやり直す (リセット)</button>
 </div>
@@ -894,8 +918,9 @@ ${G.teams.map(t=>`<option value="${esc(t.name)}" ${G.club===t.name?"selected":""
 
 function newGameScreen(){
 return `<section class="card" style="margin-top:20px">
-<h2><span>B.PREMIER GM 起動 (ARENA EDITION)</span></h2>
-<p class="muted">お好きなクラブを選択してゼネラルマネージャーに就任してください（秘書サリナが全面サポートします）。</p>
+<h2><span>B.PREMIER GM 起動 (PRO EDITION)</span></h2>
+<p class="muted">GMのお名前と、指揮を執るクラブを選択して就任してください（秘書サリナが全面サポートします）。</p>
+<label><span>GMのお名前</span><input id="firstGmName" type="text" value="マイケル" placeholder="例: 田中GM"></label>
 <label><span>担当クラブ</span><select id="firstClub">
 ${TEAM_NAMES.map(n=>`<option value="${esc(n)}" ${n==="信州ブレイブウォリアーズ"?"selected":""}>${esc(n)}（${ARENAS[n]?.name} / ${ARENAS[n]?.cap}人）</option>`).join("")}
 </select></label>
@@ -988,20 +1013,14 @@ if(Math.random()<0.15 && G.roster.length>0){
 
 if(lastRes) G.lastResult=lastRes;
 
-const homeArenaInfo = ARENAS[G.club] || {name:"アリーナ", cap:5000};
-const secretaryMsgs=[
-  `マイケルGM、第${currentRound}週の試合お疲れ様でした！${homeArenaInfo.name}でのホーム戦チケット収支は順調にプラスです。`,
-  `第${currentRound}週の報告です。${homeArenaInfo.name}の熱狂的なブースターの後押しもあり、チームの満足度が向上しています。`,
-  `今週のスケジュールが無事に終了しました。${homeArenaInfo.name}の動員数や経営状況も良好です。`
-];
-G.secretaryMeeting={text:secretaryMsgs[Math.floor(Math.random()*secretaryMsgs.length)]};
-
 G.week++;
 if(G.week>30){
   G.news.unshift({id:uid(),title:"レギュラーシーズン全日程が終了",date:"シーズン末",body:`全30週の激闘が終了しました。いよいよ年間王者を決めるチャンピオンシップ（CS）が開幕します。`});
 }
 
-saveGame();render();
+saveGame();
+// 動画のように「日付進行ボタンを押したら、即座に秘書サリナのレポートモーダルが立ち上がる」仕様
+showSecretaryReportModal(lastRes || {home:G.club,away:"対戦相手",hs:0,as:0,periods:[[0,0],[0,0],[0,0],[0,0]],venue:"アリーナ",attendance:4000,attendanceRate:80,revenue:0,expenses:0,profit:0});
 }
 
 function startCS(){
@@ -1076,11 +1095,12 @@ saveGame();render();
 function act(action,id){
 if(action==="firstgame"){
 const selectedClub = $("firstClub")?.value || "信州ブレイブウォリアーズ";
-createNewGame(selectedClub);
+const typedGmName = $("firstGmName")?.value.trim() || "マイケル";
+createNewGame(selectedClub, typedGmName);
 render();return;
 }
 if(action==="newgame"){
-if(!confirm("初期データに戻してやり直しますか？"))return;
+if(!confirm("初期データに戻してやり実データをリセットしますか？"))return;
 G=null;try{localStorage.removeItem(SAVE_KEY);}catch(e){}
 PAGE="home";render();return;
 }
@@ -1108,33 +1128,21 @@ $("modalContainer").innerHTML=`<div class="modal-overlay" id="closeModal">
 $("closeModal").onclick=()=>{$("modalContainer").innerHTML="";};
 return;
 }
-if(action==="resolvesecretary"){
-G.secretaryMeeting=null;
-saveGame();render();return;
-}
-if(action==="resolgemeeting"){
-if(id==="accept"){
-  G.fanSatisfy=Math.min(100,G.fanSatisfy+3);
-  log("首脳陣の意見を取り入れました（ファン満足度UP）");
-}else{
-  log("首脳陣の提案を見送りました");
-}
-G.pendingMeeting=null;
-saveGame();render();return;
-}
 if(action==="changeclub"){
 const name=$("clubSelect")?.value;
+const gmName=$("gmNameInput")?.value.trim() || "マイケル";
 if(!name)return;
 G.club=name;
+G.gmName=gmName;
 if(REAL_ROSTERS[name]) {
   G.roster = JSON.parse(JSON.stringify(REAL_ROSTERS[name]));
 }
 if(ARENAS[name]) {
   G.attendance = Math.round(ARENAS[name].cap * 0.8);
 }
-log("操作クラブを"+name+"に変更（ロスター・アリーナ更新）");
+log("設定を更新しました。");
 saveGame();render();
-alert("操作クラブを変更しました。ホームアリーナとロスターも更新されました。");return;
+alert("設定を保存しました。");return;
 }
 if(action==="extend"){
 const p=G.roster.find(x=>x.id===id);
@@ -1203,7 +1211,7 @@ if(action==="nextseason"){processNextSeason();return;}
 }
 
 document.addEventListener("click",e=>{
-const b=e.target.closest("button") || e.target.closest(".news-box");
+const b=e.target.closest("button") || e.target.closest(".news-box") || e.target.closest(".task-item");
 if(!b)return;
 if(b.dataset.page){PAGE=b.dataset.page;render();return;}
 if(b.dataset.act){
