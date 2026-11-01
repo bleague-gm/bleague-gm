@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>B.LEAGUE GM ULTRA - Real Rosters & Speed Edition</title>
+<title>B.LEAGUE GM ULTRA - Ultimate Edition</title>
 <style>
 :root{--bg:#070d16;--card:#0f1a2e;--card-border:#1f3352;--text:#e8f0fe;--muted:#8aa2c0;--primary:#f1c40f;--danger:#e74c3c;--success:#2ecc71;--accent:#3498db}
 *{box-sizing:border-box}
@@ -98,7 +98,7 @@ footer{color:var(--muted);text-align:center;padding:15px;font-size:11px}
 <header>
 <div>
 <h1>🏀 B.LEAGUE GM ULTRA</h1>
-<p>REAL ROSTERS & SPEED EDITION</p>
+<p>ULTIMATE COMPLETE EDITION</p>
 </div>
 <button class="primary" data-act="save">セーブ</button>
 </header>
@@ -121,7 +121,7 @@ footer{color:var(--muted);text-align:center;padding:15px;font-size:11px}
 
 <script>
 "use strict";
-const SAVE_KEY="bleague_gm_ultra_real_v3";
+const SAVE_KEY="bleague_gm_ultra_ultimate_complete_v4";
 const $=id=>document.getElementById(id);
 let G=null,PAGE="home";
 
@@ -209,7 +209,6 @@ for(let r=0; r<60; r++){
 return games;
 }
 
-// 実際のBリーグ最新ロスターデータを正確に反映
 const REAL_ROSTERS={
 "レバンガ北海道":[
   makePlayer("富永 啓生","SG",93,25000,2,"日本人",25),
@@ -533,10 +532,9 @@ return [
   makePlayer("カイ・ソット","C",85,11000,1,"外国籍",24),
   makePlayer("セクー・ドゥムブヤ","SF/PF",88,14000,1,"外国籍",26),
   makePlayer("ジャレル・マーティン","PF",87,13500,1,"外国籍",32),
+  makePlayer("ショーン・オマラ","C",86,12000,1,"外国籍",31),
   makePlayer("小野 龍猛","SF",75,2500,1,"日本人",38),
   makePlayer("ラシード ファラーズ","SF/PF",76,2800,1,"日本人",29),
-  makePlayer("會田 圭佑","PG",74,2200,1,"日本人",30),
-  makePlayer("村上 駿斗","SG",74,2300,1,"日本人",29),
   makePlayer("桜木 ジェイアール","C",80,5000,1,"帰化",50)
 ];
 }
@@ -564,7 +562,7 @@ club,gmName,seasonStart:2026,season:"2026-27",
 fans:1250000,fanSatisfy:85,
 cash:800000,ticket:4000,attendance:ARENAS[club]?.cap ? Math.round(ARENAS[club].cap*0.85) : 4500,
 week:1,
-simSpeed: "normal", // "slow", "fast", "skip"
+simSpeed: "normal",
 roster: initialRoster,
 market: getInitialMarketPool(),
 draftClass: [],
@@ -650,7 +648,7 @@ return `<div class="arena-banner">
 <div class="date-display">📅 第 ${G.week||1}/60 節: ${currentDateStr}</div>
 <div class="row" style="margin-bottom:8px;gap:6px">
 <span style="font-size:11px;color:var(--muted)">試合シミュレーション速度:</span>
-<button class="${G.simSpeed==='slow'?'primary':''}" data-act="setspeed" data-id="slow" style="padding:4px 8px;font-size:10px">🐢 通常(演出あり)</button>
+<button class="${G.simSpeed==='slow'?'primary':''}" data-act="setspeed" data-id="slow" style="padding:4px 8px;font-size:10px">🐢 通常(秘書報告)</button>
 <button class="${G.simSpeed==='fast'?'primary':''}" data-act="setspeed" data-id="fast" style="padding:4px 8px;font-size:10px">⚡ 高速表示</button>
 <button class="${G.simSpeed==='skip'?'primary':''}" data-act="setspeed" data-id="skip" style="padding:4px 8px;font-size:10px">⏩ 一括スキップ</button>
 </div>
@@ -669,13 +667,18 @@ ${G.week<=60 ? `<button class="primary" data-act="nextgame" style="width:100%;pa
 </section>
 
 <section class="card">
-<h2><span>📋 主要メニュー</span></h2>
-<div class="task-item" style="cursor:pointer" data-act="gopage" data-id="season"><div class="task-info"><strong>🏀 日程・節スケジュール確認</strong><small>全60節の対戦カード確認</small></div><button class="primary" style="padding:6px 10px">開く</button></div>
-<div class="task-item" style="cursor:pointer" data-act="gopage" data-id="market"><div class="task-info"><strong>⭐ 自由交渉選手リスト (FA)</strong><small>実在選手や大物FAの獲得</small></div><button style="padding:6px 10px">開く</button></div>
-<div class="task-item" style="cursor:pointer" data-act="gopage" data-id="team"><div class="task-info"><strong>👤 ロスター・選手管理</strong><small>年齢・能力・コンディション確認</small></div><button style="padding:6px 10px">開く</button></div>
+<h2><span>📋 業務一覧 (タップして移行)</span></h2>
+<div class="task-item" style="cursor:pointer" data-act="gopage" data-id="season"><div class="task-info"><strong>🏀 60試合日程・節スケジュール進行</strong><small>全60節の対戦カード確認と試合実行</small></div><button class="primary" style="padding:6px 10px">開く</button></div>
+<div class="task-item" style="cursor:pointer" data-act="gopage" data-id="market"><div class="task-info"><strong>⭐ 自由交渉選手リスト (FA補強)</strong><small>実戦的なFA選手や大物選手の獲得</small></div><button style="padding:6px 10px">開く</button></div>
+<div class="task-item" style="cursor:pointer" data-act="gopage" data-id="team"><div class="task-info"><strong>👤 ロスター・選手管理 (年齢・能力)</strong><small>選手のコンディション・契約更改</small></div><button style="padding:6px 10px">開く</button></div>
+<div class="task-item" style="cursor:pointer" data-act="gopage" data-id="finance"><div class="task-info"><strong>💰 経営・チケット設定</strong><small>チケット価格と動員数の調整</small></div><button style="padding:6px 10px">開く</button></div>
 </section>
 
 ${G.lastResult?`<section class="card"><h2>直近の試合結果 & 収支詳細報告</h2>${resultHTML(G.lastResult)}</section>`:""}
+
+<section class="card">
+<h2>最新アクティビティ</h2>
+${(G.log||[]).slice(0,5).map(x=>`<div class="logline">${esc(x)}</div>`).join("")||"<p class='muted'>履歴はありません。</p>"}
 </section>`;
 }
 
@@ -702,7 +705,7 @@ return `<section class="card">
 function teamPage(){
 renderTopStatus();
 return `<section class="card">
-<h2><span>ロスター・選手管理 (リアル戦力)</span> <span class="pill">${G.roster.length}/14人</span></h2>
+<h2><span>ロスター・選手管理 (リアル戦力＆年齢)</span> <span class="pill">${G.roster.length}/14人</span></h2>
 <p class="muted">外国籍: ${foreignCount()}/3人 | 帰化・アジア: ${specialCount()}/1人</p>
 ${G.roster.map(p=>`<div class="player-item">
 <div class="player-info">
@@ -732,7 +735,9 @@ ${(G.news||[]).map(n=>`<div class="news-box" data-act="shownews" data-id="${esc(
 function marketPage(){
 renderTopStatus();
 return `<section class="card">
-<h2><span>自由交渉選手リスト (FA)</span></h2>
+<h2><span>自由交渉選手リスト (FA補強)</span>
+<button class="primary" data-act="refreshmarket" style="padding:4px 8px;font-size:11px">リストを更新</button>
+</h2>
 ${G.market.map(p=>`<div class="player-item">
 <div class="player-info">
 <strong>${esc(p.name)}（${esc(p.pos)}） 歳:${p.age}</strong>
@@ -745,12 +750,22 @@ ${btn("獲得オファー","sign",p.id,"primary")}
 </section>`;
 }
 
+function coachesPage(){
+renderTopStatus();
+return `<section class="card">
+<h2><span>コーチングスタッフ</span></h2>
+${G.coaches.map(c=>`<div class="player-item"><div class="player-info"><strong>${esc(c.name)}（${esc(c.role)}）</strong><small>能力: ${c.rating} | 年俸: ${yen(c.salary)}</small></div><div class="player-actions">${btn("解任","firecoach",c.id,"danger")}</div></div>`).join("")}
+<h3 style="margin-top:16px">コーチ市場</h3>
+${G.coachMarket.map(c=>`<div class="player-item"><div class="player-info"><strong>${esc(c.name)}（${esc(c.role)}）</strong><small>能力: ${c.rating} | 年俸: ${yen(c.salary)}</small></div><div class="player-actions">${btn("契約","hirecoach",c.id,"primary")}</div></div>`).join("")}
+</section>`;
+}
+
 function financePage(){
 renderTopStatus();
 const c=cap();
 const arenaInfo = ARENAS[G.club] || {name:"専用アリーナ", cap:5000};
 return `<section class="card">
-<h2><span>経営・チケット設定</span></h2>
+<h2><span>経営・財務管理 (ホームチケット大幅プラス設定)</span></h2>
 <div class="notice">ホームアリーナ: <b>${esc(arenaInfo.name)}</b> (最大収容: <b>${arenaInfo.cap.toLocaleString()}人</b>)<br>※ホーム戦はチケット＆グッズ収入で大幅な黒字になります！</div>
 <div class="stats-grid" style="margin-bottom:12px">
 <div class="stat-box">現金資産<strong>${yen(G.cash)}</strong></div>
@@ -758,8 +773,9 @@ return `<section class="card">
 </div>
 <label><span>チケット平均価格 (円)</span><input id="ticketInput" type="number" min="1000" max="50000" step="500" value="${G.ticket}"></label>
 <label><span>見込み動員数 (人) [上限:${arenaInfo.cap}]</span><input id="attendanceInput" type="number" min="0" max="${arenaInfo.cap}" step="100" value="${G.attendance}"></label>
-<button class="primary" data-act="savefinance" style="width:100%;margin-top:8px">経営設定を保存</button>
-</section>`;
+<button class="primary" data-act="savefinance" style="width:100%;margin-top:8px">経営設定を保存する</button>
+</section>
+${coachesPage()}`;
 }
 
 function schedulePage(){
@@ -769,7 +785,7 @@ let draftHTML = "";
 if(G.draftClass && G.draftClass.length > 0){
   draftHTML = `
   <section class="card" style="border:2px solid var(--primary);margin-top:14px">
-  <h2><span>🌟 新人ドラフト会議 (ルーキー獲得)</span></h2>
+  <h2><span>🌟 新人ドラフト会議 (ルーキー獲得)</span> <span class="pill gold">開催中</span></h2>
   ${G.draftClass.map(p=>`<div class="player-item">
   <div class="player-info"><strong>${esc(p.name)}（${esc(p.pos)}） 歳:${p.age}</strong><small>能力: <b>${p.rating}</b> | 年俸: ${yen(p.salary)}</small></div>
   <div class="player-actions">${btn("指名","signdraft",p.id,"primary")}</div>
@@ -777,10 +793,19 @@ if(G.draftClass && G.draftClass.length > 0){
   </section>`;
 }
 return `<section class="card">
-<h2><span>🏖️ オフシーズン管理</span></h2>
+<h2><span>🏖️ オフシーズン管理 (ドラフト・契約更改)</span></h2>
 ${!G.draftClass || G.draftClass.length===0 ? `<button class="success" data-act="opendraft" style="width:100%;margin-top:10px;padding:12px">🌟 新人ドラフト会議を開催する</button>` : ""}
 ${draftHTML}
 <button class="primary" data-act="nextseason" style="width:100%;margin-top:12px;padding:12px">🚀 新シーズンへ移行 (年齢能力変動)</button>
+</section>`;
+}
+
+if(G.phase==="cs"){
+return `<section class="card">
+<h2><span>🏆 チャンピオンシップ (ポストシーズン)</span></h2>
+<div class="notice">ステージ: <b>${G.csStage==="quarter"?"準々決勝 (QF)":G.csStage==="semi"?"準決勝 (SF)":"決勝 (FINALS)"}</b></div>
+<button class="primary" data-act="simulatecs" style="width:100%;margin-top:10px;padding:12px">CSの試合を進める</button>
+${G.csResult?`<div style="margin-top:12px">${resultHTML(G.csResult)}</div>`:""}
 </section>`;
 }
 
@@ -789,7 +814,7 @@ const currentDateStr=SEASON_DATES[currentWeek-1] || "最終節";
 const nextGames=G.schedule.filter(g=>g.round===currentWeek);
 
 return `<section class="card">
-<h2><span>日程・第 ${currentWeek} 節 (${currentDateStr})</span></h2>
+<h2><span>日程・第 ${currentWeek} 節 (${currentDateStr})</span> <span class="pill">消化: ${(G.week||1)-1}/60節</span></h2>
 <div style="margin-bottom:12px">
 ${currentWeek<=60?btn(`▶ 第 ${currentWeek} 節の試合を実行`,"nextgame","","primary"):btn("ポストシーズンへ進む","startcs","","primary")}
 </div>
@@ -833,7 +858,7 @@ return `<div class="scoreboard">
 <div><b>TOTAL</b><br><b>${r.hs}-${r.as}</b></div></div>
 <p style="margin:8px 0 0;font-size:11px;color:var(--muted)">会場: ${esc(r.venue)} / 動員数: ${Number(r.attendance).toLocaleString()}人 (${r.attendanceRate}%)</p>
 <div style="margin-top:10px;background:#091424;padding:10px;border-radius:8px;font-size:11px;text-align:left;border:1px solid #1a2c44">
-<div style="font-weight:bold;color:var(--primary);margin-bottom:4px;border-bottom:1px solid #1f3352;padding-bottom:2px">📊 収支詳細</div>
+<div style="font-weight:bold;color:var(--primary);margin-bottom:4px;border-bottom:1px solid #1f3352;padding-bottom:2px">📊 詳細収支レポート</div>
 <div style="display:flex;justify-content:space-between"><span>チケット収入:</span><b style="color:var(--success)">+${yen(r.ticketRev)}</b></div>
 <div style="display:flex;justify-content:space-between"><span>グッズ・飲食収入:</span><b style="color:var(--success)">+${yen(r.goodsRev)}</b></div>
 <div style="display:flex;justify-content:space-between"><span>運営コスト:</span><b style="color:var(--danger)">-${yen(r.expenses)}</b></div>
@@ -859,7 +884,7 @@ ${G.teams.map(t=>`<option value="${esc(t.name)}" ${G.club===t.name?"selected":""
 
 function newGameScreen(){
 return `<section class="card" style="margin-top:20px">
-<h2><span>B.PREMIER GM 起動 (REAL ROSTERS)</span></h2>
+<h2><span>B.PREMIER GM 起動 (ULTIMATE COMPLETE)</span></h2>
 <p class="muted">GMのお名前とクラブを選択してください。</p>
 <label><span>GM名</span><input id="firstGmName" type="text" value="マイケル"></label>
 <label><span>担当クラブ</span><select id="firstClub">
@@ -875,7 +900,7 @@ try {
   const pages={home:homePage,standings:standingsPage,team:teamPage,news:newsPage,market:marketPage,finance:financePage,season:schedulePage,settings:settingsPage};
   $("app").innerHTML=(pages[PAGE]||homePage)();
 } catch(e) {
-  $("app").innerHTML=`<div class="card"><h2>エラー</h2><button class="danger" data-act="newgame">リセット</button></div>`;
+  $("app").innerHTML=`<div class="card"><h2>エラーが発生しました</h2><p class="muted">${esc(e.message)}</p><button class="danger" data-act="newgame">リセット</button></div>`;
 }
 }
 
@@ -934,7 +959,7 @@ const attendanceRate = Math.round((attendance / arena.cap) * 100);
 
 const ticketRev = isHome ? Math.round(attendance * (G.ticket || 4000) / 800) : 0;
 const goodsRev = isHome ? Math.round(ticketRev * 0.45) : 0;
-const expenses = Math.round(600 + rawSalaryTotal() / 140);
+const expenses = Math.round(600 + rawSalaryTotal() / 140 + G.coaches.reduce((s,c)=>s+c.salary,0) / 200);
 const profit = (ticketRev + goodsRev) - expenses;
 
 G.cash += profit;
@@ -955,7 +980,6 @@ G.week++;
 if(G.week>60){G.phase="off";}
 saveGame();
 
-// 速度に応じた挙動分岐
 if(G.simSpeed === "skip"){
   render();
 } else if(G.simSpeed === "fast"){
@@ -1026,10 +1050,14 @@ if(G.roster.length>=14)return alert("ロスター上限");
 G.cash-=p.salary; G.roster.push(p); G.draftClass.splice(i,1);
 saveGame();render();alert(`${p.name}獲得！`);return;
 }
+if(action==="refreshmarket"){
+G.market=getInitialMarketPool();
+saveGame();render();alert("自由交渉リストを更新しました");return;
+}
 if(action==="shownews"){
 const n=G.news.find(x=>x.id===id);
 if(!n)return;
-$("modalContainer").innerHTML=`<div class="modal-overlay"><div class="modal-content"><h3>${esc(n.title)}</h3><p>${esc(n.body)}</p><button class="primary" onclick="$('modalContainer').innerHTML=''" style="width:100%">閉じる</button></div></div>`;
+$("modalContainer").innerHTML=`<div class="modal-overlay" onclick="$('modalContainer').innerHTML=''"><div class="modal-content" onclick="event.stopPropagation()"><h3>${esc(n.title)}</h3><p>${esc(n.body)}</p><button class="primary" onclick="$('modalContainer').innerHTML=''" style="width:100%;margin-top:10px">閉じる</button></div></div>`;
 return;
 }
 if(action==="changeclub"){
@@ -1054,6 +1082,18 @@ const p=G.market[i];
 if(G.roster.length>=14)return alert("ロスター上限");
 G.cash-=p.salary; G.roster.push(p); G.market.splice(i,1);
 saveGame();render();alert(`${p.name}と契約！`);return;
+}
+if(action==="hirecoach"){
+const i=G.coachMarket.findIndex(c=>c.id===id);
+if(i<0)return;
+const c=G.coachMarket[i];
+G.cash-=c.salary; G.coaches.push(c); G.coachMarket.splice(i,1);
+saveGame();render();return;
+}
+if(action==="firecoach"){
+const i=G.coaches.findIndex(c=>c.id===id);
+if(i<0)return;
+G.coaches.splice(i,1);saveGame();render();return;
 }
 if(action==="savefinance"){
 G.ticket=Number($("ticketInput")?.value); G.attendance=Number($("attendanceInput")?.value);
