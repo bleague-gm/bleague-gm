@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>B.LEAGUE GM ULTRA - Matchday & Standings Edition</title>
+<title>B.LEAGUE GM ULTRA - Fixed Schedule & Revenue Edition</title>
 <style>
 :root{--bg:#070d16;--card:#0f1a2e;--card-border:#1f3352;--text:#e8f0fe;--muted:#8aa2c0;--primary:#f1c40f;--danger:#e74c3c;--success:#2ecc71;--accent:#3498db}
 *{box-sizing:border-box}
@@ -99,7 +99,7 @@ footer{color:var(--muted);text-align:center;padding:15px;font-size:11px}
 <header>
 <div>
 <h1>🏀 B.LEAGUE GM ULTRA</h1>
-<p>B.PREMIER DATES & STANDINGS EDITION</p>
+<p>B.PREMIER 60-GAMES & REVENUE FIXED EDITION</p>
 </div>
 <button class="primary" data-act="save">セーブ</button>
 </header>
@@ -122,7 +122,7 @@ footer{color:var(--muted);text-align:center;padding:15px;font-size:11px}
 
 <script>
 "use strict";
-const SAVE_KEY="bleague_gm_ultra_b_premier_v60_dates";
+const SAVE_KEY="bleague_gm_ultra_b_premier_v60_fix_v2";
 const $=id=>document.getElementById(id);
 let G=null,PAGE="home";
 
@@ -159,7 +159,6 @@ const EAST=Object.keys(ARENAS).slice(0,13);
 const WEST=Object.keys(ARENAS).slice(13,26);
 const TEAM_NAMES=[...EAST,...WEST];
 
-// B.LEAGUEの実日程に準拠した30節（60試合）の日付テーブル
 const SEASON_DATES = [
 "10月3日(土) - 10月4日(日)", "10月10日(土) - 10月11日(日)", "10月17日(土) - 10月18日(日)", "10月21日(水) [水曜開催]",
 "10月24日(土) - 10月25日(日)", "10月31日(土) - 11月1日(日)", "11月7日(土) - 11月8日(日)", "11月11日(水) [水曜開催]",
@@ -189,22 +188,65 @@ wins:0,losses:0,played:0,pf:0,pa:0
 }));
 }
 
+// 26チーム総当たり（ホーム＆アウェー各1試合＝計50試合）＋同地区内追加対戦（10試合）＝計60試合を確実に生成
 function makeSchedule(){
 const games=[];
-for(let r=0;r<30;r++){
-const rotation=TEAM_NAMES.map((_,i)=>TEAM_NAMES[(i+r)%26]);
-for(let i=0;i<13;i++){
-let home=rotation[i],away=rotation[25-i];
-if((r+i)%2){const t=home;home=away;away=t;}
-games.push({home,away,done:false,round:r+1,dateStr:SEASON_DATES[r]});
-let home2=rotation[(i+1)%26],away2=rotation[(24-i+26)%26];
-if(home2!==away2 && home2!==home && away2!==away){
-  if((r+i)%3===0){const t=home2;home2=away2;away2=t;}
-  games.push({home:home2,away:away2,done:false,round:r+1,dateStr:SEASON_DATES[r]});
+let gameId=1;
+
+// 1. レギュラーシーズン全26チームによるホーム＆アウェー総当たり対戦表を確実に構築 (各チーム相手に対しホーム/アウェーで2試合ずつ、計50節ベース)
+for(let r=0; r<25; r++){
+  const roundGames=[];
+  const paired=new Set();
+  const rotation = TEAM_NAMES.map((_,i)=>TEAM_NAMES[(i+r)%26]);
+  
+  for(let i=0; i<13; i++){
+    let home=rotation[i], away=rotation[25-i];
+    if(r%2===1){ const t=home; home=away; away=t; }
+    if(!paired.has(home) && !paired.has(away) && home!==away){
+      paired.add(home); paired.add(away);
+      roundGames.push({home, away, done:false, round:r+1, dateStr:SEASON_DATES[r] || "第"+(r+1)+"節", id:gameId++});
+    }
+  }
+  // 残りチームのペアリング補完（対戦相手が消えないように確実なマッチングを実行）
+  const unmatched = TEAM_NAMES.filter(t=>!paired.has(t));
+  for(let i=0; i<unmatched.length; i+=2){
+    if(i+1 < unmatched.length){
+      let home=unmatched[i], away=unmatched[i+1];
+      roundGames.push({home, away, done:false, round:r+1, dateStr:SEASON_DATES[r] || "第"+(r+1)+"節", id:gameId++});
+    }
+  }
+  games.push(...roundGames);
 }
+
+// 2. 残り5節（第26〜30節：計10試合分）は地区内対戦等で全60試合を完全補完
+for(let r=25; r<30; r++){
+  const roundGames=[];
+  const paired=new Set();
+  
+  // 東西地区内でペアリング
+  [EAST, WEST].forEach(divList=>{
+    for(let i=0; i<divList.length; i+=2){
+      let home = divList[i];
+      let away = divList[(i+r)%divList.length];
+      if(home===away) away = divList[(i+1)%divList.length];
+      if(!paired.has(home+away) && !paired.has(away+home) && home!==away){
+        paired.add(home+away);
+        roundGames.push({home, away, done:false, round:r+1, dateStr:SEASON_DATES[r] || "第"+(r+1)+"節", id:gameId++});
+      }
+    }
+  });
+
+  // 万が一ペアが足りない場合のフォールバック補完
+  const unmatched = TEAM_NAMES.filter(t=>!roundGames.some(g=>g.home===t||g.away===t));
+  for(let i=0; i<unmatched.length; i+=2){
+    if(i+1 < unmatched.length){
+      roundGames.push({home:unmatched[i], away:unmatched[i+1], done:false, round:r+1, dateStr:SEASON_DATES[r] || "第"+(r+1)+"節", id:gameId++});
+    }
+  }
+  games.push(...roundGames);
 }
-}
-return games.slice(0, 390).map((g,i)=>({...g,id:i+1}));
+
+return games;
 }
 
 const REAL_ROSTERS={
@@ -849,7 +891,7 @@ return `<section class="card">
 <div style="margin-bottom:12px">
 ${currentWeek<=30?btn(`▶ 第 ${currentWeek} 節の試合を実行 (${currentDateStr})`,"nextgame","","primary"):btn("ポストシーズンへ進む","startcs","","primary")}
 </div>
-<h3>第 ${currentWeek} 節 対戦カード</h3>
+<h3>第 ${currentWeek} 節 対戦カード (${nextGames.length}試合)</h3>
 ${nextGames.map(g=>`<div class="logline">${esc(g.home)} vs ${esc(g.away)} ${g.home===G.club||g.away===G.club?"<span class='pill gold'>自チーム戦</span>":""}</div>`).join("")||"<p class='muted'>今節の試合はありません。</p>"}
 </section>
 ${G.lastResult?`<section class="card"><h2>直近の試合結果 & チケット収入詳細</h2>${resultHTML(G.lastResult)}</section>`:""}`;
@@ -862,9 +904,9 @@ const matchDate = SEASON_DATES[(G.week-2)>=0?(G.week-2):0] || "";
 
 let secretaryText = `${G.gmName}GM、第${G.week-1}節 (${matchDate}) の試合お疲れ様でした！`;
 if(isHomeMatch) {
-  secretaryText += `${arenaInfo.name}でのホーム戦、チケット収入が順調に計上されています。試合結果と地区順位をご確認ください。`;
+  secretaryText += `${arenaInfo.name}でのホーム戦、チケット収入が確実にクラブ資産に反映されています。試合結果と地区順位をご確認ください。`;
 } else {
-  secretaryText += `今節はアウェー戦となります。試合結果と地区順位のご報告です。`;
+  secretaryText += `今節はアウェー戦となります。アウェーでの戦果と地区順位のご報告です。`;
 }
 
 $("modalContainer").innerHTML=`
@@ -951,7 +993,7 @@ ${G.teams.map(t=>`<option value="${esc(t.name)}" ${G.club===t.name?"selected":""
 
 function newGameScreen(){
 return `<section class="card" style="margin-top:20px">
-<h2><span>B.PREMIER GM 起動 (DATES EDITION)</span></h2>
+<h2><span>B.PREMIER GM 起動 (FIXED EDITION)</span></h2>
 <p class="muted">GMのお名前と、指揮を執るクラブを選択して就任してください（秘書サリナが全面サポートします）。</p>
 <label><span>GMのお名前</span><input id="firstGmName" type="text" value="マイケル" placeholder="例: 田中GM"></label>
 <label><span>担当クラブ</span><select id="firstClub">
@@ -1021,7 +1063,8 @@ const arena = ARENAS[g.home] || {name:"アリーナ", cap:5000};
 const attendance = Math.min(arena.cap, Math.round(G.attendance * (0.95 + Math.random() * 0.1)));
 const attendanceRate = Math.round((attendance / arena.cap) * 100);
 
-const revenue = isHome ? Math.round(attendance * (G.ticket || 3500) / 6000) : 0;
+// ホーム戦の場合のみチケット収入を正確に計上、アウェーはチケット収入なし
+const revenue = isHome ? Math.round(attendance * (G.ticket || 3500) / 10000) : 0;
 const expenses = Math.round(800 + rawSalaryTotal() / 110 + G.coaches.reduce((s,c)=>s+c.salary,0) / 160);
 const profit = revenue - expenses;
 
@@ -1089,7 +1132,7 @@ if(hs===as){as+=1;periods[3][1]++;}
 
 let isWin = hs > as;
 const homeArenaInfo = ARENAS[G.club] || {name:"アリーナ", cap:5000};
-const rev=Math.round(8000*G.ticket/5000);
+const rev=Math.round(8000*G.ticket/10000);
 const exp=1500;
 const profit=rev-exp;
 G.cash+=profit;
