@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>B.LEAGUE GM ULTRA - 60 Games Edition</title>
+<title>B.LEAGUE GM ULTRA - Matchday & Standings Edition</title>
 <style>
 :root{--bg:#070d16;--card:#0f1a2e;--card-border:#1f3352;--text:#e8f0fe;--muted:#8aa2c0;--primary:#f1c40f;--danger:#e74c3c;--success:#2ecc71;--accent:#3498db}
 *{box-sizing:border-box}
@@ -99,7 +99,7 @@ footer{color:var(--muted);text-align:center;padding:15px;font-size:11px}
 <header>
 <div>
 <h1>🏀 B.LEAGUE GM ULTRA</h1>
-<p>B.PREMIER 60-GAMES EDITION</p>
+<p>B.PREMIER DATES & STANDINGS EDITION</p>
 </div>
 <button class="primary" data-act="save">セーブ</button>
 </header>
@@ -122,7 +122,7 @@ footer{color:var(--muted);text-align:center;padding:15px;font-size:11px}
 
 <script>
 "use strict";
-const SAVE_KEY="bleague_gm_ultra_b_premier_v60_fix";
+const SAVE_KEY="bleague_gm_ultra_b_premier_v60_dates";
 const $=id=>document.getElementById(id);
 let G=null,PAGE="home";
 
@@ -159,6 +159,18 @@ const EAST=Object.keys(ARENAS).slice(0,13);
 const WEST=Object.keys(ARENAS).slice(13,26);
 const TEAM_NAMES=[...EAST,...WEST];
 
+// B.LEAGUEの実日程に準拠した30節（60試合）の日付テーブル
+const SEASON_DATES = [
+"10月3日(土) - 10月4日(日)", "10月10日(土) - 10月11日(日)", "10月17日(土) - 10月18日(日)", "10月21日(水) [水曜開催]",
+"10月24日(土) - 10月25日(日)", "10月31日(土) - 11月1日(日)", "11月7日(土) - 11月8日(日)", "11月11日(水) [水曜開催]",
+"11月14日(土) - 11月15日(日)", "12月5日(土) - 12月6日(日)", "12月12日(土) - 12月13日(日)", "12月16日(水) [水曜開催]",
+"12月19日(土) - 12月20日(日)", "12月26日(土) - 12月27日(日)", "1月2日(土) - 1月3日(日)", "1月20日(水) [水曜開催]",
+"1月23日(土) - 1月24日(日)", "1月30日(土) - 1月31日(日)", "2月6日(土) - 2月7日(日)", "3月6日(土) - 3月7日(日)",
+"3月13日(土) - 3月14日(日)", "3月17日(水) [水曜開催]", "3月20日(土) - 3月21日(日)", "3月27日(土) - 3月28日(日)",
+"4月3日(土) - 4月4日(日)", "4月10日(土) - 4月11日(日)", "4月14日(水) [水曜開催]", "4月17日(土) - 4月18日(日)",
+"4月24日(土) - 4月25日(日)", "5月1日(土) - 5月2日(日) [最終節]"
+];
+
 const esc=v=>String(v||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const yen=n=>Math.round(n||0).toLocaleString("ja-JP")+"万円";
 const uid=()=>Math.random().toString(36).slice(2)+Date.now().toString(36);
@@ -177,27 +189,21 @@ wins:0,losses:0,played:0,pf:0,pa:0
 }));
 }
 
-// B.PREMIER準拠：各チーム全60試合（全30週、1週あたり約2試合）の正確なホーム＆アウェー日程を生成
 function makeSchedule(){
 const games=[];
-// 総ラウンド数30（各週2試合ずつで計60試合）
 for(let r=0;r<30;r++){
-// 総当たりペア作成用のローテーション
 const rotation=TEAM_NAMES.map((_,i)=>TEAM_NAMES[(i+r)%26]);
 for(let i=0;i<13;i++){
 let home=rotation[i],away=rotation[25-i];
-// ホームとアウェーのバランスを調整
 if((r+i)%2){const t=home;home=away;away=t;}
-games.push({home,away,done:false,round:r+1});
-// 週あたりの試合数を2試合にするため、同ラウンド内でもう1試合ペアを組む
+games.push({home,away,done:false,round:r+1,dateStr:SEASON_DATES[r]});
 let home2=rotation[(i+1)%26],away2=rotation[(24-i+26)%26];
 if(home2!==away2 && home2!==home && away2!==away){
   if((r+i)%3===0){const t=home2;home2=away2;away2=t;}
-  games.push({home:home2,away:away2,done:false,round:r+1});
+  games.push({home:home2,away:away2,done:false,round:r+1,dateStr:SEASON_DATES[r]});
 }
 }
 }
-// 各試合に一意のIDを付与
 return games.slice(0, 390).map((g,i)=>({...g,id:i+1}));
 }
 
@@ -572,13 +578,13 @@ coachMarket:[
 teams:makeTeams(),
 schedule:makeSchedule(),
 news:[
-  {id:uid(),title:`${club}が新体制でB.PREMIER開幕へ！`,date:"2026年9月22日",body:`${gmName}GMの手腕にブースターの期待が高まる中、${ARENAS[club]?.name}を拠点とする60試合の長丁場シーズンが本格始動した。`}
+  {id:uid(),title:`${club}が新体制でB.PREMIER開幕へ！`,date:"10月1日",body:`${gmName}GMの手腕にブースターの期待が高まる中、${ARENAS[club]?.name}を拠点とする60試合の長丁場シーズンが本格始動した。`}
 ],
 secretaryMeeting:null,
 phase:"regular",
 csStage:null,
 csResult:null,
-log:[`${gmName}氏が${club}のGMに就任しました！B.PREMIER制覇を目指しましょう。`],
+log:[`${gmName}氏が${club}のGMに就任しました！B.PREMIER開幕です。`],
 lastResult:null
 };
 saveGame();
@@ -643,7 +649,8 @@ function homePage(){
 renderTopStatus();
 const c=cap();
 const arenaInfo = ARENAS[G.club] || {name:"専用アリーナ", cap:5000};
-let phaseText=`レギュラーシーズン (全60試合 / 第${G.week||1}週進行中)`;
+const currentDateStr = SEASON_DATES[(G.week||1)-1] || "5月 最終節";
+let phaseText=`レギュラーシーズン (全60試合 / 第${G.week||1}節進行中)`;
 if(G.phase==="cs") phaseText="🏆 チャンピオンシップ（ポストシーズン）開催中";
 if(G.phase==="off") phaseText="🏖️ オフシーズン（契約更改・補強期間）";
 
@@ -654,14 +661,14 @@ return `<div class="arena-banner">
 
 <div class="date-advance-box">
 <div>
-<div class="date-display">2026-27シーズン 第 ${G.week||1} 週</div>
-<div class="match-preview">次戦ホーム: ${esc(arenaInfo.name)}</div>
+<div class="date-display">📅 第 ${G.week||1} 節: ${currentDateStr}</div>
+<div class="match-preview">次戦ホームアリーナ: ${esc(arenaInfo.name)}</div>
 </div>
-<button class="primary" data-act="nextgame" style="padding:10px 18px;font-size:13px">▶ 週を進める (試合実行)</button>
+<button class="primary" data-act="nextgame" style="padding:10px 18px;font-size:13px">▶ 試合を進める (節進行)</button>
 </div>
 
 <section class="card">
-<h2><span>🏢 本部ダッシュボード</span> <span class="pill gold">第 ${G.week||1}/30 週</span></h2>
+<h2><span>🏢 本部ダッシュボード</span> <span class="pill gold">第 ${G.week||1}/30 節</span></h2>
 <div class="notice">現在の進行状況：<b>${phaseText}</b>（1.5億円以上スター枠: <b>${starCount(G.roster)}/1人</b>）</div>
 <div class="stats-grid">
 <div class="stat-box">現金資産<strong>${yen(G.cash)}</strong></div>
@@ -675,8 +682,8 @@ return `<div class="arena-banner">
 <h2><span>📋 業務一覧 (タップして移行)</span> <span class="pill">残り 3</span></h2>
 <div class="task-item" style="cursor:pointer" data-act="gopage" data-id="season">
 <div class="task-info">
-<strong>🏀 60試合日程・週スケジュール進行</strong>
-<small>全30週の対戦カード確認と試合結果の実行を行います。</small>
+<strong>🏀 60試合日程・節スケジュール進行</strong>
+<small>全30節の対戦カード確認と試合結果の実行を行います。</small>
 </div>
 <div class="task-actions"><button class="primary" style="padding:6px 10px">開く</button></div>
 </div>
@@ -710,7 +717,7 @@ const tab=window.standingsTab||"EAST";
 const getSorted=(div)=> [...G.teams].filter(t=>t.division===div).sort((a,b)=>b.wins-a.wins||((b.pf-b.pa)-(a.pf-a.pa)));
 
 return `<section class="card">
-<h2><span>順位表 (B.PREMIER)</span>
+<h2><span>B.PREMIER 公式順位表</span>
 <div class="row" style="gap:4px">
 <button class="${tab==='EAST'?'primary':''}" data-act="st-east" style="padding:4px 8px;font-size:11px">東地区</button>
 <button class="${tab==='WEST'?'primary':''}" data-act="st-west" style="padding:4px 8px;font-size:11px">西地区</button>
@@ -834,15 +841,16 @@ ${G.csResult?`<div style="margin-top:12px">${resultHTML(G.csResult)}</div>`:""}
 }
 
 const currentWeek=G.week||1;
+const currentDateStr=SEASON_DATES[currentWeek-1] || "5月 最終節";
 const nextGames=G.schedule.filter(g=>g.round===currentWeek);
 
 return `<section class="card">
-<h2><span>日程・第 ${currentWeek} 週 (全30週 / 各60試合)</span> <span class="pill">消化: ${(G.week||1)-1}/30週</span></h2>
+<h2><span>日程・第 ${currentWeek} 節 (${currentDateStr})</span> <span class="pill">消化: ${(G.week||1)-1}/30節</span></h2>
 <div style="margin-bottom:12px">
-${currentWeek<=30?btn(`▶ 第 ${currentWeek} 週の試合・チケット収入を実行`,"nextgame","","primary"):btn("ポストシーズンへ進む","startcs","","primary")}
+${currentWeek<=30?btn(`▶ 第 ${currentWeek} 節の試合を実行 (${currentDateStr})`,"nextgame","","primary"):btn("ポストシーズンへ進む","startcs","","primary")}
 </div>
-<h3>第 ${currentWeek} 週 対戦カード</h3>
-${nextGames.map(g=>`<div class="logline">${esc(g.home)} vs ${esc(g.away)} ${g.home===G.club||g.away===G.club?"<span class='pill gold'>自チーム戦 (ホーム/アウェイ)</span>":""}</div>`).join("")||"<p class='muted'>今週の試合はありません。</p>"}
+<h3>第 ${currentWeek} 節 対戦カード</h3>
+${nextGames.map(g=>`<div class="logline">${esc(g.home)} vs ${esc(g.away)} ${g.home===G.club||g.away===G.club?"<span class='pill gold'>自チーム戦</span>":""}</div>`).join("")||"<p class='muted'>今節の試合はありません。</p>"}
 </section>
 ${G.lastResult?`<section class="card"><h2>直近の試合結果 & チケット収入詳細</h2>${resultHTML(G.lastResult)}</section>`:""}`;
 }
@@ -850,19 +858,20 @@ ${G.lastResult?`<section class="card"><h2>直近の試合結果 & チケット�
 function showSecretaryReportModal(r){
 const arenaInfo = ARENAS[G.club] || {name:"アリーナ", cap:5000};
 const isHomeMatch = r.home === G.club;
+const matchDate = SEASON_DATES[(G.week-2)>=0?(G.week-2):0] || "";
 
-let secretaryText = `${G.gmName}GM、第${G.week-1}週の試合お疲れ様でした！`;
+let secretaryText = `${G.gmName}GM、第${G.week-1}節 (${matchDate}) の試合お疲れ様でした！`;
 if(isHomeMatch) {
-  secretaryText += `${arenaInfo.name}でのホーム戦、チケット収入がクラブ経営を強力にバックアップしています。本日の試合結果および収支報告です。`;
+  secretaryText += `${arenaInfo.name}でのホーム戦、チケット収入が順調に計上されています。試合結果と地区順位をご確認ください。`;
 } else {
-  secretaryText += `今週はアウェー戦となります。アウェーでの戦果と財務状況のご報告です。`;
+  secretaryText += `今節はアウェー戦となります。試合結果と地区順位のご報告です。`;
 }
 
 $("modalContainer").innerHTML=`
 <div class="modal-overlay" id="reportModal">
 <div class="modal-content" onclick="event.stopPropagation()">
-<h3 style="margin-top:0;color:var(--primary)">☕ 秘書サリナの業務報告 (第${G.week-1}週)</h3>
-<small style="color:var(--muted)">宛先: ${esc(G.gmName)}GM</small>
+<h3 style="margin-top:0;color:var(--primary)">☕ 秘書サリナの業務報告 (第${G.week-1}節)</h3>
+<small style="color:var(--muted)">開催日: ${esc(matchDate)} / 宛先: ${esc(G.gmName)}GM</small>
 <p style="font-size:12px;line-height:1.5;margin:8px 0">${esc(secretaryText)}</p>
 
 <div class="scoreboard">
@@ -880,13 +889,22 @@ $("modalContainer").innerHTML=`
 <div style="font-weight:bold;color:var(--primary);margin-bottom:4px;border-bottom:1px solid #1f3352;padding-bottom:2px">📊 本日のチケット収入 & 収支</div>
 <div style="display:flex;justify-content:space-between"><span>チケット収入:</span><b style="color:var(--success)">+${yen(r.revenue)}</b></div>
 <div style="display:flex;justify-content:space-between"><span>球団運営コスト:</span><b style="color:var(--danger)">-${yen(r.expenses)}</b></div>
-<div style="margin-top:6px;border-top:1px solid #1f3352;padding-top:6px;display:flex;justify-content:space-between"><span>今週の純利益:</span><b style="color:var(--primary)">+${yen(r.profit)}</b></div>
+<div style="margin-top:6px;border-top:1px solid #1f3352;padding-top:6px;display:flex;justify-content:space-between"><span>今節の純利益:</span><b style="color:var(--primary)">+${yen(r.profit)}</b></div>
 </div>
 </div>
 
-<button class="primary" id="closeReportBtn" style="width:100%;margin-top:14px;padding:10px">確認済 (本部へ戻る)</button>
+<div class="row" style="margin-top:14px;gap:8px">
+<button class="primary" id="viewStandingsBtn" style="flex:1;padding:10px;background:var(--accent);color:white">📊 最新の順位表を見る</button>
+<button class="primary" id="closeReportBtn" style="flex:1;padding:10px">確認済 (本部へ)</button>
+</div>
 </div></div>
 `;
+
+$("viewStandingsBtn").onclick = () => {
+  $("modalContainer").innerHTML="";
+  PAGE="standings";
+  render();
+};
 
 $("closeReportBtn").onclick = () => {
   $("modalContainer").innerHTML="";
@@ -911,7 +929,7 @@ return `<div class="scoreboard">
 <div style="font-weight:bold;color:var(--primary);margin-bottom:4px;border-bottom:1px solid #1f3352;padding-bottom:2px">📊 本日のチケット収入 & 収支</div>
 <div style="display:flex;justify-content:space-between"><span>チケット収入:</span><b style="color:var(--success)">+${yen(r.revenue)}</b></div>
 <div style="display:flex;justify-content:space-between"><span>球団運営コスト:</span><b style="color:var(--danger)">-${yen(r.expenses)}</b></div>
-<div style="margin-top:6px;border-top:1px solid #1f3352;padding-top:6px;display:flex;justify-content:space-between"><span>今週の純利益:</span><b style="color:var(--primary)">+${yen(r.profit)}</b></div>
+<div style="margin-top:6px;border-top:1px solid #1f3352;padding-top:6px;display:flex;justify-content:space-between"><span>今節の純利益:</span><b style="color:var(--primary)">+${yen(r.profit)}</b></div>
 </div>
 </div>`;
 }
@@ -933,7 +951,7 @@ ${G.teams.map(t=>`<option value="${esc(t.name)}" ${G.club===t.name?"selected":""
 
 function newGameScreen(){
 return `<section class="card" style="margin-top:20px">
-<h2><span>B.PREMIER GM 起動 (60試合 EDITION)</span></h2>
+<h2><span>B.PREMIER GM 起動 (DATES EDITION)</span></h2>
 <p class="muted">GMのお名前と、指揮を執るクラブを選択して就任してください（秘書サリナが全面サポートします）。</p>
 <label><span>GMのお名前</span><input id="firstGmName" type="text" value="マイケル" placeholder="例: 田中GM"></label>
 <label><span>担当クラブ</span><select id="firstClub">
@@ -968,6 +986,7 @@ function simulateGame(){
 const currentRound=G.week||1;
 if(currentRound>30){alert("レギュラーシーズンは終了しています。ポストシーズンへ進んでください。");return;}
 const roundGames=G.schedule.filter(g=>g.round===currentRound);
+const dateStr=SEASON_DATES[currentRound-1] || "";
 
 G.roster.forEach(p=>{if(p.injury>0)p.injury--;});
 
@@ -997,13 +1016,11 @@ if(score>against)t.wins++;else t.losses++;
 }
 }
 
-// 自チームの試合である場合はチケット収入や収支を厳密に計算
 if(isHome||isAway){
 const arena = ARENAS[g.home] || {name:"アリーナ", cap:5000};
 const attendance = Math.min(arena.cap, Math.round(G.attendance * (0.95 + Math.random() * 0.1)));
 const attendanceRate = Math.round((attendance / arena.cap) * 100);
 
-// ホーム戦のみチケット収入が発生、アウェー戦はチケット収入0
 const revenue = isHome ? Math.round(attendance * (G.ticket || 3500) / 6000) : 0;
 const expenses = Math.round(800 + rawSalaryTotal() / 110 + G.coaches.reduce((s,c)=>s+c.salary,0) / 160);
 const profit = revenue - expenses;
@@ -1026,13 +1043,13 @@ myTeamMatchRes = {
   profit
 };
 
-log(`第${currentRound}週: ${g.home} vs ${g.away} (${hs}-${as}) 収支: ${profit>=0?'+':''}${yen(profit)}`);
+log(`第${currentRound}節 (${dateStr}): ${g.home} vs ${g.away} (${hs}-${as}) 収支: ${profit>=0?'+':''}${yen(profit)}`);
 
 if(Math.random()<0.15 && G.roster.length>0){
   const victim = G.roster[Math.floor(Math.random()*G.roster.length)];
   if(victim.injury<=0){
     victim.injury=Math.floor(Math.random()*3)+2;
-    G.news.unshift({id:uid(),title:`【速報】${victim.name}が負傷離脱`,date:`第${currentRound}週`,body:`練習・試合中に${victim.name}選手が負傷し、全治約${victim.injury}週の見込みと診断されました。`});
+    G.news.unshift({id:uid(),title:`【速報】${victim.name}が負傷離脱`,date:`第${currentRound}節`,body:`練習・試合中に${victim.name}選手が負傷し、全治約${victim.injury}週の見込みと診断されました。`});
   }
 }
 }
@@ -1044,7 +1061,7 @@ if(myTeamMatchRes) {
 
 G.week++;
 if(G.week>30){
-  G.news.unshift({id:uid(),title:"レギュラーシーズン全日程が終了",date:"シーズン末",body:`全30週・60試合の激闘が終了しました。いよいよチャンピオンシップ（CS）が開幕します。`});
+  G.news.unshift({id:uid(),title:"レギュラーシーズン全日程が終了",date:"5月",body:`全30節・60試合の激闘が終了しました。いよいよチャンピオンシップ（CS）が開幕します。`});
 }
 
 saveGame();
